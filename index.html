@@ -1,529 +1,1085 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amazing Animals - 記憶翻牌遊戲</title>
-    <!-- 引入 Noto Sans TC 字體 -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  BookOpen, Rocket, Search, Menu, X, Download, Star, ChevronRight, Globe, 
+  ArrowLeft, PlayCircle, CheckCircle, FileText, FileImage, Volume2, HelpCircle, Layout,
+  Home, Hand, LayoutGrid, Trophy, RotateCcw, Play, MonitorPlay, ChevronLeft, Lock, Mic,
+  FlaskConical, Youtube, Construction, ExternalLink, AlertCircle, Info
+} from 'lucide-react';
+
+const apiKey = ""; // 系統會自動提供金鑰
+
+// --- Custom Animal Icon Component ---
+const AnimalIcon = ({ name, emoji, className = "" }) => {
+  if (name === 'Crow') {
+    return (
+      <img 
+        src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f426-200d-2b1b.svg" 
+        alt="Crow" 
+        className={className}
+        style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))' }}
+      />
+    );
+  }
+  if (name === 'Seal') {
+    return (
+      <img 
+        src="https://raw.githubusercontent.com/googlefonts/noto-emoji/main/svg/emoji_u1f9ad.svg" 
+        alt="Seal" 
+        className={className}
+        style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))' }}
+      />
+    );
+  }
+  return <span className={className}>{emoji}</span>;
+};
+
+// --- Mock Database ---
+const elementaryResources = [
+  { id: 1, title: 'Phonics Fun: A to Z', type: 'Worksheet', level: 'Beginner', desc: 'Basic phonics practice sheets, including A to Z letter tracing and flashcards.', downloads: 1240 },
+  { id: 2, title: 'Vocabulary Challenge', type: 'Flashcards', level: 'Beginner', desc: 'Daily vocabulary cards covering food, animals, and clothing topics.', downloads: 890 },
+  { id: 3, title: 'Reading: The Red Hen', type: 'Picture Book', level: 'Intermediate', desc: 'Reading comprehension materials based on the classic story "The Little Red Hen".', downloads: 1560 },
+  { id: 4, title: 'Basic Grammar Guide', type: 'Guide', level: 'Intermediate', desc: 'Fundamental grammar rules, covering present simple and common prepositions.', downloads: 2100 },
+];
+
+const steamResources = [
+  { id: 5, title: 'DIY Volcano Model', type: 'Experiment', focus: 'Science', desc: 'A volcano eruption guide combining science experiments with English instructions.', downloads: 3420 },
+  { id: 6, title: 'Scratch Coding', type: 'Tutorial', focus: 'Tech', desc: 'Introductory Scratch programming for kids using English terminology.', downloads: 2800 },
+  { id: 7, title: 'Bridge Engineering', type: 'Project', focus: 'Engineering', desc: 'Build a bridge using popsicle sticks and learn measurement-related vocabulary.', downloads: 1150 },
+  { id: 8, title: 'Math Logic Puzzles', type: 'Worksheet', focus: 'Math', desc: 'Logic puzzles designed to improve both calculation and English reading skills.', downloads: 1980 },
+];
+
+const animalsData = [
+  { id: 1, name: 'Dog', category: 'Land', emoji: '🐶', tpr: 'Put hands on head like ears, stick tongue out and pant.' },
+  { id: 2, name: 'Horse', category: 'Land', emoji: '🐎', tpr: 'March in place, pretend to ride a horse.' },
+  { id: 3, name: 'Elephant', category: 'Land', emoji: '🐘', tpr: 'Swing one arm in front of your face like a long trunk!' },
+  { id: 4, name: 'Lion', category: 'Land', emoji: '🦁', tpr: 'Open your hands like claws and ROAR!' },
+  { id: 5, name: 'Snake', category: 'Land', emoji: '🐍', tpr: 'Put your arms together, wiggle them, and go Sssss!' },
+  { id: 6, name: 'Human', category: 'Land', emoji: '🧑', tpr: 'Point to yourself, smile, wave, and say Hello!' },
+  { id: 7, name: 'Crow', category: 'Air', emoji: '🐦‍⬛', tpr: 'Tap your hands on your sides and say Caw, caw!' },
+  { id: 8, name: 'Eagle', category: 'Air', emoji: '🦅', tpr: 'Stretch your arms out wide like big wings and glide!' },
+  { id: 9, name: 'Whale', category: 'Water', emoji: '🐳', tpr: 'Put hands together above your head, pretend to spout water!' },
+  { id: 10, name: 'Seal', category: 'Water', emoji: '🦭', tpr: 'Keep your arms close to your body and clap your hands!' }
+];
+
+const speak = (text) => {
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'en-US';
+    utterance.rate = 0.8;
+    window.speechSynthesis.speak(utterance);
+  }
+};
+
+const shuffleArray = (array) => [...array].sort(() => Math.random() - 0.5);
+
+// --- Component Fragments ---
+
+const AdBanner = ({ format = 'horizontal', className = "" }) => (
+  <div className={`relative flex items-center justify-center bg-gray-100 border-2 border-dashed border-gray-300 text-gray-400 rounded-lg overflow-hidden ${format === 'horizontal' ? 'w-full h-20 my-2' : 'w-full h-64 my-4'} ${className}`}>
+    <span className="absolute top-1 right-2 text-[10px] bg-gray-200 text-gray-500 px-1 rounded uppercase tracking-tighter font-bold">AD Space</span>
+    <p className="font-semibold text-xs">{format === 'horizontal' ? '728 x 90' : '300 x 250'}</p>
+  </div>
+);
+
+const ResourceCard = ({ item, icon: Icon }) => (
+  <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition-shadow flex flex-col h-full cursor-pointer group">
+    <div className="flex justify-between items-start mb-2">
+      <div className="bg-orange-50 p-1.5 rounded-lg text-orange-600 group-hover:bg-orange-100 transition-colors">
+        <Icon size={20} />
+      </div>
+      <span className="text-[10px] font-bold px-2 py-0.5 bg-green-50 text-green-600 rounded-full uppercase tracking-wide">{item.level || item.focus}</span>
+    </div>
+    <h3 className="text-sm font-bold text-gray-800 mb-1 group-hover:text-orange-600 transition-colors">{item.title}</h3>
+    <p className="text-[10px] text-gray-600 mb-3 flex-grow line-clamp-2 leading-relaxed">{item.desc}</p>
+    <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-50">
+      <span className="text-[10px] text-gray-400 flex items-center font-medium"><Download size={12} className="mr-1" /> {item.downloads}</span>
+      <button className="text-[10px] font-bold text-orange-600 flex items-center hover:translate-x-0.5 transition-transform">Download <ChevronRight size={12} /></button>
+    </div>
+  </div>
+);
+
+// --- STEAM Video Page ---
+
+function SteamVideoPage({ onBack }) {
+  const videoId = "ieDNvJNf0ag";
+  const youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`;
+
+  return (
+    <div className="h-[calc(100vh-64px)] bg-slate-50 overflow-hidden flex flex-col animate-in fade-in duration-500">
+      <main className="flex-1 p-6 max-w-6xl mx-auto w-full h-full overflow-hidden flex flex-col">
+        {/* Header */}
+        <div className="flex items-center gap-5 mb-8">
+          <button 
+            onClick={onBack}
+            className="p-3 bg-white text-orange-600 rounded-2xl shadow-sm border border-orange-100 hover:bg-orange-50 transition-all hover:scale-110 active:scale-95"
+          >
+            <ArrowLeft size={24} />
+          </button>
+          <div>
+            <h2 className="text-3xl font-black text-gray-900 tracking-tight leading-none mb-2">LEGO DIY: Toy Bow & Arrow</h2>
+            <p className="text-sm text-gray-400 font-bold tracking-widest uppercase opacity-80">STEAM Project Learning • Creative Engineering Design</p>
+          </div>
+        </div>
+
+        {/* Video Frame */}
+        <div className="flex-1 bg-black rounded-[3rem] overflow-hidden shadow-2xl relative group aspect-video max-h-[50vh] mx-auto w-full border-[12px] border-white">
+          <iframe 
+            className="w-full h-full"
+            src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&showinfo=0&modestbranding=1`} 
+            title="LEGO DIY Bow and Arrow"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            referrerPolicy="no-referrer-when-downgrade"
+            allowFullScreen
+          ></iframe>
+        </div>
+
+        {/* Error State Warning */}
+        <div className="mt-8 flex flex-col items-center gap-3">
+          <div className="flex items-center gap-2 text-rose-500 text-[11px] font-black uppercase tracking-[0.2em] opacity-80">
+            <AlertCircle size={14} className="stroke-[3]" /> Playback Error?
+          </div>
+          <a 
+            href={youtubeUrl} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 text-base font-black text-white px-10 py-4 bg-rose-500 hover:bg-rose-600 rounded-full shadow-2xl shadow-rose-200 transition-all active:scale-95 group"
+          >
+            <Youtube size={22} className="group-hover:scale-110 transition-transform" /> 
+            Open in YouTube Player <ExternalLink size={18} />
+          </a>
+        </div>
+
+        {/* Info Area */}
+        <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-8 pb-8">
+          <div className="lg:col-span-2 bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm flex flex-col">
+             <h3 className="font-black text-xl mb-4 flex items-center gap-3 text-orange-600 uppercase tracking-tighter">
+               <Construction className="text-orange-400" size={24} /> Project Overview
+             </h3>
+             <p className="text-gray-500 leading-loose text-base font-medium">
+               In this lesson, we will learn how to build a fully functional toy bow and arrow using LEGO bricks! Through hands-on practice, students will experience basic concepts of physical tension, mechanical principles, and engineering structures, turning creativity into a physical masterpiece.
+             </p>
+          </div>
+          <div className="bg-indigo-600 p-8 rounded-[2.5rem] text-white shadow-xl shadow-indigo-100 flex flex-col justify-center items-center text-center relative overflow-hidden group">
+             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-125 transition-transform"><Rocket size={100} /></div>
+             <Rocket size={48} className="mb-4 opacity-90" />
+             <h4 className="text-2xl font-black mb-1">Building Guide</h4>
+             <p className="text-[11px] opacity-70 mb-6 font-black uppercase tracking-widest">Available for Pro Hub</p>
+             <button className="bg-white text-indigo-600 px-10 py-3 rounded-full font-black text-sm hover:scale-105 transition-all shadow-lg active:scale-95">
+                Download PDF
+             </button>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+// --- Amazing Animals Module ---
+
+function AaHomeView({ setModuleView }) {
+  return (
+    <div className="flex flex-col items-center justify-center text-center animate-in fade-in slide-in-from-bottom-4 duration-700 h-full w-full py-12">
+      <div className="flex gap-4 mb-6 animate-bounce justify-center">
+        <span className="text-7xl drop-shadow-xl">🐶</span>
+        <span className="text-7xl drop-shadow-xl">🦁</span>
+        <span className="text-7xl drop-shadow-xl">🐘</span>
+        <span className="text-7xl drop-shadow-xl">🐎</span>
+      </div>
+      <h2 className="text-4xl font-black text-sky-900 mb-2 tracking-tight">Amazing Animals!</h2>
+      <p className="text-base text-sky-700/60 mb-10 max-w-sm font-bold leading-relaxed mx-auto">Meet animal friends, listen, and move your body!</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full max-w-3xl px-6">
+        <AaHomeCard icon={<BookOpen className="text-amber-500" />} title="Learn & Move" desc="Vocabulary & TPR Actions" color="bg-amber-50 border-amber-200" onClick={() => setModuleView('learn')} />
+        <AaHomeCard icon={<Hand className="text-rose-500" />} title="Listening Game" desc="Test Your Ears" color="bg-rose-50 border-rose-200" onClick={() => setModuleView('swatter')} />
+        <AaHomeCard icon={<LayoutGrid className="text-emerald-500" />} title="Matching Game" desc="Find the Pairs" color="bg-emerald-50 border-emerald-200" onClick={() => setModuleView('memory')} />
+        <AaHomeCard icon={<Download className="text-purple-500" />} title="Materials" desc="PPT & PDF Download" color="bg-purple-50 border-purple-200" onClick={() => setModuleView('downloads')} />
+      </div>
+    </div>
+  );
+}
+
+function AaHomeCard({ icon, title, desc, color, onClick }) {
+  return (
+    <button onClick={onClick} className={`${color} border-2 rounded-[2rem] p-6 text-left flex items-center gap-5 transition-all hover:scale-[1.03] active:scale-95 group shadow-sm w-full`}>
+      <div className="bg-white p-4 rounded-2xl shadow-sm group-hover:rotate-6 transition-transform">{icon}</div>
+      <div>
+        <h3 className="text-xl font-black text-gray-800 leading-tight"> {title} </h3>
+        <p className="text-[12px] text-gray-500 font-black mt-1 uppercase tracking-wider">{desc}</p>
+      </div>
+    </button>
+  );
+}
+
+function AaLearnView({ onHome }) {
+  const categories = [
+    { id: 'Land', label: 'Land', eng: "Let's go to the Land!", icon: "🌳", color: "from-emerald-400 to-green-600" },
+    { id: 'Air', label: 'Air', eng: "Let's fly in the Sky!", icon: "☁️", color: "from-cyan-300 to-blue-400" },
+    { id: 'Water', label: 'Water', eng: "Let's dive into the Sea!", icon: "🌊", color: "from-blue-400 to-indigo-600" },
+  ];
+
+  const [filter, setFilter] = useState('Land');
+  const [intro, setIntro] = useState({ title: categories[0].eng, sub: `${categories[0].label} Animals`, color: categories[0].color, icon: categories[0].icon });
+
+  useEffect(() => { speak(categories[0].eng); }, []);
+
+  const handleFilterChange = (cat) => {
+    if (cat.id === filter) return;
+    setIntro({ title: cat.eng, sub: `${cat.label} Animals`, color: cat.color, icon: cat.icon });
+    speak(cat.eng);
+    setFilter(cat.id);
+  };
+
+  const getSentence = (name) => {
+    if (name === 'Human') return "I am a human.";
+    const lowerName = name.toLowerCase();
+    const isVowel = ['a', 'e', 'i', 'o', 'u'].includes(lowerName[0]);
+    return `It is ${isVowel ? 'an' : 'a'} ${lowerName}.`;
+  };
+
+  return (
+    <div className="h-full flex flex-col relative overflow-hidden animate-in fade-in">
+      {intro && (
+        <div className={`fixed inset-0 z-[100] flex flex-col items-center justify-center text-white bg-gradient-to-br ${intro.color} animate-in fade-in zoom-in duration-500`}>
+          <div className="text-[10rem] mb-10 animate-bounce">{intro.icon}</div>
+          <h2 className="text-4xl md:text-6xl font-black text-center px-8 mb-8 drop-shadow-2xl uppercase tracking-tighter opacity-95">{intro.title}</h2>
+          <div className="bg-white/20 backdrop-blur-xl px-16 py-4 rounded-[3rem] border border-white/40 text-[36px] md:text-[58px] font-black mb-12 shadow-2xl tracking-tighter text-center">{intro.sub}</div>
+          <button 
+            onClick={() => setIntro(null)} 
+            className="bg-white text-sky-900 px-12 py-5 rounded-full font-black text-2xl shadow-2xl hover:scale-110 active:scale-95 transition-all flex items-center gap-3"
+          >
+            Start Learning <ChevronRight size={28} />
+          </button>
+        </div>
+      )}
+
+      {/* Filter Nav */}
+      <div className="flex items-center justify-between mb-8 bg-white p-3 rounded-3xl shadow-sm border border-sky-100">
+        <button onClick={onHome} className="p-3 text-sky-500 hover:bg-sky-50 rounded-2xl transition-all shadow-sm active:scale-90"><ArrowLeft size={28} /></button>
+        <div className="flex gap-3">
+          {categories.map(cat => (
+            <button 
+              key={cat.id} 
+              onClick={() => handleFilterChange(cat)} 
+              className={`px-8 py-3 rounded-full text-base font-black transition-all ${filter === cat.id ? 'bg-sky-500 text-white shadow-lg scale-105' : 'bg-white text-sky-600 hover:bg-sky-50 border border-sky-100'}`}
+            >
+              {cat.icon} {cat.label}
+            </button>
+          ))}
+        </div>
+        <div className="w-12"></div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto pb-12 custom-scroll">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-2">
+          {animalsData.filter(a => a.category === filter).map(animal => {
+            const sentenceText = getSentence(animal.name);
+            return (
+              <div key={animal.id} className="bg-white rounded-[3rem] p-10 shadow-lg border border-sky-50 flex flex-col items-center text-center transition-all hover:shadow-2xl hover:-translate-y-2 group relative">
+                <div className="w-40 h-40 mb-6 cursor-pointer group-hover:scale-110 transition-transform active:scale-95 flex items-center justify-center" onClick={() => speak(animal.name)}>
+                  <AnimalIcon name={animal.name} emoji={animal.emoji} className="text-9xl drop-shadow-2xl w-full h-full object-contain" />
+                </div>
+                
+                <h3 className="text-4xl font-black text-gray-800 mb-6 tracking-tighter">{animal.name}</h3>
+                
+                {/* Sentence Display */}
+                <div className="mb-6 min-h-8 flex items-center justify-center">
+                  <p className="text-xl font-black text-sky-600 italic tracking-tight opacity-90">"{sentenceText}"</p>
+                </div>
+
+                {/* TPR Action Box */}
+                <div className="bg-sky-50/70 p-6 rounded-[2rem] w-full mb-8 border border-sky-100/50 relative">
+                  <p className="text-[11px] uppercase tracking-[0.3em] font-black text-sky-400 mb-3 text-center flex items-center justify-center gap-2">
+                    🏃 TPR ACTION
+                  </p>
+                  <p className="text-base text-sky-800 font-bold italic text-center leading-relaxed">
+                    "{animal.tpr}"
+                  </p>
+                </div>
+                
+                {/* Action Buttons */}
+                <div className="flex gap-4 w-full mt-auto">
+                  <button onClick={() => speak(animal.name)} className="flex-1 bg-amber-400 hover:bg-amber-500 text-white py-5 rounded-[1.5rem] font-black transition-all shadow-lg active:scale-95 flex items-center justify-center gap-3 shadow-amber-100"><Volume2 size={24}/>Word</button>
+                  <button onClick={() => speak(sentenceText)} className="flex-1 bg-sky-500 hover:bg-sky-600 text-white py-5 rounded-[1.5rem] font-black transition-all shadow-lg active:scale-95 flex items-center justify-center gap-3 shadow-sky-100"><Play size={24}/>Sentence</button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// --- Downloads View ---
+
+function AaDownloadsView({ onHome }) {
+  const [downloading, setDownloading] = useState(null);
+  const [slideIndex, setSlideIndex] = useState(0);
+  const slideUrls = ["https://i.ibb.co/YFGTvyp2/1.png", "https://i.ibb.co/3myx4BBH/2.png", "https://i.ibb.co/HDm9jRm4/3.png", "https://i.ibb.co/nMQmTqbN/4.png", "https://i.ibb.co/1YNMxSfK/5.png", "https://i.ibb.co/j9Lk6HtL/6.png", "https://i.ibb.co/2Yj2vV40/7.png", "https://i.ibb.co/1Gpk35C0/8.png", "https://i.ibb.co/WwL1KwF/9.png", "https://i.ibb.co/nsCm7Cdq/10.png", "https://i.ibb.co/JFj24v2w/11.png", "https://i.ibb.co/1GSXjsDh/12.png", "https://i.ibb.co/prPkxYsd/13.png", "https://i.ibb.co/S703kGRp/14.png", "https://i.ibb.co/Vc1VDSpJ/15.png"];
+  
+  const handleDownload = (type) => {
+    setDownloading(type);
+    const url = type === 'pdf' ? "https://raw.githubusercontent.com/JOUCHUCHEN/CurioCat/main/animals/Animal_Field_Guide.pdf" : "https://github.com/JOUCHUCHEN/CurioCat/blob/main/animals/Animal_Field_Guide.pptx?raw=true";
+    window.open(url, '_blank');
+    setTimeout(() => setDownloading(null), 2000);
+  };
+
+  return (
+    <div className="flex flex-col h-full animate-in fade-in">
+      <button onClick={onHome} className="p-3 bg-white text-orange-500 rounded-2xl shadow-sm border mb-6 w-12 hover:bg-orange-50 active:scale-90 transition-all"><ArrowLeft size={24}/></button>
+      <div className="flex-1 flex flex-col lg:flex-row gap-8 overflow-hidden">
+        {/* Left: Preview */}
+        <div className="w-full lg:w-7/12 bg-white rounded-[3rem] border p-8 flex flex-col shadow-sm border-orange-50">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-lg font-black flex items-center gap-3 text-gray-800 tracking-tight uppercase">
+              <MonitorPlay size={24} className="text-orange-500" /> Preview
+            </h3>
+            <span className="text-[11px] bg-orange-50 text-orange-600 px-4 py-1.5 rounded-full font-black uppercase tracking-widest">
+              Slide {slideIndex + 1} / {slideUrls.length}
+            </span>
+          </div>
+          <div className="flex-1 bg-gray-950 rounded-[2.5rem] overflow-hidden relative flex items-center justify-center border border-gray-900 shadow-2xl">
+            <img src={slideUrls[slideIndex]} className="h-full w-full object-contain" alt={`Slide ${slideIndex + 1}`} />
+            <button onClick={() => setSlideIndex((prev) => (prev - 1 + slideUrls.length) % slideUrls.length)} className="absolute left-6 bg-black/40 hover:bg-white p-4 rounded-full text-white hover:text-orange-600 active:scale-90 transition-all backdrop-blur-md"><ChevronLeft size={32} /></button>
+            <button onClick={() => setSlideIndex((prev) => (prev + 1) % slideUrls.length)} className="absolute right-6 bg-black/40 hover:bg-white p-4 rounded-full text-white hover:text-orange-600 active:scale-90 transition-all backdrop-blur-md"><ChevronRight size={32} /></button>
+          </div>
+        </div>
+
+        {/* Right: Download Section */}
+        <div className="w-full lg:w-5/12 bg-white rounded-[3rem] border p-12 flex flex-col items-center justify-center text-center h-full shadow-sm border-orange-50">
+          <div className="bg-orange-50 p-8 rounded-[3rem] mb-8 text-orange-500 shadow-inner relative group">
+             <Download size={56} className="group-hover:translate-y-1 transition-transform" />
+             <div className="absolute inset-0 bg-orange-400/5 animate-ping rounded-[3rem]"></div>
+          </div>
+          <h3 className="text-4xl font-black text-gray-900 mb-4 tracking-tighter">Get the Materials</h3>
+          <p className="text-sm text-gray-400 mb-12 max-w-[280px] font-bold leading-relaxed opacity-70">
+            Take the learning further! Download the full animal collection in your preferred format and start your adventure.
+          </p>
+          <div className="w-full space-y-4">
+            <button 
+              onClick={() => handleDownload('ppt')} 
+              disabled={downloading} 
+              className="w-full bg-indigo-500 hover:bg-indigo-600 text-white py-5 rounded-[1.5rem] font-black text-base flex items-center justify-center gap-4 active:scale-95 disabled:opacity-50 transition-all shadow-xl shadow-indigo-100"
+            >
+              <MonitorPlay size={20} /> 
+              Download PPTX
+            </button>
+            <button 
+              onClick={() => handleDownload('pdf')} 
+              disabled={downloading} 
+              className="w-full bg-rose-500 hover:bg-rose-600 text-white py-5 rounded-[1.5rem] font-black text-base flex items-center justify-center gap-4 active:scale-95 disabled:opacity-50 transition-all shadow-xl shadow-rose-100"
+            >
+              <FileText size={20} /> 
+              Download PDF
+            </button>
+          </div>
+        </div>
+      </div>
+      <AdBanner />
+    </div>
+  );
+}
+
+// --- Main App Component ---
+
+export default function App() {
+  const [currentView, setCurrentView] = useState('home');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const scrollToSection = (sectionId) => {
+    if (currentView !== 'home') {
+      setCurrentView('home');
+      setTimeout(() => {
+        document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else {
+      document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+    }
+    setIsMobileMenuOpen(false);
+  };
+
+  const Navbar = () => (
+    <nav className="bg-white shadow-sm h-16 border-b flex-shrink-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 h-full flex justify-between items-center">
+        <div className="flex items-center cursor-pointer group" onClick={() => scrollToSection('top')}>
+          <img 
+            src="https://i.ibb.co/CFC5v9L/Curio-Cat-Logo.png" 
+            alt="CurioCat Official Logo" 
+            className="w-10 h-10 mr-3 rounded-xl shadow-sm border border-orange-100 group-hover:scale-110 group-hover:rotate-6 transition-all"
+          />
+          <span className="font-black text-2xl text-gray-900 tracking-tighter">
+            Curio<span className="text-orange-600">Cat</span>
+          </span>
+        </div>
+        <div className="hidden md:flex items-center space-x-12">
+          <button onClick={() => scrollToSection('top')} className={`font-bold text-sm uppercase tracking-widest transition-colors ${currentView === 'home' ? 'text-orange-600' : 'text-gray-500 hover:text-orange-600'}`}>Home</button>
+          <button onClick={() => scrollToSection('elementary')} className="text-gray-500 font-bold text-sm hover:text-orange-600 uppercase tracking-widest tracking-wide transition-colors">Elementary</button>
+          <button onClick={() => scrollToSection('steam')} className="text-gray-500 font-bold text-sm hover:text-orange-600 uppercase tracking-widest tracking-wide transition-colors">STEAM</button>
+        </div>
+        <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="md:hidden text-gray-600 p-2"><Menu size={28} /></button>
+      </div>
+    </nav>
+  );
+
+  const AmazingAnimalsPage = () => {
+    const [moduleView, setModuleView] = useState('home');
+    return (
+      <div className="h-[calc(100vh-64px)] bg-sky-50 flex flex-col relative overflow-hidden">
+        <main className="flex-1 p-6 max-w-7xl mx-auto w-full h-full overflow-y-auto overflow-x-hidden">
+          {moduleView === 'home' && <AaHomeView setModuleView={setModuleView} />}
+          {moduleView === 'learn' && <AaLearnView onHome={() => setModuleView('home')} />}
+          {moduleView === 'swatter' && <AaSwatterGameView onHome={() => setModuleView('home')} />}
+          {moduleView === 'memory' && <AaMemoryGameView onHome={() => setModuleView('home')} />}
+          {moduleView === 'downloads' && <AaDownloadsView onHome={() => setModuleView('home')} />}
+        </main>
+        <style dangerouslySetInnerHTML={{ __html: `
+          .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; } 
+          .no-scrollbar::-webkit-scrollbar { display: none; } 
+          .perspective { perspective: 1000px; }
+          .transform-style-3d { transform-style: preserve-3d; transition: transform 0.5s cubic-bezier(0.4, 0.2, 0.2, 1); } 
+          .backface-hidden { backface-visibility: hidden; } 
+          .rotate-y-180 { transform: rotateY(180deg); }
+          .no-select { user-select: none; -webkit-user-select: none; }
+        `}} />
+      </div>
+    );
+  };
+
+  return (
+    <div 
+      className="min-h-screen bg-gray-50 flex flex-col h-screen overflow-hidden"
+      style={{ fontFamily: "'Noto Sans TC', sans-serif" }}
+    >
+      <style dangerouslySetInnerHTML={{ __html: `
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+      `}} />
+      
+      <Navbar />
+
+      <div className="flex-1 overflow-hidden">
+        {currentView === 'amazing-animals' ? <AmazingAnimalsPage /> : 
+         currentView === 'steam-video' ? <SteamVideoPage onBack={() => setCurrentView('home')} /> : (
+          <div className="h-full overflow-y-auto custom-scroll">
+            <div id="top" className="max-w-7xl mx-auto px-4 pt-6"><AdBanner /></div>
+            
+            <header className="max-w-7xl mx-auto px-4 py-10 text-center animate-in fade-in slide-in-from-top-4">
+              <h1 className="text-4xl md:text-6xl font-black text-gray-900 mb-4 tracking-tight leading-none">Creative Resource Hub</h1>
+              <p className="text-gray-500 text-lg md:text-xl font-bold leading-relaxed max-w-3xl mx-auto text-center tracking-wide opacity-80">
+                Providing free, professional English and STEAM teaching resources for educators worldwide.
+              </p>
+            </header>
+
+            <main className="max-w-7xl mx-auto px-4 py-6 flex flex-col lg:flex-row gap-10">
+              <div className="lg:w-4/5">
+                <section id="elementary" className="mb-14">
+                  <div className="flex items-center mb-10">
+                    <LayoutGrid className="text-orange-600 mr-5" size={32} />
+                    <h2 className="text-3xl font-black text-gray-900 uppercase tracking-[0.01em]">Elementary English</h2>
+                  </div>
+                  
+                  {/* Amazing Animals Module (Moved) */}
+                  <div className="mb-8">
+                    <div onClick={() => setCurrentView('amazing-animals')} className="bg-gradient-to-br from-orange-400 to-amber-700 rounded-[3rem] p-10 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.02] transition-all relative overflow-hidden h-56 flex items-center justify-between group shadow-xl">
+                      <div className="absolute right-6 top-1/2 -translate-y-1/2 opacity-20 group-hover:opacity-40 transition-opacity transform group-hover:scale-125 duration-700"><span className="text-[12rem]">🦁</span></div>
+                      <div className="relative z-10">
+                        <span className="bg-white/20 px-5 py-2 rounded-full text-[11px] font-black tracking-[0.2em] uppercase mb-5 inline-block shadow-sm backdrop-blur-md">Interactive Module</span>
+                        <h3 className="text-4xl font-black mb-2 drop-shadow-2xl">🐾 Amazing Animals</h3>
+                        <p className="text-orange-50 text-base opacity-90 font-bold mt-2">Interactive audio games & fun TPR activities</p>
+                      </div>
+                      <div className="bg-white/20 p-4 rounded-full group-hover:scale-110 transition-all shadow-md backdrop-blur-md">
+                        <ChevronRight size={36} />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-8">
+                    {elementaryResources.map(item => <ResourceCard key={item.id} item={item} icon={Star} />)}
+                  </div>
+                </section>
+
+                <section id="steam" className="mb-14">
+                  <div className="flex items-center mb-10">
+                    <Rocket className="text-orange-600 mr-5" size={32} />
+                    <h2 className="text-3xl font-black text-gray-900 uppercase tracking-[0.01em]">STEAM Learning</h2>
+                  </div>
+
+                  {/* LEGO DIY Bow Video Lesson (Moved) */}
+                  <div className="mb-8">
+                    <div onClick={() => setCurrentView('steam-video')} className="bg-gradient-to-br from-indigo-500 to-purple-800 rounded-[3rem] p-10 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.02] transition-all relative overflow-hidden h-56 flex items-center justify-between group shadow-xl">
+                      <div className="absolute right-6 top-1/2 -translate-y-1/2 opacity-20 group-hover:opacity-40 transition-opacity transform group-hover:scale-125 duration-700"><span className="text-[12rem]">🏹</span></div>
+                      <div className="relative z-10">
+                        <span className="bg-white/20 px-5 py-2 rounded-full text-[11px] font-black tracking-[0.2em] uppercase mb-5 inline-block shadow-sm backdrop-blur-md">STEAM Video Lesson</span>
+                        <h3 className="text-4xl font-black mb-2 drop-shadow-2xl">🧱 LEGO DIY Bow</h3>
+                        <p className="text-indigo-50 text-base opacity-90 font-bold mt-2">Hands-on creation and mechanical logic</p>
+                      </div>
+                      <div className="bg-white/20 p-4 rounded-full group-hover:scale-110 transition-all shadow-md backdrop-blur-md">
+                        <Youtube size={36} />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-8">
+                    {steamResources.map(item => <ResourceCard key={item.id} item={item} icon={Rocket} />)}
+                  </div>
+                </section>
+              </div>
+
+              <aside className="lg:w-1/5">
+                <div className="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 p-8 sticky top-28">
+                  <h3 className="font-black text-gray-800 mb-8 pb-4 border-b text-[10px] uppercase tracking-[0.4em]">Popular Tags</h3>
+                  <div className="flex flex-wrap gap-3">
+                    {['Phonics', 'Animals', 'Science', 'STEAM', 'Grammar', 'Flashcards', 'Games'].map(tag => (
+                      <span key={tag} className="px-4 py-2 bg-gray-50 text-gray-600 text-[11px] font-black rounded-full hover:bg-orange-100 hover:text-orange-600 cursor-pointer border border-gray-100 transition-all active:scale-95">#{tag}</span>
+                    ))}
+                  </div>
+                </div>
+              </aside>
+            </main>
+
+            <footer className="bg-gray-900 text-white py-20 text-center mt-12">
+              <div className="max-w-7xl mx-auto px-4">
+                <div className="flex items-center justify-center mb-10 text-3xl font-black tracking-tighter uppercase">
+                  CurioCat
+                </div>
+                <div className="pt-10 border-t border-gray-800 text-gray-600 text-[9px] font-black tracking-[0.5em] uppercase">© 2026 CurioCat. All rights reserved.</div>
+              </div>
+            </footer>
+          </div>
+        )}
+      </div>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        .custom-scroll::-webkit-scrollbar { width: 8px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #f8fafc; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 20px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+      `}} />
+    </div>
+  );
+}
+
+// --- Game Logic: Swatter ---
+function AaSwatterGameView({ onHome }) {
+  const [target, setTarget] = useState(null);
+  const [options, setOptions] = useState([]);
+  const [score, setScore] = useState(0);
+  const [feedback, setFeedback] = useState(null); 
+  const [timeLeft, setTimeLeft] = useState(60);
+  const [gameOver, setGameOver] = useState(false);
+
+  const playDingDong = () => {
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      const ctx = new AudioContext();
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(987.77, ctx.currentTime);
+      gain1.gain.setValueAtTime(0.5, ctx.currentTime);
+      gain1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+      osc1.start(ctx.currentTime);
+      osc1.stop(ctx.currentTime + 0.3);
+
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(783.99, ctx.currentTime + 0.2);
+      gain2.gain.setValueAtTime(0.5, ctx.currentTime + 0.2);
+      gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+      osc2.start(ctx.currentTime + 0.2);
+      osc2.stop(ctx.currentTime + 0.6);
+    } catch (e) { console.error("Audio API not supported", e); }
+  };
+
+  const playGameOverSound = () => {
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      const ctx = new AudioContext();
+      const now = ctx.currentTime;
+      const playNote = (freq, startTime, duration) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, startTime);
+        gain.gain.setValueAtTime(0.3, startTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(startTime);
+        osc.stop(startTime + duration);
+      };
+      playNote(523.25, now, 0.2);
+      playNote(659.25, now + 0.15, 0.2);
+      playNote(783.99, now + 0.3, 0.2);
+      playNote(1046.50, now + 0.45, 0.8);
+    } catch (e) { console.error("Audio API not supported", e); }
+  };
+
+  const startRound = () => {
+    const randomTarget = animalsData[Math.floor(Math.random() * animalsData.length)];
+    setTarget(randomTarget);
+    const distractors = animalsData.filter(a => a.id !== randomTarget.id);
+    const selectedDistractors = shuffleArray(distractors).slice(0, 4);
+    setOptions(shuffleArray([randomTarget, ...selectedDistractors]));
+    setFeedback(null);
+    speak(randomTarget.name);
+  };
+
+  useEffect(() => { startRound(); }, []);
+
+  useEffect(() => {
+    if (timeLeft > 0 && !gameOver) {
+      const timerId = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+      return () => clearTimeout(timerId);
+    } else if (timeLeft === 0 && !gameOver) {
+      setGameOver(true);
+      playGameOverSound();
+    }
+  }, [timeLeft, gameOver]);
+
+  const handleTap = (animal) => {
+    if (feedback?.type === 'success' || gameOver) return; 
+    if (animal.id === target.id) {
+      playDingDong();
+      setScore(s => s + 1);
+      setFeedback({ type: 'success', text: `✨ Correct!` });
+      setTimeout(startRound, 1200);
+    } else {
+      speak('Try again.');
+      setFeedback({ type: 'error', text: `Try again!` });
+      setTimeout(() => setFeedback(null), 800);
+    }
+  };
+
+  const restartGame = () => {
+    setScore(0);
+    setTimeLeft(60);
+    setGameOver(false);
+    startRound();
+  };
+
+  if (gameOver) {
+    return (
+      <div className="flex flex-col h-full animate-in fade-in zoom-in max-h-screen">
+         <button onClick={onHome} className="p-3 bg-white text-orange-500 rounded-2xl shadow-sm border mb-6 w-12 active:scale-90 transition-all"><ArrowLeft size={24}/></button>
+         <div className="flex-1 flex flex-col items-center justify-center max-w-xl mx-auto w-full pb-8 -translate-y-[10vh]">
+           <div className="bg-white p-12 rounded-[3.5rem] shadow-xl w-full flex flex-col items-center text-center relative border border-sky-50">
+              <h2 className="text-4xl font-black text-gray-800 mb-4">Time's Up!</h2>
+              <div className="text-6xl mb-6">🏆</div>
+              <p className="text-xl font-bold text-gray-500 mb-8">Your final score is <span className="text-orange-500 text-3xl mx-2">{score}</span></p>
+              <button onClick={restartGame} className="bg-orange-500 text-white px-10 py-4 rounded-full font-black text-lg hover:scale-105 active:scale-95 transition-all shadow-lg flex items-center gap-3">
+                <RotateCcw size={24} /> Play Again
+              </button>
+           </div>
+         </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col h-full animate-in fade-in zoom-in max-h-screen">
+      <button onClick={onHome} className="p-3 bg-white text-orange-500 rounded-2xl shadow-sm border mb-6 w-12 active:scale-90 transition-all"><ArrowLeft size={24}/></button>
+      <div className="flex-1 flex flex-col items-center justify-center max-w-xl mx-auto w-full pb-8 -translate-y-[10vh]">
+        <div className="bg-white p-12 rounded-[3.5rem] shadow-xl mb-12 w-full flex flex-col items-center text-center relative border border-sky-50">
+          <div className="flex gap-4 mb-8">
+            <div className="bg-rose-50 text-rose-500 px-6 py-2 rounded-full font-black text-sm shadow-sm tracking-widest uppercase">Score: {score}</div>
+            <div className={`bg-orange-50 ${timeLeft <= 10 ? 'text-red-500 animate-pulse' : 'text-orange-500'} px-6 py-2 rounded-full font-black text-sm shadow-sm tracking-widest uppercase`}>
+              Time: {timeLeft}s
+            </div>
+          </div>
+          <button onClick={() => speak(target?.name)} className="w-28 h-28 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 mb-8 hover:scale-105 active:scale-95 shadow-inner transition-all"><Volume2 size={56} /></button>
+          <div className="text-2xl font-black text-gray-600 uppercase tracking-tighter">{feedback ? feedback.text : `Where is the ${target?.name}?`}</div>
+        </div>
+        <div className="grid grid-cols-5 gap-4 w-full">
+          {options.map((animal) => (
+            <button key={animal.id} onClick={() => handleTap(animal)} className="bg-white aspect-square rounded-[2rem] shadow-sm border-2 border-transparent hover:border-orange-300 hover:bg-orange-50 active:scale-90 transition-all p-3 flex items-center justify-center shadow-orange-100/50">
+              <AnimalIcon name={animal.name} emoji={animal.emoji} className="text-5xl w-full h-full object-contain" />
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// --- Game Logic: Memory Match (Ported from game.html) ---
+const memoryAnimalData = [
+  { id: 'snake', name: 'Snake', icon: '🐍', imgUrl: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f40d.svg' },
+  { id: 'crow', name: 'Crow', icon: '🐦‍⬛', imgUrl: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f426-200d-2b1b.svg' },
+  { id: 'horse', name: 'Horse', icon: '🐴', imgUrl: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f434.svg' },
+  { id: 'dog', name: 'Dog', icon: '🐶', imgUrl: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f436.svg' },
+  { id: 'whale', name: 'Whale', icon: '🐳', imgUrl: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f433.svg' },
+  { id: 'elephant', name: 'Elephant', icon: '🐘', imgUrl: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f418.svg' },
+  { id: 'lion', name: 'Lion', icon: '🦁', imgUrl: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f981.svg' },
+  { id: 'human', name: 'Human', icon: '👦', imgUrl: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f466.svg' }, 
+  { id: 'seal', name: 'Seal', icon: '🦭', imgUrl: 'https://raw.githubusercontent.com/googlefonts/noto-emoji/main/svg/emoji_u1f9ad.svg' },
+  { id: 'eagle', name: 'Eagle', icon: '🦅', imgUrl: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f985.svg' }
+];
+
+function AaMemoryGameView({ onHome }) {
+  const [cards, setCards] = useState([]);
+  const [flipped, setFlipped] = useState([]);
+  const [solved, setSolved] = useState([]);
+  const [disabled, setDisabled] = useState(false);
+  const [moves, setMoves] = useState(0);
+  const [matches, setMatches] = useState(0);
+  
+  const [showIntro, setShowIntro] = useState(true);
+  const [showWin, setShowWin] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [toasts, setToasts] = useState([]);
+
+  const audioCtxRef = useRef(null);
+  const fadeIntervalRef = useRef(null);
+  
+  // 利用 useEffect 確保 Audio 實體只在元件載入時被建立一次
+  const bgMusicRef = useRef(null);
+  const matchSoundRef = useRef(null);
+  const errorSoundRef = useRef(null);
+  const winSoundRef = useRef(null);
+
+  useEffect(() => {
+    // 預先載入所有音效物件，並加入 preload 屬性提升讀取速度
+    bgMusicRef.current = new Audio('https://raw.githubusercontent.com/JOUCHUCHEN/CurioCat/main/animals/amazing_animals_bgm.mp3');
+    bgMusicRef.current.loop = true;
+    bgMusicRef.current.preload = 'auto';
+
+    matchSoundRef.current = new Audio('https://raw.githubusercontent.com/JOUCHUCHEN/CurioCat/main/correct.mp3');
+    matchSoundRef.current.preload = 'auto';
+
+    errorSoundRef.current = new Audio('https://raw.githubusercontent.com/JOUCHUCHEN/CurioCat/main/error.mp3');
+    errorSoundRef.current.preload = 'auto';
+
+    winSoundRef.current = new Audio('https://raw.githubusercontent.com/JOUCHUCHEN/CurioCat/main/freesound_crunchpixstudio-purchase-success-384963.mp3');
+    winSoundRef.current.preload = 'auto';
+
+    initGame();
+
+    return () => {
+      // 離開頁面時停止播放並清除記憶體
+      if (bgMusicRef.current) {
+        bgMusicRef.current.pause();
+        bgMusicRef.current.src = "";
+      }
+      if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
+    };
+  }, []);
+
+  const initAudio = () => {
+    if (!audioCtxRef.current) {
+      audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtxRef.current.state === 'suspended') {
+      audioCtxRef.current.resume();
+    }
+  };
+
+  const playTone = (freq, type, duration, vol) => {
+    if (!audioCtxRef.current || isMuted) return;
+    const osc = audioCtxRef.current.createOscillator();
+    const gain = audioCtxRef.current.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtxRef.current.currentTime);
+    gain.gain.setValueAtTime(0, audioCtxRef.current.currentTime);
+    gain.gain.linearRampToValueAtTime(vol, audioCtxRef.current.currentTime + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtxRef.current.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(audioCtxRef.current.destination);
+    osc.start();
+    osc.stop(audioCtxRef.current.currentTime + duration);
+  };
+
+  const playSfx = (type) => {
+    if (isMuted) return;
+    if (type === 'flip') {
+      playTone(600, 'sine', 0.1, 0.05);
+    } else if (type === 'match' && matchSoundRef.current) {
+      matchSoundRef.current.currentTime = 0;
+      matchSoundRef.current.play().catch(() => {});
+    } else if (type === 'error' && errorSoundRef.current) {
+      errorSoundRef.current.currentTime = 0;
+      errorSoundRef.current.play().catch(() => {});
+    } else if (type === 'win' && winSoundRef.current) {
+      winSoundRef.current.currentTime = 0;
+      winSoundRef.current.play().catch(() => {});
+    }
+  };
+
+  const playMusicWithFadeIn = () => {
+    if (!bgMusicRef.current) return;
     
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        // 設定 Tailwind 使用 Noto Sans TC 作為預設無襯線字體
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['"Noto Sans TC"', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        /* 卡片 3D 翻轉效果的 CSS 設定 */
-        .perspective {
-            perspective: 1000px;
-        }
-        .transform-style-3d {
-            transform-style: preserve-3d;
-            transition: transform 0.5s cubic-bezier(0.4, 0.2, 0.2, 1);
-        }
-        .backface-hidden {
-            backface-visibility: hidden;
-        }
-        .rotate-y-180 {
-            transform: rotateY(180deg);
-        }
-        
-        /* 避免在觸控螢幕上選取文字 */
-        .no-select {
-            user-select: none;
-            -webkit-user-select: none;
-        }
-    </style>
-</head>
-<body class="bg-sky-100 h-[100dvh] flex flex-col items-center py-2 sm:py-4 font-sans overflow-hidden">
+    // 直接在點擊事件中呼叫 play，確保不被瀏覽器阻擋
+    bgMusicRef.current.volume = 0;
+    const playPromise = bgMusicRef.current.play();
+    
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        setIsMuted(false);
+        if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
+        let vol = 0;
+        fadeIntervalRef.current = setInterval(() => {
+          vol += 0.025;
+          if (vol >= 0.20) {
+            if (bgMusicRef.current) bgMusicRef.current.volume = 0.20;
+            clearInterval(fadeIntervalRef.current);
+          } else {
+            if (bgMusicRef.current) bgMusicRef.current.volume = vol;
+          }
+        }, 100);
+      }).catch((e) => {
+        console.warn("BGM playback failed. Browser might have blocked it.", e);
+        setIsMuted(true);
+      });
+    }
+  };
 
-    <!-- 開場遊戲指南對話框 (Intro Modal) -->
-    <div id="intro-modal" class="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-[60]">
-        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md text-center shadow-2xl transform scale-100 transition-transform mx-4">
-            <div class="text-5xl sm:text-6xl mb-4">🐾</div>
-            <h2 class="text-2xl sm:text-3xl font-bold text-sky-600 mb-4">Welcome to Amazing Animals!</h2>
-            <div class="text-base sm:text-lg text-gray-700 mb-6 text-left bg-sky-50 p-4 rounded-xl border border-sky-100">
-                <strong>How to play:</strong><br>
-                <ul class="list-disc pl-5 mt-2 space-y-1">
-                    <li>Click on the cards to flip them.</li>
-                    <li>Match the animal picture with its English name.</li>
-                    <li>Find all 10 pairs to win!</li>
-                </ul>
+  const toggleMusic = () => {
+    initAudio();
+    if (!isMuted) {
+      if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
+      if (bgMusicRef.current) bgMusicRef.current.pause();
+      setIsMuted(true);
+    } else {
+      playMusicWithFadeIn();
+    }
+  };
+
+  const showToast = (message, type = 'info') => {
+    const id = Date.now() + Math.random();
+    setToasts(prev => [...prev, { id, message, type }]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 4000);
+  };
+
+  const fetchAnimalFunFact = async (animalName) => {
+    if (!apiKey) {
+      showToast(`Great! You found the ${animalName}!`, 'success');
+      return;
+    }
+    showToast(`Asking the AI teacher for a fun fact about ${animalName}...`, 'info');
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+    const prompt = `Give a fun fact about the animal "${animalName}" for a 7-year-old child in English. Keep it under one short sentence, playful and cute, no introductory greetings.`;
+    const payload = {
+      contents: [{ parts: [{ text: prompt }] }],
+      systemInstruction: { parts: [{ text: "You are an animal expert who is great at interacting with kids." }] }
+    };
+    let retries = 0;
+    let delay = 1000;
+    while (retries < 5) {
+      try {
+        const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        if (!response.ok) throw new Error('API Request Failed');
+        const data = await response.json();
+        const fact = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (fact) {
+          showToast(`🤖 AI Teacher says: ${fact}`, 'success');
+          return;
+        }
+      } catch (error) {
+        retries++;
+        if (retries >= 5) {
+          showToast(`Oops, the AI teacher is a bit busy right now. Try again later for a fun fact about ${animalName}!`, 'error');
+          return;
+        }
+        await new Promise(res => setTimeout(res, delay));
+        delay *= 2;
+      }
+    }
+  };
+
+  const initGame = () => {
+    setShowWin(false);
+    setToasts([]);
+    setMoves(0);
+    setMatches(0);
+    setFlipped([]);
+    setSolved([]);
+    setDisabled(false);
+
+    let gameCards = [];
+    memoryAnimalData.forEach(animal => {
+      gameCards.push({ ...animal, type: 'image', uid: Math.random().toString(36).substr(2, 9) });
+      gameCards.push({ ...animal, type: 'text', uid: Math.random().toString(36).substr(2, 9) });
+    });
+    setCards(shuffleArray(gameCards));
+  };
+
+  // 當使用者點擊「Start Game」時，同步且直接呼叫 play()，滿足瀏覽器互動規定
+  const handleStartGame = () => {
+    setShowIntro(false);
+    initAudio();
+    playMusicWithFadeIn();
+  };
+
+  const handleCardClick = (index) => {
+    if (disabled || flipped.includes(index) || solved.includes(index)) return;
+    
+    playSfx('flip');
+    const newFlipped = [...flipped, index];
+    setFlipped(newFlipped);
+
+    if (newFlipped.length === 2) {
+      setDisabled(true);
+      setMoves(m => m + 1);
+      
+      const match = cards[newFlipped[0]].id === cards[newFlipped[1]].id;
+      if (match) {
+        setTimeout(() => playSfx('match'), 500);
+        setTimeout(() => {
+          setSolved(prev => {
+            const newSolved = [...prev, newFlipped[0], newFlipped[1]];
+            setMatches(newSolved.length / 2);
+            if (newSolved.length === cards.length) {
+              setTimeout(() => {
+                playSfx('win');
+                setShowWin(true);
+              }, 500);
+            }
+            return newSolved;
+          });
+          fetchAnimalFunFact(cards[newFlipped[0]].name);
+          setFlipped([]);
+          setDisabled(false);
+        }, 300);
+      } else {
+        setTimeout(() => playSfx('error'), 500);
+        setTimeout(() => {
+          setFlipped([]);
+          setDisabled(false);
+        }, 1000);
+      }
+    }
+  };
+
+  return (
+    <div className="flex flex-col h-full relative font-sans animate-in fade-in duration-500">
+      {/* Absolute Back Button */}
+      <button onClick={onHome} className="absolute top-0 left-0 p-3 bg-white text-sky-500 rounded-2xl shadow-sm border w-12 hover:bg-sky-50 active:scale-90 transition-all z-40">
+        <ArrowLeft size={24}/>
+      </button>
+
+      {/* Intro Modal */}
+      {showIntro && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-[60]">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md text-center shadow-2xl mx-4 animate-in zoom-in duration-300">
+            <div className="text-5xl sm:text-6xl mb-4">🐾</div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-sky-600 mb-4">Welcome to Amazing Animals!</h2>
+            <div className="text-base sm:text-lg text-gray-700 mb-6 text-left bg-sky-50 p-4 rounded-xl border border-sky-100">
+              <strong>How to play:</strong><br/>
+              <ul className="list-disc pl-5 mt-2 space-y-1">
+                <li>Click on the cards to flip them.</li>
+                <li>Match the animal picture with its English name.</li>
+                <li>Find all 10 pairs to win!</li>
+              </ul>
             </div>
-            <button id="start-btn" class="bg-amber-400 hover:bg-amber-500 text-amber-900 font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105 active:scale-95 text-xl border-b-4 border-amber-600">
-                Start Game
+            <button onClick={handleStartGame} className="bg-amber-400 hover:bg-amber-500 text-amber-900 font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105 active:scale-95 text-xl border-b-4 border-amber-600">
+              Start Game
             </button>
+          </div>
         </div>
-    </div>
+      )}
 
-    <!-- 音樂控制按鈕 -->
-    <div class="fixed top-2 right-2 sm:top-4 sm:right-4 z-50">
-        <button id="music-toggle" class="bg-white w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full shadow border-2 border-sky-200 hover:bg-sky-50 text-xl transition-colors no-select">
-            🔇
-        </button>
-    </div>
-
-    <!-- 遊戲標題與計分板 -->
-    <div class="text-center mb-2 flex-shrink-0">
-        <h1 class="text-2xl sm:text-3xl font-bold text-amber-600 mb-1 drop-shadow-md border-b-4 border-amber-400 pb-1 inline-block">🐾 Amazing Animals 🐾</h1>
-        <div class="mt-2 flex justify-center gap-4 text-sm sm:text-base font-bold text-sky-800">
-            <div class="bg-white px-3 py-1 sm:px-4 sm:py-2 rounded-full shadow-sm border-2 border-sky-200">
-                Moves: <span id="moves" class="text-amber-500">0</span>
-            </div>
-            <div class="bg-white px-3 py-1 sm:px-4 sm:py-2 rounded-full shadow-sm border-2 border-sky-200">
-                Matches: <span id="matches" class="text-green-500">0</span> / 10
-            </div>
-        </div>
-    </div>
-
-    <!-- 遊戲網格 -->
-    <div id="game-board" class="grid grid-cols-4 grid-rows-5 sm:grid-cols-5 sm:grid-rows-4 gap-2 sm:gap-3 max-w-4xl w-full px-4 flex-1 min-h-0 perspective pb-2">
-        <!-- 卡片將由 JavaScript 動態生成 -->
-    </div>
-
-    <!-- 控制按鈕 -->
-    <div class="mt-2 mb-2 sm:mb-4 flex-shrink-0">
-        <button onclick="initGame()" class="bg-amber-400 hover:bg-amber-500 text-amber-900 font-bold py-2 px-6 rounded-full shadow-lg transform transition hover:scale-105 active:scale-95 text-base sm:text-lg border-b-4 border-amber-600">
-            🔄 Restart
-        </button>
-    </div>
-
-    <!-- 勝利視窗 (預設隱藏) -->
-    <div id="win-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-50">
-        <div class="bg-white rounded-3xl p-8 max-w-sm text-center shadow-2xl transform scale-100 transition-transform">
-            <div class="text-6xl mb-4">🎉</div>
-            <h2 class="text-3xl font-bold text-green-600 mb-2">Great Job!</h2>
-            <p class="text-lg text-gray-700 mb-6">You found all the animals!<br>It took you <span id="final-moves" class="font-bold text-amber-500"></span> moves.</p>
-            <button onclick="initGame()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full shadow-md transform transition hover:scale-105 active:scale-95 text-lg">
-                Play Again
+      {/* Win Modal */}
+      {showWin && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[60] animate-in fade-in duration-300">
+          <div className="bg-white rounded-3xl p-8 max-w-sm text-center shadow-2xl animate-in zoom-in duration-300">
+            <div className="text-6xl mb-4">🎉</div>
+            <h2 className="text-3xl font-bold text-green-600 mb-2">Great Job!</h2>
+            <p className="text-lg text-gray-700 mb-6">You found all the animals!<br/>It took you <span className="font-bold text-amber-500">{moves}</span> moves.</p>
+            <button onClick={initGame} className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full shadow-md transform transition hover:scale-105 active:scale-95 text-lg">
+              Play Again
             </button>
+          </div>
         </div>
+      )}
+
+      {/* Music Toggle */}
+      <div className="absolute top-0 right-0 z-40">
+        <button onClick={toggleMusic} className="bg-white w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full shadow border-2 border-sky-200 hover:bg-sky-50 text-xl transition-colors no-select">
+          {isMuted ? '🔇' : '🎵'}
+        </button>
+      </div>
+
+      {/* Header & Stats */}
+      <div className="text-center mb-2 flex-shrink-0 pt-2">
+        <h1 className="text-2xl sm:text-3xl font-bold text-amber-600 mb-1 drop-shadow-md border-b-4 border-amber-400 pb-1 inline-block">🐾 Amazing Animals 🐾</h1>
+        <div className="mt-2 flex justify-center gap-4 text-sm sm:text-base font-bold text-sky-800">
+          <div className="bg-white px-3 py-1 sm:px-4 sm:py-2 rounded-full shadow-sm border-2 border-sky-200">
+            Moves: <span className="text-amber-500">{moves}</span>
+          </div>
+          <div className="bg-white px-3 py-1 sm:px-4 sm:py-2 rounded-full shadow-sm border-2 border-sky-200">
+            Matches: <span className="text-green-500">{matches}</span> / 10
+          </div>
+        </div>
+      </div>
+
+      {/* Game Board */}
+      <div className="flex-1 flex justify-center items-center pb-2 px-4 w-full">
+        <div className="grid grid-cols-4 grid-rows-5 sm:grid-cols-5 sm:grid-rows-4 gap-2 sm:gap-3 w-full max-w-4xl h-full perspective">
+          {cards.map((card, index) => {
+            const isFlipped = flipped.includes(index) || solved.includes(index);
+            const isSolved = solved.includes(index);
+
+            return (
+              <div key={card.uid} onClick={() => handleCardClick(index)} className="relative w-full h-full cursor-pointer no-select perspective">
+                <div className={`w-full h-full absolute transform-style-3d rounded-xl shadow-md ${isFlipped ? 'rotate-y-180' : ''}`}>
+                  {/* Card Back (Grass/Leaf) */}
+                  <div className="w-full h-full absolute backface-hidden bg-gradient-to-br from-emerald-400 to-green-600 rounded-xl flex items-center justify-center border-4 border-white hover:opacity-90 transition-opacity">
+                    <span className="text-3xl sm:text-4xl text-white opacity-50">🍃</span>
+                  </div>
+                  {/* Card Front (Animal Image or Text) */}
+                  <div className={`w-full h-full absolute backface-hidden rotate-y-180 rounded-xl flex flex-col items-center justify-center border-4 p-1 sm:p-2 text-center transition-colors ${isSolved ? 'border-green-500 bg-green-50' : 'border-amber-300 bg-white'}`}>
+                    {card.type === 'image' ? (
+                      <img 
+                        src={card.imgUrl} 
+                        alt={card.name} 
+                        className="w-12 h-12 sm:w-16 sm:h-16 drop-shadow-sm pointer-events-none object-contain" 
+                        draggable="false" 
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'block';
+                        }} 
+                      />
+                    ) : (
+                      <span className="text-base sm:text-xl font-bold text-slate-800 break-words w-full px-1">{card.name}</span>
+                    )}
+                    {/* Fallback Emoji */}
+                    {card.type === 'image' && <span className="text-4xl sm:text-5xl drop-shadow-sm hidden">{card.icon}</span>}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Restart Button */}
+      <div className="mt-2 mb-2 sm:mb-4 flex-shrink-0 text-center">
+        <button onClick={initGame} className="bg-amber-400 hover:bg-amber-500 text-amber-900 font-bold py-2 px-6 rounded-full shadow-lg transform transition hover:scale-105 active:scale-95 text-base sm:text-lg border-b-4 border-amber-600">
+          🔄 Restart
+        </button>
+      </div>
+
+      {/* Toasts */}
+      <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 w-[90%] max-w-md z-[100] flex flex-col gap-2 pointer-events-none">
+        {toasts.map(toast => {
+          const bgColor = toast.type === 'success' ? 'bg-green-100 border-green-400 text-green-800' : 
+                          toast.type === 'error' ? 'bg-red-100 border-red-400 text-red-800' : 
+                          'bg-blue-100 border-blue-400 text-blue-800';
+          return (
+            <div key={toast.id} className={`p-4 rounded-xl shadow-lg border-2 ${bgColor} flex items-center gap-3 pointer-events-auto animate-in slide-in-from-bottom-5 fade-in duration-300`}>
+              <span className="text-2xl">{toast.type === 'success' ? '✨' : toast.type === 'error' ? '❌' : '🤖'}</span>
+              <p className="font-bold text-sm sm:text-base">{toast.message}</p>
+            </div>
+          );
+        })}
+      </div>
     </div>
-
-    <!-- AI 知識小學堂 (Toast 通知區) -->
-    <div id="toast-container" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 w-[90%] max-w-md z-50 flex flex-col gap-2 pointer-events-none"></div>
-
-    <script>
-        const apiKey = ""; // 系統會自動提供金鑰
-
-        // ==========================================
-        // 🎵 音效與背景音樂設定
-        // ==========================================
-        let audioCtx = null;
-        let isMuted = true; // 預設靜音
-        const musicToggle = document.getElementById('music-toggle');
-        const introModal = document.getElementById('intro-modal');
-        const startBtn = document.getElementById('start-btn');
-
-        // 設定您指定的背景音樂與外部音效 (轉換為 Raw URL 以便讀取音檔)
-        const bgMusic = new Audio('https://raw.githubusercontent.com/JOUCHUCHEN/CurioCat/main/animals/amazing_animals_bgm.mp3');
-        bgMusic.loop = true;
-        
-        // 淡入效果與目標音量設定 (音量從 0.25 再降低 10% 變成 0.15)
-        const targetVolume = 0.20; 
-        bgMusic.volume = 0; // 初始音量設為 0 以便淡入
-        let fadeInterval = null;
-
-        const matchSound = new Audio('https://raw.githubusercontent.com/JOUCHUCHEN/CurioCat/main/correct.mp3');
-        const errorSound = new Audio('https://raw.githubusercontent.com/JOUCHUCHEN/CurioCat/main/error.mp3');
-        const winSound = new Audio('https://raw.githubusercontent.com/JOUCHUCHEN/CurioCat/main/freesound_crunchpixstudio-purchase-success-384963.mp3');
-
-        // 初始化音效引擎 (僅用於翻牌的基礎特效音)
-        function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-        }
-
-        // 彈奏單音 (基礎翻牌特效音使用)
-        function playTone(freq, type, duration, vol) {
-            if (!audioCtx || isMuted) return;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = type;
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            
-            // 設定音量漸弱，讓聲音圓潤不刺耳
-            gain.gain.setValueAtTime(0, audioCtx.currentTime);
-            gain.gain.linearRampToValueAtTime(vol, audioCtx.currentTime + 0.05);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-            
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + duration);
-        }
-
-        // 播放遊戲音效
-        function playSfx(type) {
-            if (isMuted) return;
-            if (type === 'flip') {
-                playTone(600, 'sine', 0.1, 0.05); // 翻牌：維持短促高音
-            } else if (type === 'match') {
-                matchSound.currentTime = 0; // 確保音效可以快速重複播放
-                matchSound.play().catch(err => console.log("音效播放提示:", err.message));
-            } else if (type === 'error') {
-                errorSound.currentTime = 0;
-                errorSound.play().catch(err => console.log("音效播放提示:", err.message));
-            } else if (type === 'win') {
-                winSound.currentTime = 0;
-                winSound.play().catch(err => console.log("音效播放提示:", err.message));
-            }
-        }
-
-        // 播放音樂並加入淡入效果 (Fade-in)
-        function playMusicWithFadeIn() {
-            bgMusic.volume = 0; // 確保從 0 開始
-            const playPromise = bgMusic.play();
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    if (fadeInterval) clearInterval(fadeInterval);
-                    let vol = 0;
-                    // 每 100 毫秒增加音量，約 1 秒內平滑達到目標音量
-                    fadeInterval = setInterval(() => {
-                        if (isMuted) {
-                            clearInterval(fadeInterval);
-                            return;
-                        }
-                        vol += 0.025;
-                        if (vol >= targetVolume) {
-                            bgMusic.volume = targetVolume;
-                            clearInterval(fadeInterval);
-                        } else {
-                            bgMusic.volume = vol;
-                        }
-                    }, 100);
-                }).catch(err => {
-                    console.log("音樂播放提示:", err.message);
-                    musicToggle.textContent = '🔇';
-                    isMuted = true;
-                });
-            }
-        }
-
-        // 音樂開關控制
-        musicToggle.addEventListener('click', (e) => {
-            e.stopPropagation(); // 避免觸發 body 的點擊事件
-            initAudio(); // 確保特效音引擎啟動
-            isMuted = !isMuted;
-            if (isMuted) {
-                if (fadeInterval) clearInterval(fadeInterval); // 停止淡入計時器
-                bgMusic.pause();
-                musicToggle.textContent = '🔇';
-            } else {
-                playMusicWithFadeIn();
-                musicToggle.textContent = '🎵';
-            }
-        });
-
-        // 點擊 Start Game 按鈕後關閉對話框並啟動音樂
-        startBtn.addEventListener('click', () => {
-            introModal.classList.add('hidden');
-            initAudio(); // 確保特效音引擎啟動
-            
-            if (isMuted) {
-                isMuted = false;
-                musicToggle.textContent = '🎵';
-                playMusicWithFadeIn();
-            }
-        });
-
-        // 目標動物資料 (升級為 Twemoji 圖片連結，確保所有裝置都能正確顯示圖案與顏色，並保留 icon 作為備用)
-        const animalData = [
-            { id: 'snake', name: 'Snake', icon: '🐍', imgUrl: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f40d.svg' },
-            { id: 'crow', name: 'Crow', icon: '🐦‍⬛', imgUrl: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f426-200d-2b1b.svg' },
-            { id: 'horse', name: 'Horse', icon: '🐴', imgUrl: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f434.svg' },
-            { id: 'dog', name: 'Dog', icon: '🐶', imgUrl: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f436.svg' },
-            { id: 'whale', name: 'Whale', icon: '🐳', imgUrl: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f433.svg' },
-            { id: 'elephant', name: 'Elephant', icon: '🐘', imgUrl: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f418.svg' },
-            { id: 'lion', name: 'Lion', icon: '🦁', imgUrl: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f981.svg' },
-            { id: 'human', name: 'Human', icon: '👦', imgUrl: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f466.svg' }, 
-            { id: 'seal', name: 'Seal', icon: '🦭', imgUrl: 'https://raw.githubusercontent.com/googlefonts/noto-emoji/main/svg/emoji_u1f9ad.svg' },
-            { id: 'eagle', name: 'Eagle', icon: '🦅', imgUrl: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f985.svg' }
-        ];
-
-        let cards = [];
-        let firstCard = null;
-        let secondCard = null;
-        let lockBoard = false;
-        let moves = 0;
-        let matches = 0;
-
-        const gameBoard = document.getElementById('game-board');
-        const movesEl = document.getElementById('moves');
-        const matchesEl = document.getElementById('matches');
-        const winModal = document.getElementById('win-modal');
-        const finalMovesEl = document.getElementById('final-moves');
-        const toastContainer = document.getElementById('toast-container');
-
-        // 初始化遊戲
-        function initGame() {
-            gameBoard.innerHTML = '';
-            winModal.classList.add('hidden');
-            toastContainer.innerHTML = '';
-            moves = 0;
-            matches = 0;
-            firstCard = null;
-            secondCard = null;
-            lockBoard = false;
-            updateStats();
-
-            // 產生「圖像」與「文字」配對卡片
-            cards = [];
-            animalData.forEach(animal => {
-                cards.push({ id: animal.id, name: animal.name, icon: animal.icon, imgUrl: animal.imgUrl, type: 'image' });
-                cards.push({ id: animal.id, name: animal.name, icon: animal.icon, imgUrl: animal.imgUrl, type: 'text' });
-            });
-            
-            // 洗牌演算法 (Fisher-Yates Shuffle)
-            for (let i = cards.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [cards[i], cards[j]] = [cards[j], cards[i]];
-            }
-
-            // 建立卡片 DOM 元素
-            cards.forEach((animal, index) => {
-                const cardElement = document.createElement('div');
-                cardElement.classList.add('relative', 'w-full', 'h-full', 'cursor-pointer', 'no-select');
-                cardElement.dataset.id = animal.id; // 改用 id 進行配對
-                cardElement.dataset.name = animal.name;
-
-                // 內部容器 (控制 3D 翻轉)
-                const innerElement = document.createElement('div');
-                innerElement.classList.add('w-full', 'h-full', 'absolute', 'transform-style-3d', 'rounded-xl', 'shadow-md');
-                
-                // 卡片背面 (初始顯示面 - 草地/葉子圖案)
-                const cardBack = document.createElement('div');
-                cardBack.classList.add('w-full', 'h-full', 'absolute', 'backface-hidden', 'bg-gradient-to-br', 'from-emerald-400', 'to-green-600', 'rounded-xl', 'flex', 'items-center', 'justify-center', 'border-4', 'border-white', 'hover:opacity-90', 'transition-opacity');
-                cardBack.innerHTML = '<span class="text-3xl sm:text-4xl text-white opacity-50">🍃</span>';
-
-                // 卡片正面 (翻開後顯示面 - 根據 type 顯示圖片或文字，並加入圖片載入失敗時的備用機制)
-                const cardFront = document.createElement('div');
-                cardFront.classList.add('w-full', 'h-full', 'absolute', 'backface-hidden', 'rotate-y-180', 'bg-white', 'rounded-xl', 'flex', 'flex-col', 'items-center', 'justify-center', 'border-4', 'border-amber-300', 'p-1', 'sm:p-2', 'text-center');
-                
-                if (animal.type === 'image') {
-                    cardFront.innerHTML = `<img src="${animal.imgUrl}" alt="${animal.name}" class="w-12 h-12 sm:w-16 sm:h-16 drop-shadow-sm pointer-events-none" draggable="false" onerror="this.outerHTML='<span class=\\'text-4xl sm:text-5xl drop-shadow-sm\\'>${animal.icon}</span>'">`;
-                } else {
-                    cardFront.innerHTML = `<span class="text-base sm:text-xl font-bold text-slate-800 break-words w-full px-1">${animal.name}</span>`;
-                }
-
-                innerElement.appendChild(cardBack);
-                innerElement.appendChild(cardFront);
-                cardElement.appendChild(innerElement);
-
-                // 點擊事件
-                cardElement.addEventListener('click', () => flipCard(cardElement, innerElement));
-
-                gameBoard.appendChild(cardElement);
-            });
-        }
-
-        // 翻牌邏輯
-        function flipCard(card, inner) {
-            if (lockBoard) return;
-            if (card === firstCard) return; // 避免點擊同一張卡片
-            if (card.classList.contains('matched')) return; // 避免點擊已配對的卡片
-
-            // 播放翻牌音效
-            playSfx('flip');
-
-            // 執行翻轉動畫
-            inner.classList.add('rotate-y-180');
-
-            if (!firstCard) {
-                // 第一次點擊
-                firstCard = card;
-                return;
-            }
-
-            // 第二次點擊
-            secondCard = card;
-            moves++;
-            updateStats();
-            checkForMatch();
-        }
-
-        // 檢查是否配對成功
-        function checkForMatch() {
-            // 改用 id 檢查是否配對 (圖案卡和文字卡有相同的 id)
-            let isMatch = firstCard.dataset.id === secondCard.dataset.id;
-
-            if (isMatch) {
-                let animalName = firstCard.dataset.name;
-                disableCards(animalName);
-            } else {
-                unflipCards();
-            }
-        }
-
-        // 配對成功：停用點擊並保持翻開
-        function disableCards(animalName) {
-            firstCard.classList.add('matched');
-            secondCard.classList.add('matched');
-            
-            // 將卡片暫存到區域變數中，避免在計時器內讀取到被重設的 null 值
-            const matchCard1 = firstCard;
-            const matchCard2 = secondCard;
-            
-            // 播放配對成功音效 (延遲 0.5 秒後播放，配合翻牌動畫)
-            setTimeout(() => {
-                playSfx('match');
-            }, 500);
-
-            // 加上配對成功的視覺提示 (改變正面卡片的邊框與背景色)
-            setTimeout(() => {
-                // 取得卡片的正面元素 (innerElement 的第二個子元素)
-                const front1 = matchCard1.firstElementChild.children[1];
-                const front2 = matchCard2.firstElementChild.children[1];
-                
-                // 將邊框改為綠色，並加上淺綠色背景
-                front1.classList.remove('border-amber-300', 'bg-white');
-                front1.classList.add('border-green-500', 'bg-green-50');
-                
-                front2.classList.remove('border-amber-300', 'bg-white');
-                front2.classList.add('border-green-500', 'bg-green-50');
-
-                matches++;
-                updateStats();
-                
-                // 觸發 AI 小知識功能
-                fetchAnimalFunFact(animalName);
-                
-                if (matches === animalData.length) {
-                    setTimeout(showWinModal, 500);
-                }
-            }, 300);
-
-            resetBoard();
-        }
-
-        // 配對失敗：將卡片翻回去
-        function unflipCards() {
-            lockBoard = true; // 鎖定面板，防止點擊其他卡片
-            
-            // 播放配對失敗音效 (延遲 0.5 秒後播放，配合翻牌動畫)
-            setTimeout(() => {
-                playSfx('error');
-            }, 500);
-
-            setTimeout(() => {
-                firstCard.firstElementChild.classList.remove('rotate-y-180');
-                secondCard.firstElementChild.classList.remove('rotate-y-180');
-                resetBoard();
-            }, 1000); // 等待1秒後翻回
-        }
-
-        // 重置點擊狀態
-        function resetBoard() {
-            [firstCard, secondCard] = [null, null];
-            lockBoard = false;
-        }
-
-        // 更新計分板
-        function updateStats() {
-            movesEl.textContent = moves;
-            matchesEl.textContent = matches;
-        }
-
-        // 顯示勝利視窗
-        function showWinModal() {
-            playSfx('win'); // 播放勝利音效
-            finalMovesEl.textContent = moves;
-            winModal.classList.remove('hidden');
-        }
-
-        // 顯示 Toast 訊息
-        function showToast(message, type = 'info') {
-            const toast = document.createElement('div');
-            const bgColor = type === 'success' ? 'bg-green-100 border-green-400 text-green-800' : 
-                            type === 'error' ? 'bg-red-100 border-red-400 text-red-800' : 
-                            'bg-blue-100 border-blue-400 text-blue-800';
-                            
-            toast.className = `p-4 rounded-xl shadow-lg border-2 ${bgColor} transform transition-all duration-300 translate-y-10 opacity-0 pointer-events-auto flex items-center gap-3`;
-            toast.innerHTML = `
-                <span class="text-2xl">${type === 'success' ? '✨' : type === 'error' ? '❌' : '🤖'}</span>
-                <p class="font-bold text-sm sm:text-base">${message}</p>
-            `;
-            
-            toastContainer.prepend(toast);
-            
-            // 動畫進入
-            requestAnimationFrame(() => {
-                toast.classList.remove('translate-y-10', 'opacity-0');
-            });
-
-            // 4秒後消失 (原本是 5 秒，縮減 1 秒)
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'scale-95');
-                setTimeout(() => toast.remove(), 300);
-            }, 4000);
-        }
-
-        // 使用 Gemini API 獲取動物冷知識
-        async function fetchAnimalFunFact(animalName) {
-            if (!apiKey) {
-                showToast(`Great! You found the ${animalName}!`, 'success');
-                return;
-            }
-
-            showToast(`Asking the AI teacher for a fun fact about ${animalName}...`, 'info');
-
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-            const prompt = `Give a fun fact about the animal "${animalName}" for a 7-year-old child in English. Keep it under one short sentence, playful and cute, no introductory greetings.`;
-            
-            const payload = {
-                contents: [{ parts: [{ text: prompt }] }],
-                systemInstruction: { parts: [{ text: "You are an animal expert who is great at interacting with kids." }] }
-            };
-
-            const maxRetries = 5;
-            let retries = 0;
-            let delay = 1000;
-
-            while (retries < maxRetries) {
-                try {
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (!response.ok) throw new Error('API Request Failed');
-
-                    const data = await response.json();
-                    const fact = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                    
-                    if (fact) {
-                        showToast(`🤖 AI Teacher says: ${fact}`, 'success');
-                        return;
-                    }
-                } catch (error) {
-                    retries++;
-                    if (retries >= maxRetries) {
-                        showToast(`Oops, the AI teacher is a bit busy right now. Try again later for a fun fact about ${animalName}!`, 'error');
-                        return;
-                    }
-                    await new Promise(res => setTimeout(res, delay));
-                    delay *= 2; // Exponential backoff
-                }
-            }
-        }
-
-        // 網頁載入後立即啟動遊戲
-        window.onload = initGame;
-    </script>
-</body>
-</html>
+  );
+}
