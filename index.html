@@ -384,7 +384,14 @@
           
           const handleDownload = (type) => {
             setDownloading(type);
-            const url = type === 'pdf' ? "https://raw.githubusercontent.com/JOUCHUCHEN/CurioCat/main/animals/Animal_Field_Guide.pdf" : "https://github.com/JOUCHUCHEN/CurioCat/blob/main/animals/Animal_Field_Guide.pptx?raw=true";
+            let url = "";
+            if (type === 'pdf') {
+              url = "https://raw.githubusercontent.com/JOUCHUCHEN/CurioCat/main/animals/Animal_Field_Guide.pdf";
+            } else if (type === 'ppt') {
+              url = "https://github.com/JOUCHUCHEN/CurioCat/blob/main/animals/Animal_Field_Guide.pptx?raw=true";
+            } else if (type === 'flashcards') {
+              url = "https://github.com/JOUCHUCHEN/CurioCat/blob/main/animals/Flashcards.zip?raw=true";
+            }
             window.open(url, '_blank');
             setTimeout(() => setDownloading(null), 2000);
           };
@@ -435,6 +442,14 @@
                     >
                       <FileText size={20} /> 
                       Download PDF
+                    </button>
+                    <button 
+                      onClick={() => handleDownload('flashcards')} 
+                      disabled={downloading} 
+                      className="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-5 rounded-[1.5rem] font-black text-base flex items-center justify-center gap-4 active:scale-95 disabled:opacity-50 transition-all shadow-xl shadow-emerald-100"
+                    >
+                      <FileImage size={20} /> 
+                      Download Flashcards
                     </button>
                   </div>
                 </div>
