@@ -1,1606 +1,1066 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>英文小遊戲</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8863676691191007"
-     crossorigin="anonymous"></script>
-    <style>
-        :root {
-            --primary-color: #6366f1; /* Indigo 500 */
-            --secondary-color: #4f46e5; /* Indigo 600 */
-            --card-back-color: #1e3a8a; /* Blue 900 */
-            --card-front-color: #ffffff;
-            --success-color: #10b981; /* Emerald 500 */
-            --danger-color: #ef4444; /* Red 500 */
-            --text-color: #1f2937;
-            font-family: 'Inter', sans-serif;
-        }
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  BookOpen, Rocket, Search, Menu, X, Download, Star, ChevronRight, Globe, 
+  ArrowLeft, PlayCircle, CheckCircle, FileText, FileImage, Volume2, HelpCircle, Layout,
+  Home, Hand, LayoutGrid, Trophy, RotateCcw, Play, MonitorPlay, ChevronLeft, Lock, Mic,
+  FlaskConical, Youtube, Construction, ExternalLink, AlertCircle, Info
+} from 'lucide-react';
 
-        body {
-            background-color: #eef2ff; /* Indigo 50 */
-            display: flex;
-            justify-content: center;
-            align-items: flex-start; /* Align to top for better mobile view */
-            min-height: 100vh;
-            padding: 20px;
-            color: var(--text-color);
-        }
+const apiKey = ""; // 系統會自動提供金鑰
 
-        /* Main application container styling */
-        .app-container {
-            width: 100%;
-            max-width: 700px;
-            background-color: #ffffff;
-            border-radius: 1.5rem; /* rounded-3xl */
-            padding: 1.5rem;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            transition: all 0.3s ease;
-        }
+// --- Custom Animal Icon Component ---
+const AnimalIcon = ({ name, emoji, className = "" }) => {
+  if (name === 'Crow') {
+    return (
+      <img 
+        src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f426-200d-2b1b.svg" 
+        alt="Crow" 
+        className={className}
+        style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))' }}
+      />
+    );
+  }
+  if (name === 'Seal') {
+    return (
+      <img 
+        src="https://raw.githubusercontent.com/googlefonts/noto-emoji/main/svg/emoji_u1f9ad.svg" 
+        alt="Seal" 
+        className={className}
+        style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))' }}
+      />
+    );
+  }
+  return <span className={className}>{emoji}</span>;
+};
 
-        h1 {
-            color: var(--primary-color);
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-        }
-        
-        /* Home View Specific Styles */
-        .game-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-        .game-tile {
-            padding: 1rem;
-            background-color: #f7faff;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            transition: all 0.2s ease;
-            cursor: pointer;
-            border: 2px solid #e0e7ff;
-        }
-        
-        .game-tile:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 10px -3px rgba(0, 0, 0, 0.1);
-            border-color: var(--primary-color);
-        }
-        
-        /* Card Grid (Memory Game Specific) */
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            padding: 15px 0;
-        }
+// --- Mock Database ---
+const elementaryResources = [
+  { id: 1, title: 'Phonics Fun: A to Z', type: 'Worksheet', level: 'Beginner', desc: 'Basic phonics practice sheets, including A to Z letter tracing and flashcards.', downloads: 1240 },
+  { id: 2, title: 'Vocabulary Challenge', type: 'Flashcards', level: 'Beginner', desc: 'Daily vocabulary cards covering food, animals, and clothing topics.', downloads: 890 },
+  { id: 3, title: 'Reading: The Red Hen', type: 'Picture Book', level: 'Intermediate', desc: 'Reading comprehension materials based on the classic story "The Little Red Hen".', downloads: 1560 },
+  { id: 4, title: 'Basic Grammar Guide', type: 'Guide', level: 'Intermediate', desc: 'Fundamental grammar rules, covering present simple and common prepositions.', downloads: 2100 },
+];
 
-        .card {
-            background-color: transparent;
-            height: 80px;
-            perspective: 1000px;
-            cursor: pointer;
-            transition: transform 0.6s;
-            border-radius: 0.5rem;
-            position: relative;
-        }
+const steamResources = [
+  { id: 5, title: 'DIY Volcano Model', type: 'Experiment', focus: 'Science', desc: 'A volcano eruption guide combining science experiments with English instructions.', downloads: 3420 },
+  { id: 6, title: 'Scratch Coding', type: 'Tutorial', focus: 'Tech', desc: 'Introductory Scratch programming for kids using English terminology.', downloads: 2800 },
+  { id: 7, title: 'Bridge Engineering', type: 'Project', focus: 'Engineering', desc: 'Build a bridge using popsicle sticks and learn measurement-related vocabulary.', downloads: 1150 },
+  { id: 8, title: 'Math Logic Puzzles', type: 'Worksheet', focus: 'Math', desc: 'Logic puzzles designed to improve both calculation and English reading skills.', downloads: 1980 },
+];
 
-        /* Front and Back of the Card */
-        .card-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            text-align: center;
-            transition: transform 0.6s;
-            transform-style: preserve-3d;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
-        }
+const animalsData = [
+  { id: 1, name: 'Dog', category: 'Land', emoji: '🐶', tpr: 'Put hands on head like ears, stick tongue out and pant.' },
+  { id: 2, name: 'Horse', category: 'Land', emoji: '🐎', tpr: 'March in place, pretend to ride a horse.' },
+  { id: 3, name: 'Elephant', category: 'Land', emoji: '🐘', tpr: 'Swing one arm in front of your face like a long trunk!' },
+  { id: 4, name: 'Lion', category: 'Land', emoji: '🦁', tpr: 'Open your hands like claws and ROAR!' },
+  { id: 5, name: 'Snake', category: 'Land', emoji: '🐍', tpr: 'Put your arms together, wiggle them, and go Sssss!' },
+  { id: 6, name: 'Human', category: 'Land', emoji: '🧑', tpr: 'Point to yourself, smile, wave, and say Hello!' },
+  { id: 7, name: 'Crow', category: 'Air', emoji: '🐦‍⬛', tpr: 'Tap your hands on your sides and say Caw, caw!' },
+  { id: 8, name: 'Eagle', category: 'Air', emoji: '🦅', tpr: 'Stretch your arms out wide like big wings and glide!' },
+  { id: 9, name: 'Whale', category: 'Water', emoji: '🐳', tpr: 'Put hands together above your head, pretend to spout water!' },
+  { id: 10, name: 'Seal', category: 'Water', emoji: '🦭', tpr: 'Keep your arms close to your body and clap your hands!' }
+];
 
-        .card.flipped .card-inner, .card.matched .card-inner {
-            transform: rotateY(180deg);
-        }
+const speak = (text) => {
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'en-US';
+    utterance.rate = 0.8;
+    window.speechSynthesis.speak(utterance);
+  }
+};
 
-        .card-front, .card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            -webkit-backface-visibility: hidden; /* Safari */
-            backface-visibility: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.25rem;
-            font-weight: 700;
-            border-radius: 0.5rem;
-            user-select: none;
-            padding: 5px; /* Allow text wrapping */
-        }
+const shuffleArray = (array) => [...array].sort(() => Math.random() - 0.5);
 
-        .card-back {
-            background-color: var(--card-back-color);
-            color: white;
-            border: 3px solid var(--secondary-color);
-            transition: background-color 0.3s;
-        }
-        
-        .card:hover .card-back:not(.matched) {
-            background-color: #1e40af; /* Slightly lighter blue on hover */
-        }
+// --- Component Fragments ---
 
+const AdBanner = ({ format = 'horizontal', className = "" }) => (
+  <div className={`relative flex items-center justify-center bg-gray-100 border-2 border-dashed border-gray-300 text-gray-400 rounded-lg overflow-hidden ${format === 'horizontal' ? 'w-full h-20 my-2' : 'w-full h-64 my-4'} ${className}`}>
+    <span className="absolute top-1 right-2 text-[10px] bg-gray-200 text-gray-500 px-1 rounded uppercase tracking-tighter font-bold">AD Space</span>
+    <p className="font-semibold text-xs">{format === 'horizontal' ? '728 x 90' : '300 x 250'}</p>
+  </div>
+);
 
-        .card-front {
-            background-color: var(--card-front-color);
-            color: var(--text-color);
-            transform: rotateY(180deg);
-            border: 3px solid #e5e7eb;
-            font-size: 1.1rem; /* Adjust font size for words */
-            line-height: 1.2;
-        }
-        
-        .card-front.icon {
-            font-size: 2.5rem; /* Larger font size for icons */
-        }
-
-        .card.matched .card-inner {
-            opacity: 0.6;
-            transform: rotateY(180deg) scale(0.95);
-            transition: transform 0.6s, opacity 0.6s;
-        }
-        
-        .card.matched .card-front {
-            background-color: var(--success-color);
-            color: white;
-            border-color: var(--success-color);
-        }
-
-        /* Button Styles */
-        .btn-base {
-            padding: 10px 20px;
-            border-radius: 9999px; /* full rounded */
-            font-weight: 700;
-            transition: background-color 0.2s, transform 0.1s;
-            border: none;
-        }
-        .btn-primary {
-            @apply btn-base;
-            background-color: var(--primary-color);
-            color: white;
-            box-shadow: 0 4px var(--secondary-color);
-        }
-
-        .btn-primary:hover {
-            background-color: var(--secondary-color);
-        }
-        
-        .btn-primary:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px var(--secondary-color);
-        }
-        
-        .btn-secondary {
-            @apply btn-base;
-            background-color: #e0e7ff; /* Indigo 100 */
-            color: var(--secondary-color);
-            box-shadow: 0 3px #c7d2fe; /* Indigo 200 */
-        }
-        
-        .btn-secondary:hover {
-            background-color: #c7d2fe; /* Indigo 200 */
-        }
-        
-        .btn-secondary:active {
-            transform: translateY(1px);
-            box-shadow: 0 2px #c7d2fe;
-        }
-
-
-        /* Modal Styling */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .modal-content {
-            background-color: #fff;
-            padding: 40px 30px;
-            border-radius: 1rem;
-            text-align: center;
-            max-width: 90%;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        }
-        
-        /* Responsive Adjustments */
-        @media (max-width: 640px) {
-            .card-grid {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 5px;
-            }
-            .card {
-                height: 70px;
-            }
-            .card-front {
-                font-size: 0.9rem;
-            }
-            .card-front.icon {
-                font-size: 2rem;
-            }
-            .app-container {
-                padding: 1rem;
-            }
-            h1 {
-                font-size: 1.5rem;
-            }
-            .game-grid {
-                grid-template-columns: repeat(1, 1fr) !important;
-            }
-        }
-        
-        /* Status Bar and Controls (Shared across games) */
-        .status-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 2px solid #e0e7ff; /* Indigo 100 */
-            margin-bottom: 10px;
-        }
-        
-        .stat-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-size: 0.9rem;
-            font-weight: 600;
-            flex-grow: 1;
-        }
-        
-        .stat-value {
-            font-size: 1.5rem;
-            color: var(--secondary-color);
-            font-weight: 700;
-        }
-        
-        .icon-text {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        /* Specific Styles for new games */
-        .game-content-box {
-            @apply text-center mt-6 p-6 bg-gray-50 rounded-xl shadow-inner border border-indigo-200 min-h-[300px] flex flex-col justify-between items-center;
-        }
-        .word-token {
-            @apply inline-block px-3 py-1 m-1 bg-white border border-indigo-300 rounded-full cursor-pointer hover:bg-indigo-100 transition;
-        }
-        .word-token.correct {
-             @apply bg-success-color text-white border-success-color;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="app-container">
-        
-        <!-- ============================= -->
-        <!-- 1. HOME VIEW (遊戲選擇主頁) -->
-        <!-- ============================= -->
-        <div id="home-view" class="w-full">
-            <h1 class="text-4xl font-extrabold text-center mb-8">英文小遊戲</h1>
-
-            <div id="game-list" class="game-grid grid gap-4 sm:grid-cols-2">
-                <!-- Game tiles generated by JavaScript -->
-            </div>
-        </div>
-
-        <!-- ============================= -->
-        <!-- 2. MEMORY GAME VIEW (翻翻樂) -->
-        <!-- ============================= -->
-        <div id="memory-game-view" class="game-view" style="display: none;">
-            <h1 class="text-3xl font-bold text-center mb-4">翻翻樂 (Memory Match)</h1>
-            <!-- Status Bar / Game Board / Modal (Memory Game uses existing structure) -->
-            <div class="status-bar">
-                <button id="memory-back-button" class="btn-secondary text-sm px-3 py-2">🏠 主頁</button>
-                <div class="stat-item">
-                    <div class="icon-text"><span class="text-xl">🚶</span><span>步數</span></div>
-                    <div id="moves-counter" class="stat-value">0</div>
-                </div>
-                <div class="stat-item">
-                    <div class="icon-text"><span class="text-xl">⏱️</span><span>時間</span></div>
-                    <div id="timer" class="stat-value">00:00</div>
-                </div>
-                <div><button id="reset-button" class="btn-primary text-sm px-3 py-2">重設</button></div>
-            </div>
-            <div id="card-grid" class="card-grid"></div>
-        </div>
-        
-        <!-- ============================= -->
-        <!-- 3. FLASHCARD GAME VIEW (閃卡測驗) -->
-        <!-- ============================= -->
-        <div id="flashcard-game-view" class="game-view" style="display: none;">
-            <h1 class="text-3xl font-bold text-center mb-4">閃卡測驗 (Flashcard Quiz)</h1>
-            <div class="status-bar">
-                <button id="flashcard-back-button" class="btn-secondary text-sm px-3 py-2">🏠 主頁</button>
-                <p class="text-xl font-semibold text-gray-700">卡片: <span id="flashcard-count">0/0</span></p>
-            </div>
-            <div class="game-content-box">
-                <div id="flashcard-content" class="min-h-[150px] flex flex-col justify-center items-center">
-                    <p id="flashcard-prompt" class="text-2xl font-semibold text-gray-700">準備好了嗎？</p>
-                    <p id="flashcard-answer" class="text-5xl font-extrabold text-primary-color mt-4 transition-opacity duration-500 hidden"></p>
-                </div>
-                <div class="mt-8 space-x-4 flex justify-center">
-                    <button id="flashcard-reveal-btn" class="btn-primary">顯示答案</button>
-                    <button id="flashcard-next-btn" class="btn-secondary" disabled>下一題</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============================= -->
-        <!-- 4. JUMBLE GAME VIEW (單字拼圖) -->
-        <!-- ============================= -->
-        <div id="jumble-game-view" class="game-view" style="display: none;">
-            <h1 class="text-3xl font-bold text-center mb-4">單字拼圖 (Word Jumble)</h1>
-            <div class="status-bar">
-                <button id="jumble-back-button" class="btn-secondary text-sm px-3 py-2">🏠 主頁</button>
-                <p class="text-xl font-semibold text-gray-700">單字: <span id="jumble-count">0/0</span></p>
-            </div>
-            <div class="game-content-box">
-                <div>
-                    <p class="text-lg font-medium text-gray-500 mb-4" id="jumble-hint">提示：</p>
-                    <div id="jumble-scrambled-letters" class="text-6xl font-extrabold tracking-widest text-secondary-color mb-8"></div>
-                </div>
-                <input type="text" id="jumble-input" placeholder="輸入正確單字..." class="w-full max-w-sm p-3 text-center text-xl border-2 border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition uppercase" maxlength="15" />
-                <p id="jumble-feedback" class="text-lg font-semibold mt-4 min-h-[30px]"></p>
-                <div class="mt-6 space-x-4 flex justify-center w-full">
-                    <button id="jumble-check-btn" class="btn-primary flex-1 max-w-[150px]">檢查答案</button>
-                    <button id="jumble-next-btn" class="btn-secondary flex-1 max-w-[150px]" disabled>下一個</button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- ============================= -->
-        <!-- 5. LISTENING GAME VIEW (聽力訓練) -->
-        <!-- ============================= -->
-        <div id="listening-game-view" class="game-view" style="display: none;">
-            <h1 class="text-3xl font-bold text-center mb-4">聽力訓練 (Listening Practice)</h1>
-            <div class="status-bar">
-                <button id="listening-back-button" class="btn-secondary text-sm px-3 py-2">🏠 主頁</button>
-                <p class="text-xl font-semibold text-gray-700">回合: <span id="listening-count">0/0</span></p>
-            </div>
-            <div class="game-content-box">
-                <div>
-                    <p class="text-lg font-medium text-gray-500 mb-4" id="listening-prompt-text">點擊播放，並聽寫單字。</p>
-                    <button id="listening-play-btn" class="text-6xl p-4 bg-indigo-100 rounded-full hover:bg-indigo-200 transition">▶️</button>
-                    <div id="listening-hint" class="text-xl font-bold text-indigo-500 mt-4 hidden"></div>
-                </div>
-                <input type="text" id="listening-input" placeholder="輸入您聽到的單字..." class="w-full max-w-sm p-3 text-center text-xl border-2 border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition uppercase" maxlength="15" />
-                <p id="listening-feedback" class="text-lg font-semibold mt-4 min-h-[30px]"></p>
-                <div class="mt-6 space-x-4 flex justify-center w-full">
-                    <button id="listening-check-btn" class="btn-primary flex-1 max-w-[150px]">檢查答案</button>
-                    <button id="listening-next-btn" class="btn-secondary flex-1 max-w-[150px]" disabled>下一個</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============================= -->
-        <!-- 6. FILL-IN GAME VIEW (填空遊戲) -->
-        <!-- ============================= -->
-        <div id="fill_in-game-view" class="game-view" style="display: none;">
-            <h1 class="text-3xl font-bold text-center mb-4">填空遊戲 (Fill-in-the-Blank)</h1>
-            <div class="status-bar">
-                <button id="fill_in-back-button" class="btn-secondary text-sm px-3 py-2">🏠 主頁</button>
-                <p class="text-xl font-semibold text-gray-700">句子: <span id="fill_in-count">0/0</span></p>
-            </div>
-            <div class="game-content-box">
-                <div id="fill_in-sentence" class="text-2xl font-medium text-gray-800 mb-8 p-4 bg-white rounded-lg shadow-sm w-full">
-                    <!-- Sentence with blank -->
-                </div>
-                <input type="text" id="fill_in-input" placeholder="填入空格中的單字..." class="w-full max-w-sm p-3 text-center text-xl border-2 border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition uppercase" maxlength="15" />
-                <p id="fill_in-feedback" class="text-lg font-semibold mt-4 min-h-[30px]"></p>
-                <div class="mt-6 space-x-4 flex justify-center w-full">
-                    <button id="fill_in-check-btn" class="btn-primary flex-1 max-w-[150px]">檢查答案</button>
-                    <button id="fill_in-next-btn" class="btn-secondary flex-1 max-w-[150px]" disabled>下一個</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============================= -->
-        <!-- 7. SENTENCE SCRAMBLE (句子重組) -->
-        <!-- ============================= -->
-        <div id="sentence_scramble-game-view" class="game-view" style="display: none;">
-            <h1 class="text-3xl font-bold text-center mb-4">句子重組 (Sentence Scramble)</h1>
-            <div class="status-bar">
-                <button id="scramble-back-button" class="btn-secondary text-sm px-3 py-2">🏠 主頁</button>
-                <p class="text-xl font-semibold text-gray-700">句子: <span id="scramble-count">0/0</span></p>
-            </div>
-            <div class="game-content-box min-h-[400px]">
-                <div class="w-full">
-                    <p class="text-sm font-medium text-gray-500 mb-2">點擊單字以重組成正確的句子:</p>
-                    <div id="scramble-target-sentence" class="min-h-[80px] p-2 mb-4 border-2 border-indigo-300 border-dashed rounded-lg bg-indigo-50 text-left text-lg">
-                        <!-- Reordered words appear here -->
-                    </div>
-                    <div id="scramble-word-pool" class="min-h-[80px] p-2 mb-6 border rounded-lg bg-white text-left text-lg">
-                        <!-- Scrambled words appear here -->
-                    </div>
-                </div>
-                <p id="scramble-feedback" class="text-lg font-semibold mt-4 min-h-[30px]"></p>
-                <div class="mt-6 space-x-4 flex justify-center w-full">
-                    <button id="scramble-check-btn" class="btn-primary flex-1 max-w-[150px]">檢查</button>
-                    <button id="scramble-reset-btn" class="btn-secondary flex-1 max-w-[150px]">重設</button>
-                    <button id="scramble-next-btn" class="btn-primary flex-1 max-w-[150px]" disabled>下一個</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============================= -->
-        <!-- 8. PRONUNCIATION (發音挑戰) -->
-        <!-- ============================= -->
-        <div id="pronunciation-game-view" class="game-view" style="display: none;">
-            <h1 class="text-3xl font-bold text-center mb-4">發音挑戰 (Pronunciation Challenge)</h1>
-            <div class="status-bar">
-                <button id="pronunciation-back-button" class="btn-secondary text-sm px-3 py-2">🏠 主頁</button>
-                <p class="text-xl font-semibold text-gray-700">單字: <span id="pronunciation-count">0/0</span></p>
-            </div>
-            <div class="game-content-box">
-                <div>
-                    <p class="text-2xl font-medium text-gray-500 mb-4">請對著麥克風念出這個單字:</p>
-                    <div id="pronunciation-word" class="text-7xl font-extrabold text-secondary-color mb-8"></div>
-                </div>
-                <p id="pronunciation-instructions" class="text-sm text-gray-500 mb-6">(此處為模擬發音辨識)</p>
-                <button id="pronunciation-start-btn" class="btn-primary text-2xl px-6 py-4">🎙️ 開始錄音 (模擬)</button>
-                <p id="pronunciation-feedback" class="text-2xl font-bold mt-8 min-h-[40px]"></p>
-                <div class="mt-6 space-x-4 flex justify-center w-full">
-                    <button id="pronunciation-next-btn" class="btn-secondary flex-1 max-w-[150px]" disabled>下一個</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============================= -->
-        <!-- 9. WORD CHAIN (詞彙接龍) -->
-        <!-- ============================= -->
-        <div id="word_chain-game-view" class="game-view" style="display: none;">
-            <h1 class="text-3xl font-bold text-center mb-4">詞彙接龍 (Word Chain)</h1>
-            <div class="status-bar">
-                <button id="word_chain-back-button" class="btn-secondary text-sm px-3 py-2">🏠 主頁</button>
-                <p class="text-xl font-semibold text-gray-700">回合: <span id="word_chain-turn">1</span></p>
-            </div>
-            <div class="game-content-box min-h-[400px]">
-                <div class="w-full">
-                    <p class="text-lg font-medium text-gray-500 mb-2">上一個單字 (電腦):</p>
-                    <div id="word_chain-current-word" class="text-4xl font-extrabold text-secondary-color p-3 bg-indigo-100 rounded-lg shadow-md mb-6">Start</div>
-                    <p id="word_chain-rule" class="text-xl font-semibold mb-4 text-gray-700">請輸入一個以 <span id="word_chain-required-letter" class="text-red-500 text-3xl">T</span> 開頭的單字:</p>
-                </div>
-                <input type="text" id="word_chain-input" placeholder="輸入您的單字..." class="w-full max-w-sm p-3 text-center text-xl border-2 border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition uppercase" maxlength="15" />
-                <p id="word_chain-feedback" class="text-lg font-semibold mt-4 min-h-[30px]"></p>
-                <div class="mt-6 space-x-4 flex justify-center w-full">
-                    <button id="word_chain-submit-btn" class="btn-primary flex-1 max-w-[150px]">提交</button>
-                    <button id="word_chain-restart-btn" class="btn-secondary flex-1 max-w-[150px]">重設</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============================= -->
-        <!-- 10. SYNONYM BATTLE (同義詞大作戰) -->
-        <!-- ============================= -->
-        <div id="synonym_battle-game-view" class="game-view" style="display: none;">
-            <h1 class="text-3xl font-bold text-center mb-4">同義詞大作戰 (Synonym Battle)</h1>
-            <div class="status-bar">
-                <button id="synonym-back-button" class="btn-secondary text-sm px-3 py-2">🏠 主頁</button>
-                <p class="text-xl font-semibold text-gray-700">挑戰: <span id="synonym-count">0/0</span></p>
-            </div>
-            <div class="game-content-box">
-                <div>
-                    <p class="text-2xl font-medium text-gray-500 mb-4">請提供這個單字的一個**同義詞**:</p>
-                    <div id="synonym-word" class="text-7xl font-extrabold text-secondary-color mb-8"></div>
-                </div>
-                <input type="text" id="synonym-input" placeholder="輸入同義詞..." class="w-full max-w-sm p-3 text-center text-xl border-2 border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition" maxlength="15" />
-                <p id="synonym-feedback" class="text-lg font-semibold mt-4 min-h-[30px]"></p>
-                <div class="mt-6 space-x-4 flex justify-center w-full">
-                    <button id="synonym-check-btn" class="btn-primary flex-1 max-w-[150px]">檢查答案</button>
-                    <button id="synonym-next-btn" class="btn-secondary flex-1 max-w-[150px]" disabled>下一個</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============================= -->
-        <!-- 11. DAILY WORD (每日單字) -->
-        <!-- ============================= -->
-        <div id="daily_word-game-view" class="game-view" style="display: none;">
-            <h1 class="text-3xl font-bold text-center mb-4">每日單字 (Daily Word)</h1>
-            <div class="status-bar">
-                <button id="daily_word-back-button" class="btn-secondary text-sm px-3 py-2">🏠 主頁</button>
-            </div>
-            <div class="game-content-box">
-                <p class="text-4xl" id="daily_word-icon">🗓️</p>
-                <div class="w-full mt-4 p-4 bg-white rounded-lg shadow-md border-t-4 border-primary-color">
-                    <h2 id="daily_word-word" class="text-5xl font-extrabold text-primary-color mb-2"></h2>
-                    <p id="daily_word-meaning" class="text-2xl text-gray-600 mb-4"></p>
-                    <div class="text-left border-t pt-4">
-                        <p class="text-sm font-semibold text-indigo-700">例句:</p>
-                        <p id="daily_word-sentence" class="text-lg italic text-gray-700"></p>
-                    </div>
-                </div>
-                <p class="text-sm text-gray-500 mt-6">今天的單字每天自動更新一次。</p>
-            </div>
-        </div>
+const ResourceCard = ({ item, icon: Icon }) => (
+  <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition-shadow flex flex-col h-full cursor-pointer group">
+    <div className="flex justify-between items-start mb-2">
+      <div className="bg-orange-50 p-1.5 rounded-lg text-orange-600 group-hover:bg-orange-100 transition-colors">
+        <Icon size={20} />
+      </div>
+      <span className="text-[10px] font-bold px-2 py-0.5 bg-green-50 text-green-600 rounded-full uppercase tracking-wide">{item.level || item.focus}</span>
     </div>
-    
-    <!-- Game Over Modal (Used only by Memory Game) -->
-    <div id="game-over-modal" class="modal">
-        <div class="modal-content">
-            <h2 class="text-3xl font-bold text-success-color mb-4 text-green-500">恭喜！遊戲完成！🎉</h2>
-            <p class="text-lg mb-4">您成功配對了所有單字！</p>
-            <p class="text-xl font-semibold mb-6">總步數: <span id="final-moves" class="text-primary-color"></span></p>
-            <p class="text-xl font-semibold mb-6">總時間: <span id="final-time" class="text-primary-color"></span></p>
-            <button id="modal-reset-button" class="btn-primary">再玩一次</button>
-        </div>
+    <h3 className="text-sm font-bold text-gray-800 mb-1 group-hover:text-orange-600 transition-colors">{item.title}</h3>
+    <p className="text-[10px] text-gray-600 mb-3 flex-grow line-clamp-2 leading-relaxed">{item.desc}</p>
+    <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-50">
+      <span className="text-[10px] text-gray-400 flex items-center font-medium"><Download size={12} className="mr-1" /> {item.downloads}</span>
+      <button className="text-[10px] font-bold text-orange-600 flex items-center hover:translate-x-0.5 transition-transform">Download <ChevronRight size={12} /></button>
     </div>
+  </div>
+);
 
+// --- STEAM Video Page ---
 
-    <script>
-        // --- 遊戲定義與數據 ---
-        
-        // 10 遊戲列表 (所有遊戲現在都可玩)
-        const allGames = [
-            { id: 1, name: "翻翻樂 (Memory Match)", description: "單字與圖像配對", icon: "🧠", type: "memory" },
-            { id: 2, name: "閃卡測驗 (Flashcard Quiz)", description: "單字與中文釋義測驗", icon: "✨", type: "flashcard" },
-            { id: 3, name: "單字拼圖 (Word Jumble)", description: "字母重組挑戰", icon: "🧩", type: "jumble" },
-            { id: 4, name: "聽力訓練 (Listening Practice)", description: "聽寫與辨識", icon: "🎧", type: "listening" },
-            { id: 5, name: "填空遊戲 (Fill-in-the-Blank)", description: "語境理解", icon: "✍️", type: "fill_in" },
-            { id: 6, name: "句子重組 (Sentence Scramble)", description: "語法練習", icon: "📝", type: "sentence_scramble" },
-            { id: 7, name: "發音挑戰 (Pronunciation Challenge)", description: "語音糾正 (模擬)", icon: "🗣️", type: "pronunciation" },
-            { id: 8, name: "詞彙接龍 (Word Chain)", description: "與AI對戰 (單人模式)", icon: "🔗", type: "word_chain" },
-            { id: 9, name: "同義詞大作戰 (Synonym Battle)", description: "擴充詞彙", icon: "⚔️", type: "synonym_battle" },
-            { id: 10, name: "每日單字 (Daily Word)", description: "新單字學習", icon: "🗓️", type: "daily_word" }
-        ];
+function SteamVideoPage({ onBack }) {
+  const videoId = "ieDNvJNf0ag";
+  const youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`;
 
-        // 所有遊戲共用的單字庫，加入了中文釋義、例句和同義詞
-        const wordPairs = [
-            { id: 1, word: "Apple", icon: "🍎", meaning: "蘋果", sentence: "I like to eat a red ___ every morning.", synonym: "Fruit", last_letter: 'e' },
-            { id: 2, word: "Cat", icon: "🐈", meaning: "貓", sentence: "The fluffy ___ sleeps on the couch.", synonym: "Feline", last_letter: 't' },
-            { id: 3, word: "Car", icon: "🚗", meaning: "汽車", sentence: "We drove our new ___ to the beach.", synonym: "Vehicle", last_letter: 'r' },
-            { id: 4, word: "Sun", icon: "☀️", meaning: "太陽", sentence: "The ___ shines brightly in the sky.", synonym: "Star", last_letter: 'n' },
-            { id: 5, word: "Book", icon: "📚", meaning: "書本", sentence: "Please read the new ___ on the shelf.", synonym: "Tome", last_letter: 'k' },
-            { id: 6, word: "House", icon: "🏠", meaning: "房子", sentence: "A big, comfortable ___ is our dream.", synonym: "Home", last_letter: 'e' },
-            { id: 7, word: "Star", icon: "⭐", meaning: "星星", sentence: "I wish upon a falling ___ tonight.", synonym: "Celestial Body", last_letter: 'r' },
-            { id: 8, word: "Pizza", icon: "🍕", meaning: "披薩", sentence: "Let's order a large ___ for dinner.", synonym: "Dish", last_letter: 'a' }
-        ];
+  return (
+    <div className="h-[calc(100vh-64px)] bg-slate-50 overflow-hidden flex flex-col animate-in fade-in duration-500">
+      <main className="flex-1 p-6 max-w-6xl mx-auto w-full h-full overflow-hidden flex flex-col">
+        {/* Header */}
+        <div className="flex items-center gap-5 mb-8">
+          <button 
+            onClick={onBack}
+            className="p-3 bg-white text-orange-600 rounded-2xl shadow-sm border border-orange-100 hover:bg-orange-50 transition-all hover:scale-110 active:scale-95"
+          >
+            <ArrowLeft size={24} />
+          </button>
+          <div>
+            <h2 className="text-3xl font-black text-gray-900 tracking-tight leading-none mb-2">LEGO DIY: Toy Bow & Arrow</h2>
+            <p className="text-sm text-gray-400 font-bold tracking-widest uppercase opacity-80">STEAM Project Learning • Creative Engineering Design</p>
+          </div>
+        </div>
 
-        // --- DOM 元素 ---
-        const homeView = document.getElementById('home-view');
-        const allGameViews = document.querySelectorAll('.game-view');
-        
-        // Memory Game elements
-        const cardGrid = document.getElementById('card-grid');
-        const movesCounterElement = document.getElementById('moves-counter');
-        const timerElement = document.getElementById('timer');
-        const resetButton = document.getElementById('reset-button');
-        const memoryBackButton = document.getElementById('memory-back-button');
-        const modal = document.getElementById('game-over-modal');
-        const modalResetButton = document.getElementById('modal-reset-button');
-        const finalMovesElement = document.getElementById('final-moves');
-        const finalTimeElement = document.getElementById('final-time');
+        {/* Video Frame */}
+        <div className="flex-1 bg-black rounded-[3rem] overflow-hidden shadow-2xl relative group aspect-video max-h-[50vh] mx-auto w-full border-[12px] border-white">
+          <iframe 
+            className="w-full h-full"
+            src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&showinfo=0&modestbranding=1`} 
+            title="LEGO DIY Bow and Arrow"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            referrerPolicy="no-referrer-when-downgrade"
+            allowFullScreen
+          ></iframe>
+        </div>
 
-        // Flashcard Game elements
-        const flashcardCountEl = document.getElementById('flashcard-count');
-        const flashcardRevealBtn = document.getElementById('flashcard-reveal-btn');
-        const flashcardNextBtn = document.getElementById('flashcard-next-btn');
-        
-        // Jumble Game elements
-        const jumbleCountEl = document.getElementById('jumble-count');
-        const jumbleInputEl = document.getElementById('jumble-input');
-        const jumbleCheckBtn = document.getElementById('jumble-check-btn');
-        const jumbleNextBtn = document.getElementById('jumble-next-btn');
-        const jumbleFeedbackEl = document.getElementById('jumble-feedback');
-        
-        // Listening Game elements
-        const listeningCountEl = document.getElementById('listening-count');
-        const listeningPromptTextEl = document.getElementById('listening-prompt-text');
-        const listeningPlayBtn = document.getElementById('listening-play-btn');
-        const listeningHintEl = document.getElementById('listening-hint');
-        const listeningInputEl = document.getElementById('listening-input');
-        const listeningCheckBtn = document.getElementById('listening-check-btn');
-        const listeningNextBtn = document.getElementById('listening-next-btn');
-        const listeningFeedbackEl = document.getElementById('listening-feedback');
+        {/* Error State Warning */}
+        <div className="mt-8 flex flex-col items-center gap-3">
+          <div className="flex items-center gap-2 text-rose-500 text-[11px] font-black uppercase tracking-[0.2em] opacity-80">
+            <AlertCircle size={14} className="stroke-[3]" /> Playback Error?
+          </div>
+          <a 
+            href={youtubeUrl} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 text-base font-black text-white px-10 py-4 bg-rose-500 hover:bg-rose-600 rounded-full shadow-2xl shadow-rose-200 transition-all active:scale-95 group"
+          >
+            <Youtube size={22} className="group-hover:scale-110 transition-transform" /> 
+            Open in YouTube Player <ExternalLink size={18} />
+          </a>
+        </div>
 
-        // Fill-in Game elements
-        const fillInCountEl = document.getElementById('fill_in-count');
-        const fillInSentenceEl = document.getElementById('fill_in-sentence');
-        const fillInInputEl = document.getElementById('fill_in-input');
-        const fillInCheckBtn = document.getElementById('fill_in-check-btn');
-        const fillInNextBtn = document.getElementById('fill_in-next-btn');
-        const fillInFeedbackEl = document.getElementById('fill_in-feedback');
+        {/* Info Area */}
+        <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-8 pb-8">
+          <div className="lg:col-span-2 bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm flex flex-col">
+             <h3 className="font-black text-xl mb-4 flex items-center gap-3 text-orange-600 uppercase tracking-tighter">
+               <Construction className="text-orange-400" size={24} /> Project Overview
+             </h3>
+             <p className="text-gray-500 leading-loose text-base font-medium">
+               In this lesson, we will learn how to build a fully functional toy bow and arrow using LEGO bricks! Through hands-on practice, students will experience basic concepts of physical tension, mechanical principles, and engineering structures, turning creativity into a physical masterpiece.
+             </p>
+          </div>
+          <div className="bg-indigo-600 p-8 rounded-[2.5rem] text-white shadow-xl shadow-indigo-100 flex flex-col justify-center items-center text-center relative overflow-hidden group">
+             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-125 transition-transform"><Rocket size={100} /></div>
+             <Rocket size={48} className="mb-4 opacity-90" />
+             <h4 className="text-2xl font-black mb-1">Building Guide</h4>
+             <p className="text-[11px] opacity-70 mb-6 font-black uppercase tracking-widest">Available for Pro Hub</p>
+             <button className="bg-white text-indigo-600 px-10 py-3 rounded-full font-black text-sm hover:scale-105 transition-all shadow-lg active:scale-95">
+                Download PDF
+             </button>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
 
-        // Sentence Scramble elements
-        const scrambleCountEl = document.getElementById('scramble-count');
-        const scrambleTargetSentenceEl = document.getElementById('scramble-target-sentence');
-        const scrambleWordPoolEl = document.getElementById('scramble-word-pool');
-        const scrambleCheckBtn = document.getElementById('scramble-check-btn');
-        const scrambleResetBtn = document.getElementById('scramble-reset-btn');
-        const scrambleNextBtn = document.getElementById('scramble-next-btn');
-        const scrambleFeedbackEl = document.getElementById('scramble-feedback');
+// --- Amazing Animals Module ---
 
-        // Pronunciation Game elements
-        const pronunciationCountEl = document.getElementById('pronunciation-count');
-        const pronunciationWordEl = document.getElementById('pronunciation-word');
-        const pronunciationStartBtn = document.getElementById('pronunciation-start-btn');
-        const pronunciationFeedbackEl = document.getElementById('pronunciation-feedback');
-        const pronunciationNextBtn = document.getElementById('pronunciation-next-btn');
+function AaHomeView({ setModuleView }) {
+  return (
+    <div className="flex flex-col items-center justify-center text-center animate-in fade-in slide-in-from-bottom-4 duration-700 h-full w-full py-12">
+      <div className="flex gap-4 mb-6 animate-bounce justify-center">
+        <span className="text-7xl drop-shadow-xl">🐶</span>
+        <span className="text-7xl drop-shadow-xl">🦁</span>
+        <span className="text-7xl drop-shadow-xl">🐘</span>
+        <span className="text-7xl drop-shadow-xl">🐎</span>
+      </div>
+      <h2 className="text-4xl font-black text-sky-900 mb-2 tracking-tight">Amazing Animals!</h2>
+      <p className="text-base text-sky-700/60 mb-10 max-w-sm font-bold leading-relaxed mx-auto">Meet animal friends, listen, and move your body!</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full max-w-3xl px-6">
+        <AaHomeCard icon={<BookOpen className="text-amber-500" />} title="Learn & Move" desc="Vocabulary & TPR Actions" color="bg-amber-50 border-amber-200" onClick={() => setModuleView('learn')} />
+        <AaHomeCard icon={<Hand className="text-rose-500" />} title="Listening Game" desc="Test Your Ears" color="bg-rose-50 border-rose-200" onClick={() => setModuleView('swatter')} />
+        <AaHomeCard icon={<LayoutGrid className="text-emerald-500" />} title="Match Game" desc="Find the Pairs" color="bg-emerald-50 border-emerald-200" onClick={() => setModuleView('memory')} />
+        <AaHomeCard icon={<Download className="text-purple-500" />} title="Materials" desc="PPT & PDF Download" color="bg-purple-50 border-purple-200" onClick={() => setModuleView('downloads')} />
+      </div>
+    </div>
+  );
+}
 
-        // Word Chain Game elements
-        const wordChainTurnEl = document.getElementById('word_chain-turn');
-        const wordChainCurrentWordEl = document.getElementById('word_chain-current-word');
-        const wordChainRequiredLetterEl = document.getElementById('word_chain-required-letter');
-        const wordChainInputEl = document.getElementById('word_chain-input');
-        const wordChainSubmitBtn = document.getElementById('word_chain-submit-btn');
-        const wordChainFeedbackEl = document.getElementById('word_chain-feedback');
+function AaHomeCard({ icon, title, desc, color, onClick }) {
+  return (
+    <button onClick={onClick} className={`${color} border-2 rounded-[2rem] p-6 text-left flex items-center gap-5 transition-all hover:scale-[1.03] active:scale-95 group shadow-sm w-full`}>
+      <div className="bg-white p-4 rounded-2xl shadow-sm group-hover:rotate-6 transition-transform">{icon}</div>
+      <div>
+        <h3 className="text-xl font-black text-gray-800 leading-tight"> {title} </h3>
+        <p className="text-[12px] text-gray-500 font-black mt-1 uppercase tracking-wider">{desc}</p>
+      </div>
+    </button>
+  );
+}
 
-        // Synonym Battle elements
-        const synonymCountEl = document.getElementById('synonym-count');
-        const synonymWordEl = document.getElementById('synonym-word');
-        const synonymInputEl = document.getElementById('synonym-input');
-        const synonymCheckBtn = document.getElementById('synonym-check-btn');
-        const synonymNextBtn = document.getElementById('synonym-next-btn');
-        const synonymFeedbackEl = document.getElementById('synonym-feedback');
+function AaLearnView({ onHome }) {
+  const categories = [
+    { id: 'Land', label: 'Land', eng: "Let's go to the Land!", icon: "🌳", color: "from-emerald-400 to-green-600" },
+    { id: 'Air', label: 'Air', eng: "Let's fly in the Sky!", icon: "☁️", color: "from-cyan-300 to-blue-400" },
+    { id: 'Water', label: 'Water', eng: "Let's dive into the Sea!", icon: "🌊", color: "from-blue-400 to-indigo-600" },
+  ];
 
-        // Daily Word elements
-        const dailyWordWordEl = document.getElementById('daily_word-word');
-        const dailyWordMeaningEl = document.getElementById('daily_word-meaning');
-        const dailyWordSentenceEl = document.getElementById('daily_word-sentence');
-        
-        // --- Global State ---
-        let timerInterval;
+  const [filter, setFilter] = useState('Land');
+  const [intro, setIntro] = useState({ title: categories[0].eng, sub: `${categories[0].label} Animals`, color: categories[0].color, icon: categories[0].icon });
 
-        // --- Memory Game State ---
-        let cards = [];
-        let flippedCards = [];
-        let matchesFound = 0;
-        let moves = 0;
-        let isProcessing = false;
-        let timer = 0;
+  useEffect(() => { speak(categories[0].eng); }, []);
 
-        // --- Flashcard Game State ---
-        let flashcards = [];
-        let currentFlashcardIndex = 0;
+  const handleFilterChange = (cat) => {
+    if (cat.id === filter) return;
+    setIntro({ title: cat.eng, sub: `${cat.label} Animals`, color: cat.color, icon: cat.icon });
+    speak(cat.eng);
+    setFilter(cat.id);
+  };
 
-        // --- Jumble Game State ---
-        let jumbleWords = [];
-        let currentJumbleIndex = 0;
-        let currentCorrectWord = "";
-        
-        // --- Listening Game State ---
-        let listeningWords = [];
-        let currentListeningIndex = 0;
-        
-        // --- Fill-in Game State ---
-        let fillInSentences = [];
-        let currentFillInIndex = 0;
+  const getSentence = (name) => {
+    if (name === 'Human') return "I am a human.";
+    const lowerName = name.toLowerCase();
+    const isVowel = ['a', 'e', 'i', 'o', 'u'].includes(lowerName[0]);
+    return `It is ${isVowel ? 'an' : 'a'} ${lowerName}.`;
+  };
 
-        // --- Sentence Scramble Game State ---
-        let scrambleSentences = [];
-        let currentScrambleIndex = 0;
-        let currentScrambleOriginal = "";
-        let currentScrambleReordered = [];
-        
-        // --- Pronunciation Game State ---
-        let pronunciationWords = [];
-        let currentPronunciationIndex = 0;
+  return (
+    <div className="h-full flex flex-col relative overflow-hidden animate-in fade-in">
+      {intro && (
+        <div className={`fixed inset-0 z-[100] flex flex-col items-center justify-center text-white bg-gradient-to-br ${intro.color} animate-in fade-in zoom-in duration-500`}>
+          <div className="text-[10rem] mb-10 animate-bounce">{intro.icon}</div>
+          <h2 className="text-4xl md:text-6xl font-black text-center px-8 mb-8 drop-shadow-2xl uppercase tracking-tighter opacity-95">{intro.title}</h2>
+          <div className="bg-white/20 backdrop-blur-xl px-16 py-4 rounded-[3rem] border border-white/40 text-[36px] md:text-[58px] font-black mb-12 shadow-2xl tracking-tighter text-center">{intro.sub}</div>
+          <button 
+            onClick={() => setIntro(null)} 
+            className="bg-white text-sky-900 px-12 py-5 rounded-full font-black text-2xl shadow-2xl hover:scale-110 active:scale-95 transition-all flex items-center gap-3"
+          >
+            Start Learning <ChevronRight size={28} />
+          </button>
+        </div>
+      )}
 
-        // --- Word Chain Game State ---
-        let wordChainWords = [];
-        let wordChainTurn = 1;
-        let wordChainLastWord = "";
-        let wordChainUsedWords = new Set();
-        
-        // --- Synonym Battle Game State ---
-        let synonymWords = [];
-        let currentSynonymIndex = 0;
+      {/* Filter Nav */}
+      <div className="flex items-center justify-between mb-8 bg-white p-3 rounded-3xl shadow-sm border border-sky-100">
+        <button onClick={onHome} className="p-3 text-sky-500 hover:bg-sky-50 rounded-2xl transition-all shadow-sm active:scale-90"><ArrowLeft size={28} /></button>
+        <div className="flex gap-3">
+          {categories.map(cat => (
+            <button 
+              key={cat.id} 
+              onClick={() => handleFilterChange(cat)} 
+              className={`px-8 py-3 rounded-full text-base font-black transition-all ${filter === cat.id ? 'bg-sky-500 text-white shadow-lg scale-105' : 'bg-white text-sky-600 hover:bg-sky-50 border border-sky-100'}`}
+            >
+              {cat.icon} {cat.label}
+            </button>
+          ))}
+        </div>
+        <div className="w-12"></div>
+      </div>
 
-
-        // --- 共通工具函數 ---
-
-        /**
-         * Shuffles an array in place (Fisher-Yates algorithm).
-         * @param {Array} array 
-         */
-        function shuffle(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-        }
-
-        /**
-         * Converts seconds into MM:SS format.
-         * @param {number} totalSeconds 
-         * @returns {string}
-         */
-        function formatTime(totalSeconds) {
-            const minutes = Math.floor(totalSeconds / 60);
-            const seconds = totalSeconds % 60;
-            return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        }
-        
-        /**
-         * 創建並顯示一個簡單的模態視窗（替代 alert/confirm）。
-         * @param {string} title 標題
-         * @param {string} message 訊息
-         */
-        function showSimpleModal(title, message) {
-            const tempModal = document.createElement('div');
-            tempModal.innerHTML = `
-                <div class="modal" style="display: flex;">
-                    <div class="modal-content">
-                        <h3 class="text-xl font-bold mb-4 text-primary-color">${title}</h3>
-                        <p class="mb-6 text-gray-700">${message}</p>
-                        <button onclick="this.closest('.modal').remove()" class="btn-primary">確定</button>
-                    </div>
+      <div className="flex-1 overflow-y-auto pb-12 custom-scroll">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-2">
+          {animalsData.filter(a => a.category === filter).map(animal => {
+            const sentenceText = getSentence(animal.name);
+            return (
+              <div key={animal.id} className="bg-white rounded-[3rem] p-10 shadow-lg border border-sky-50 flex flex-col items-center text-center transition-all hover:shadow-2xl hover:-translate-y-2 group relative">
+                <div className="w-40 h-40 mb-6 cursor-pointer group-hover:scale-110 transition-transform active:scale-95 flex items-center justify-center" onClick={() => speak(animal.name)}>
+                  <AnimalIcon name={animal.name} emoji={animal.emoji} className="text-9xl drop-shadow-2xl w-full h-full object-contain" />
                 </div>
-            `;
-            document.body.appendChild(tempModal.firstChild);
-        }
-
-        // --- 視圖控制器函數 ---
-        
-        /**
-         * 渲染主頁面上的遊戲列表。
-         */
-        function renderGameList() {
-            const gameListContainer = document.getElementById('game-list');
-            gameListContainer.innerHTML = '';
-            allGames.forEach(game => {
-                const gameTile = document.createElement('div');
-                gameTile.classList.add('game-tile');
-                // 所有遊戲現在都可玩
-                gameTile.addEventListener('click', () => showPage(game.type));
-
-                gameTile.innerHTML = `
-                    <div class="flex items-center space-x-3">
-                        <span class="text-3xl">${game.icon}</span>
-                        <div>
-                            <h3 class="font-bold text-lg text-primary-color">${game.name}</h3>
-                            <p class="text-sm text-gray-500">${game.description}</p>
-                        </div>
-                    </div>
-                `;
-                gameListContainer.appendChild(gameTile);
-            });
-        }
-        
-        /**
-         * 切換顯示的主畫面。
-         * @param {string} pageId - 遊戲類型 ID
-         */
-        function showPage(pageId) {
-            // 隱藏所有視圖和 modal
-            homeView.style.display = 'none';
-            allGameViews.forEach(view => view.style.display = 'none');
-            modal.style.display = 'none';
-            clearInterval(timerInterval); // 停止計時器
-
-            if (pageId === 'home') {
-                homeView.style.display = 'block';
-                renderGameList();
-            } else {
-                const view = document.getElementById(`${pageId}-game-view`);
-                if (view) {
-                    view.style.display = 'block';
-                    // 根據遊戲類型呼叫初始化函數
-                    switch (pageId) {
-                        case 'memory': initMemoryGame(); break;
-                        case 'flashcard': initFlashcardGame(); break;
-                        case 'jumble': initJumbleGame(); break;
-                        case 'listening': initListeningGame(); break;
-                        case 'fill_in': initFillInGame(); break;
-                        case 'sentence_scramble': initSentenceScrambleGame(); break;
-                        case 'pronunciation': initPronunciationGame(); break;
-                        case 'word_chain': initWordChainGame(); break;
-                        case 'synonym_battle': initSynonymBattleGame(); break;
-                        case 'daily_word': initDailyWordGame(); break;
-                    }
-                }
-            }
-        }
-
-        // ====================================================================
-        // --- 遊戲 1: 翻翻樂 (Memory Match) 邏輯 ---
-        // ====================================================================
-
-        function updateMoves() { movesCounterElement.textContent = moves; }
-        
-        function startTimer() {
-            clearInterval(timerInterval);
-            timer = 0;
-            timerElement.textContent = formatTime(timer);
-            timerInterval = setInterval(() => { timer++; timerElement.textContent = formatTime(timer); }, 1000);
-        }
-
-        function setupCards() {
-            const deck = [];
-            // 由於 wordPairs 較少，我們只取前 4 個進行 4x2 的遊戲板
-            const subset = wordPairs.slice(0, 4); 
-            subset.forEach(pair => {
-                deck.push({ content: pair.word, type: 'word', matchId: pair.id, isMatched: false });
-                deck.push({ content: pair.icon, type: 'icon', matchId: pair.id, isMatched: false });
-            });
-            shuffle(deck);
-            cards = deck;
-            return deck;
-        }
-
-        function createCardElement(cardData, index) {
-            // ... (Same as before) ...
-            const card = document.createElement('div');
-            card.classList.add('card');
-            card.dataset.index = index;
-            card.dataset.matchId = cardData.matchId;
-            const clickHandler = () => handleCardClick(card);
-            card.addEventListener('click', clickHandler);
-            card.clickHandler = clickHandler;
-
-            const inner = document.createElement('div');
-            inner.classList.add('card-inner');
-
-            const back = document.createElement('div');
-            back.classList.add('card-back');
-            back.textContent = '?';
-
-            const front = document.createElement('div');
-            front.classList.add('card-front', cardData.type === 'icon' ? 'icon' : 'word');
-            front.textContent = cardData.content;
-            
-            inner.appendChild(front);
-            inner.appendChild(back);
-            card.appendChild(inner);
-            
-            return card;
-        }
-
-        function renderBoard() {
-            cardGrid.innerHTML = '';
-            cards.forEach((cardData, index) => {
-                const cardElement = createCardElement(cardData, index);
-                cardGrid.appendChild(cardElement);
-            });
-        }
-
-        function handleCardClick(clickedCard) {
-            if (isProcessing || clickedCard.classList.contains('matched') || clickedCard.classList.contains('flipped')) { return; }
-
-            clickedCard.classList.add('flipped');
-            flippedCards.push(clickedCard);
-
-            if (flippedCards.length === 2) {
-                isProcessing = true;
-                moves++;
-                updateMoves();
                 
-                setTimeout(checkForMatch, 1000);
-            }
-        }
+                <h3 className="text-4xl font-black text-gray-800 mb-6 tracking-tighter">{animal.name}</h3>
+                
+                {/* Sentence Display */}
+                <div className="mb-6 min-h-8 flex items-center justify-center">
+                  <p className="text-xl font-black text-sky-600 italic tracking-tight opacity-90">"{sentenceText}"</p>
+                </div>
 
-        function getCardType(cardElement) {
-            const front = cardElement.querySelector('.card-front');
-            return front.classList.contains('icon') ? 'icon' : 'word';
-        }
-
-        function checkForMatch() {
-            const [card1, card2] = flippedCards;
-            const isMatch = (card1.dataset.matchId === card2.dataset.matchId) && (getCardType(card1) !== getCardType(card2));
-            
-            if (isMatch) {
-                card1.classList.add('matched');
-                card2.classList.add('matched');
-                matchesFound++;
-                if (matchesFound === wordPairs.slice(0, 4).length) { setTimeout(showGameOverModal, 500); }
-            } else {
-                card1.classList.remove('flipped');
-                card2.classList.remove('flipped');
-            }
-
-            flippedCards = [];
-            isProcessing = false;
-        }
-        
-        function showGameOverModal() {
-            clearInterval(timerInterval);
-            finalMovesElement.textContent = moves;
-            finalTimeElement.textContent = formatTime(timer);
-            modal.style.display = 'flex';
-        }
-
-        function initMemoryGame() {
-            flippedCards = []; matchesFound = 0; moves = 0; isProcessing = false;
-            updateMoves();
-            setupCards();
-            renderBoard();
-            startTimer();
-        }
-
-        // ====================================================================
-        // --- 遊戲 2: 閃卡測驗 (Flashcard Quiz) 邏輯 ---
-        // ====================================================================
-
-        function initFlashcardGame() {
-            flashcards = wordPairs.map(p => ({ word: p.word, meaning: p.meaning, icon: p.icon }));
-            shuffle(flashcards);
-            currentFlashcardIndex = 0;
-            flashcardRevealBtn.onclick = revealFlashcard;
-            flashcardNextBtn.onclick = nextFlashcard;
-            renderFlashcard();
-        }
-
-        function renderFlashcard() {
-            const promptEl = document.getElementById('flashcard-prompt');
-            const answerEl = document.getElementById('flashcard-answer');
-            flashcardCountEl.textContent = `${currentFlashcardIndex + 1}/${flashcards.length}`;
-
-            if (currentFlashcardIndex >= flashcards.length) {
-                promptEl.innerHTML = "<span class='text-4xl text-green-600'>測驗完成！</span>";
-                answerEl.textContent = "🎉";
-                answerEl.classList.remove('hidden');
-                flashcardRevealBtn.disabled = true;
-                flashcardNextBtn.disabled = true;
-                flashcardCountEl.textContent = `${flashcards.length}/${flashcards.length}`;
-                return;
-            }
-
-            const card = flashcards[currentFlashcardIndex];
-            const isWordPrompt = Math.random() < 0.5;
-
-            if (isWordPrompt) {
-                promptEl.innerHTML = `<span class="text-4xl font-bold">${card.word}</span>`;
-                answerEl.textContent = `${card.meaning} (${card.icon})`;
-            } else {
-                promptEl.innerHTML = `<span class="text-5xl">${card.icon}</span><br>這是什麼單字？ (提示：${card.meaning})`;
-                answerEl.textContent = card.word;
-            }
-            
-            answerEl.classList.add('hidden');
-            flashcardRevealBtn.textContent = '顯示答案';
-            flashcardRevealBtn.disabled = false;
-            flashcardNextBtn.disabled = true;
-        }
-
-        function revealFlashcard() {
-            document.getElementById('flashcard-answer').classList.remove('hidden');
-            flashcardRevealBtn.disabled = true;
-            flashcardNextBtn.disabled = false;
-        }
-
-        function nextFlashcard() {
-            currentFlashcardIndex++;
-            renderFlashcard();
-        }
-
-        // ====================================================================
-        // --- 遊戲 3: 單字拼圖 (Word Jumble) 邏輯 ---
-        // ====================================================================
-
-        function scrambleWord(word) {
-            const letters = word.split('');
-            let scrambled;
-            do {
-                shuffle(letters);
-                scrambled = letters.join('');
-            } while (scrambled === word);
-            return scrambled;
-        }
-
-        function initJumbleGame() {
-            jumbleWords = wordPairs.map(p => ({ word: p.word.toUpperCase(), meaning: p.meaning }));
-            shuffle(jumbleWords);
-            currentJumbleIndex = 0;
-            jumbleCheckBtn.onclick = checkJumbleAnswer;
-            jumbleNextBtn.onclick = nextJumbleWord;
-            jumbleInputEl.onkeyup = (e) => { if (e.key === 'Enter' && !jumbleCheckBtn.disabled) checkJumbleAnswer(); }; // Enter key support
-            renderJumble();
-        }
-
-        function renderJumble() {
-            const scrambledLettersEl = document.getElementById('jumble-scrambled-letters');
-            const hintEl = document.getElementById('jumble-hint');
-            jumbleCountEl.textContent = `${currentJumbleIndex + 1}/${jumbleWords.length}`;
-
-            if (currentJumbleIndex >= jumbleWords.length) {
-                scrambledLettersEl.innerHTML = "<span class='text-4xl text-green-600'>挑戰完成！</span>";
-                hintEl.textContent = "所有單字都已完成拼字！🎉";
-                jumbleInputEl.style.display = 'none';
-                jumbleCheckBtn.style.display = 'none';
-                jumbleNextBtn.style.display = 'none';
-                jumbleFeedbackEl.textContent = '';
-                jumbleCountEl.textContent = `${jumbleWords.length}/${jumbleWords.length}`;
-                return;
-            }
-
-            const wordData = jumbleWords[currentJumbleIndex];
-            currentCorrectWord = wordData.word;
-            
-            scrambledLettersEl.textContent = scrambleWord(currentCorrectWord);
-            hintEl.textContent = `提示：${wordData.meaning}`;
-            
-            jumbleInputEl.value = '';
-            jumbleInputEl.style.display = 'block';
-            jumbleCheckBtn.style.display = 'inline-block';
-            jumbleNextBtn.style.display = 'inline-block';
-            jumbleCheckBtn.disabled = false;
-            jumbleNextBtn.disabled = true;
-            jumbleInputEl.disabled = false;
-            jumbleFeedbackEl.textContent = '';
-            jumbleInputEl.focus();
-        }
-
-        function checkJumbleAnswer() {
-            const userGuess = jumbleInputEl.value.trim().toUpperCase();
-            
-            if (userGuess === currentCorrectWord) {
-                jumbleFeedbackEl.textContent = `✅ 正確！(${currentCorrectWord})`;
-                jumbleFeedbackEl.classList.remove('text-red-500');
-                jumbleFeedbackEl.classList.add('text-green-500');
-                jumbleCheckBtn.disabled = true;
-                jumbleNextBtn.disabled = false;
-                jumbleInputEl.disabled = true;
-            } else {
-                jumbleFeedbackEl.textContent = "❌ 錯誤，請再試一次。";
-                jumbleFeedbackEl.classList.remove('text-green-500');
-                jumbleFeedbackEl.classList.add('text-red-500');
-            }
-        }
-
-        function nextJumbleWord() {
-            currentJumbleIndex++;
-            renderJumble();
-        }
-        
-        // ====================================================================
-        // --- 遊戲 4: 聽力訓練 (Listening Practice) 邏輯 (模擬) ---
-        // ====================================================================
-
-        function initListeningGame() {
-            listeningWords = wordPairs.map(p => ({ word: p.word.toUpperCase(), meaning: p.meaning }));
-            shuffle(listeningWords);
-            currentListeningIndex = 0;
-            listeningPlayBtn.onclick = mockPlayAudio;
-            listeningCheckBtn.onclick = checkListeningAnswer;
-            listeningNextBtn.onclick = nextListeningWord;
-            listeningInputEl.onkeyup = (e) => { if (e.key === 'Enter' && !listeningCheckBtn.disabled) checkListeningAnswer(); };
-            renderListeningWord();
-        }
-
-        function renderListeningWord() {
-            listeningCountEl.textContent = `${currentListeningIndex + 1}/${listeningWords.length}`;
-            
-            if (currentListeningIndex >= listeningWords.length) {
-                listeningPromptTextEl.textContent = "挑戰完成！";
-                listeningPlayBtn.textContent = "🎉";
-                listeningPlayBtn.disabled = true;
-                listeningHintEl.classList.add('hidden');
-                listeningInputEl.style.display = 'none';
-                listeningCheckBtn.style.display = 'none';
-                listeningNextBtn.style.display = 'none';
-                listeningFeedbackEl.textContent = '';
-                return;
-            }
-
-            const wordData = listeningWords[currentListeningIndex];
-            
-            // 由於無法播放真實音頻，我們在點擊「播放」後顯示中文意思作為提示
-            listeningPromptTextEl.textContent = "點擊播放，並聽寫單字。";
-            listeningPlayBtn.textContent = "▶️";
-            listeningPlayBtn.disabled = false;
-            listeningHintEl.classList.add('hidden');
-            listeningHintEl.textContent = `中文意思：${wordData.meaning}`;
-            
-            listeningInputEl.value = '';
-            listeningInputEl.disabled = false;
-            listeningCheckBtn.disabled = false;
-            listeningNextBtn.disabled = true;
-            listeningFeedbackEl.textContent = '';
-            listeningInputEl.style.display = 'block';
-            listeningCheckBtn.style.display = 'inline-block';
-            listeningNextBtn.style.display = 'inline-block';
-            listeningInputEl.focus();
-        }
-        
-        function mockPlayAudio() {
-            // 模擬播放音頻，顯示中文意思作為提示
-            listeningPlayBtn.textContent = "🔊 正在發音...";
-            listeningPlayBtn.disabled = true;
-            setTimeout(() => {
-                listeningPlayBtn.textContent = "✅ 已播放";
-                // 為了讓玩家有線索，我們顯示中文意思
-                listeningHintEl.classList.remove('hidden');
-            }, 1000); 
-        }
-
-        function checkListeningAnswer() {
-            const userGuess = listeningInputEl.value.trim().toUpperCase();
-            const correctWord = listeningWords[currentListeningIndex].word;
-            
-            if (userGuess === correctWord) {
-                listeningFeedbackEl.textContent = `✅ 正確！(${correctWord})`;
-                listeningFeedbackEl.classList.remove('text-red-500');
-                listeningFeedbackEl.classList.add('text-green-500');
-                listeningCheckBtn.disabled = true;
-                listeningNextBtn.disabled = false;
-                listeningInputEl.disabled = true;
-            } else {
-                listeningFeedbackEl.textContent = `❌ 錯誤，正確答案是：${correctWord}。`;
-                listeningFeedbackEl.classList.remove('text-green-500');
-                listeningFeedbackEl.classList.add('text-red-500');
-                listeningCheckBtn.disabled = true;
-                listeningNextBtn.disabled = false;
-                listeningInputEl.disabled = true;
-            }
-            listeningPlayBtn.disabled = true;
-        }
-
-        function nextListeningWord() {
-            currentListeningIndex++;
-            renderListeningWord();
-        }
-
-        // ====================================================================
-        // --- 遊戲 5: 填空遊戲 (Fill-in-the-Blank) 邏輯 ---
-        // ====================================================================
-        
-        function initFillInGame() {
-            fillInSentences = wordPairs.map(p => ({ 
-                sentence: p.sentence.replace('___', '______'), // 加長下劃線
-                word: p.word.toUpperCase() 
-            }));
-            shuffle(fillInSentences);
-            currentFillInIndex = 0;
-            fillInCheckBtn.onclick = checkFillInAnswer;
-            fillInNextBtn.onclick = nextFillInSentence;
-            fillInInputEl.onkeyup = (e) => { if (e.key === 'Enter' && !fillInCheckBtn.disabled) checkFillInAnswer(); };
-            renderFillInSentence();
-        }
-
-        function renderFillInSentence() {
-            fillInCountEl.textContent = `${currentFillInIndex + 1}/${fillInSentences.length}`;
-
-            if (currentFillInIndex >= fillInSentences.length) {
-                fillInSentenceEl.textContent = "挑戰完成！🎉";
-                fillInInputEl.style.display = 'none';
-                fillInCheckBtn.style.display = 'none';
-                fillInNextBtn.style.display = 'none';
-                fillInFeedbackEl.textContent = '';
-                return;
-            }
-
-            const sentenceData = fillInSentences[currentFillInIndex];
-            
-            fillInSentenceEl.innerHTML = `請填入空格中的單字：<br> <span class="font-bold">${sentenceData.sentence}</span>`;
-            
-            fillInInputEl.value = '';
-            fillInInputEl.disabled = false;
-            fillInCheckBtn.disabled = false;
-            fillInNextBtn.disabled = true;
-            fillInFeedbackEl.textContent = '';
-            fillInInputEl.focus();
-        }
-
-        function checkFillInAnswer() {
-            const userGuess = fillInInputEl.value.trim().toUpperCase();
-            const correctWord = fillInSentences[currentFillInIndex].word;
-            
-            if (userGuess === correctWord) {
-                fillInFeedbackEl.textContent = `✅ 正確！`;
-                fillInFeedbackEl.classList.remove('text-red-500');
-                fillInFeedbackEl.classList.add('text-green-500');
-                // 將句子中的空格替換為正確單字
-                fillInSentenceEl.innerHTML = fillInSentences[currentFillInIndex].sentence.replace('______', `<span class="text-green-600 font-extrabold">${correctWord}</span>`);
-                fillInCheckBtn.disabled = true;
-                fillInNextBtn.disabled = false;
-                fillInInputEl.disabled = true;
-            } else {
-                fillInFeedbackEl.textContent = `❌ 錯誤，請再試一次。`;
-                fillInFeedbackEl.classList.remove('text-green-500');
-                fillInFeedbackEl.classList.add('text-red-500');
-            }
-        }
-
-        function nextFillInSentence() {
-            currentFillInIndex++;
-            renderFillInSentence();
-        }
-
-        // ====================================================================
-        // --- 遊戲 6: 句子重組 (Sentence Scramble) 邏輯 ---
-        // ====================================================================
-        
-        function initSentenceScrambleGame() {
-            // 使用 wordPairs 中的句子，並將其拆解為單字列表
-            scrambleSentences = wordPairs.map(p => ({
-                original: p.sentence.replace('___', p.word).replace('.', '').trim(), // 創建完整句子
-            }));
-            shuffle(scrambleSentences);
-            currentScrambleIndex = 0;
-            scrambleCheckBtn.onclick = checkScrambleAnswer;
-            scrambleResetBtn.onclick = resetScrambleBoard;
-            scrambleNextBtn.onclick = nextScrambleSentence;
-            renderScrambleSentence();
-        }
-
-        function renderScrambleSentence() {
-            scrambleCountEl.textContent = `${currentScrambleIndex + 1}/${scrambleSentences.length}`;
-            scrambleFeedbackEl.textContent = '';
-            scrambleCheckBtn.disabled = false;
-            scrambleNextBtn.disabled = true;
-            scrambleTargetSentenceEl.textContent = '';
-            currentScrambleReordered = [];
-            scrambleWordPoolEl.innerHTML = '';
-            
-            if (currentScrambleIndex >= scrambleSentences.length) {
-                scrambleTargetSentenceEl.textContent = "挑戰完成！🎉";
-                scrambleWordPoolEl.style.display = 'none';
-                scrambleCheckBtn.style.display = 'none';
-                scrambleResetBtn.style.display = 'none';
-                scrambleNextBtn.style.display = 'none';
-                return;
-            }
-
-            currentScrambleOriginal = scrambleSentences[currentScrambleIndex].original.toUpperCase();
-            let words = currentScrambleOriginal.split(' ');
-            shuffle(words);
-
-            words.forEach((word, index) => {
-                const token = document.createElement('span');
-                token.classList.add('word-token');
-                token.textContent = word;
-                token.dataset.word = word;
-                token.dataset.originalIndex = index;
-                token.onclick = () => moveWordToTarget(token);
-                scrambleWordPoolEl.appendChild(token);
-            });
-            scrambleWordPoolEl.style.display = 'block';
-            scrambleCheckBtn.style.display = 'inline-block';
-            scrambleResetBtn.style.display = 'inline-block';
-            scrambleNextBtn.style.display = 'inline-block';
-        }
-
-        function moveWordToTarget(token) {
-            token.remove(); // 從 Pool 移除
-            currentScrambleReordered.push(token);
-            
-            // 創建新的可點擊 token
-            const targetToken = document.createElement('span');
-            targetToken.classList.add('word-token');
-            targetToken.textContent = token.textContent;
-            targetToken.onclick = () => moveWordToPool(targetToken, token);
-            scrambleTargetSentenceEl.appendChild(targetToken);
-
-            scrambleFeedbackEl.textContent = '';
-        }
-        
-        function moveWordToPool(targetToken, originalToken) {
-            targetToken.remove(); // 從 Target 移除
-            
-            // 找到原始 token 在 reordered 陣列中的位置並移除
-            const index = currentScrambleReordered.findIndex(t => t.isSameNode(originalToken));
-            if (index > -1) {
-                currentScrambleReordered.splice(index, 1);
-            }
-            
-            // 將原始 token 放回 Pool
-            scrambleWordPoolEl.appendChild(originalToken);
-            originalToken.onclick = () => moveWordToTarget(originalToken); // 重新綁定點擊事件
-        }
-
-        function resetScrambleBoard() {
-            scrambleTargetSentenceEl.innerHTML = '';
-            currentScrambleReordered = [];
-            renderScrambleSentence(); // 重新渲染，因為簡單重置較複雜
-        }
-
-        function checkScrambleAnswer() {
-            const userSentence = currentScrambleReordered.map(token => token.textContent).join(' ');
-            
-            if (userSentence === currentScrambleOriginal) {
-                scrambleFeedbackEl.textContent = `✅ 正確！`;
-                scrambleFeedbackEl.classList.remove('text-red-500');
-                scrambleFeedbackEl.classList.add('text-green-500');
-                scrambleCheckBtn.disabled = true;
-                scrambleNextBtn.disabled = false;
-                scrambleTargetSentenceEl.innerHTML = ''; // 清空 target
-                currentScrambleReordered.forEach(token => {
-                    const correctToken = document.createElement('span');
-                    correctToken.classList.add('word-token', 'correct');
-                    correctToken.textContent = token.textContent;
-                    scrambleTargetSentenceEl.appendChild(correctToken);
-                });
-                scrambleWordPoolEl.innerHTML = ''; // 清空 pool
-            } else {
-                scrambleFeedbackEl.textContent = `❌ 錯誤，請再試一次。`;
-                scrambleFeedbackEl.classList.remove('text-green-500');
-                scrambleFeedbackEl.classList.add('text-red-500');
-            }
-        }
-
-        function nextScrambleSentence() {
-            currentScrambleIndex++;
-            renderScrambleSentence();
-        }
-
-        // ====================================================================
-        // --- 遊戲 7: 發音挑戰 (Pronunciation Challenge) 邏輯 (模擬) ---
-        // ====================================================================
-
-        function initPronunciationGame() {
-            pronunciationWords = wordPairs.map(p => ({ word: p.word, meaning: p.meaning }));
-            shuffle(pronunciationWords);
-            currentPronunciationIndex = 0;
-            pronunciationStartBtn.onclick = mockPronunciationCheck;
-            pronunciationNextBtn.onclick = nextPronunciationWord;
-            renderPronunciationWord();
-        }
-
-        function renderPronunciationWord() {
-            pronunciationCountEl.textContent = `${currentPronunciationIndex + 1}/${pronunciationWords.length}`;
-            pronunciationFeedbackEl.textContent = '';
-            pronunciationStartBtn.disabled = false;
-            pronunciationNextBtn.disabled = true;
-            
-            if (currentPronunciationIndex >= pronunciationWords.length) {
-                pronunciationWordEl.innerHTML = "<span class='text-4xl text-green-600'>挑戰完成！</span>";
-                pronunciationStartBtn.style.display = 'none';
-                pronunciationNextBtn.style.display = 'none';
-                return;
-            }
-
-            const wordData = pronunciationWords[currentPronunciationIndex];
-            pronunciationWordEl.textContent = wordData.word;
-            pronunciationStartBtn.style.display = 'inline-block';
-            pronunciationStartBtn.textContent = '🎙️ 開始錄音 (模擬)';
-        }
-
-        function mockPronunciationCheck() {
-            pronunciationStartBtn.disabled = true;
-            pronunciationStartBtn.textContent = '...辨識中...';
-            pronunciationFeedbackEl.textContent = '';
-
-            setTimeout(() => {
-                const randomScore = Math.floor(Math.random() * 10) + 90; // 模擬 90-100 分
-                if (randomScore > 95) {
-                    pronunciationFeedbackEl.textContent = `⭐ 發音極佳! (${randomScore}/100)`;
-                    pronunciationFeedbackEl.classList.remove('text-red-500');
-                    pronunciationFeedbackEl.classList.add('text-green-500');
-                } else {
-                    pronunciationFeedbackEl.textContent = `👍 發音不錯! (${randomScore}/100)`;
-                    pronunciationFeedbackEl.classList.remove('text-red-500');
-                    pronunciationFeedbackEl.classList.add('text-indigo-500');
-                }
-                pronunciationNextBtn.disabled = false;
-                pronunciationStartBtn.textContent = '✅ 已完成';
-            }, 1500);
-        }
-
-        function nextPronunciationWord() {
-            currentPronunciationIndex++;
-            renderPronunciationWord();
-        }
-
-        // ====================================================================
-        // --- 遊戲 8: 詞彙接龍 (Word Chain) 邏輯 ---
-        // ====================================================================
-
-        function initWordChainGame() {
-            wordChainWords = wordPairs.map(p => p.word.toUpperCase());
-            wordChainTurn = 1;
-            wordChainUsedWords = new Set();
-            wordChainSubmitBtn.onclick = checkWordChainAnswer;
-            document.getElementById('word_chain-restart-btn').onclick = initWordChainGame;
-            wordChainInputEl.onkeyup = (e) => { if (e.key === 'Enter' && !wordChainSubmitBtn.disabled) checkWordChainAnswer(); };
-            
-            // 隨機選一個起始單字
-            const startWord = wordChainWords[Math.floor(Math.random() * wordChainWords.length)];
-            wordChainUsedWords.add(startWord);
-            wordChainLastWord = startWord;
-            
-            renderWordChain();
-        }
-        
-        function renderWordChain() {
-            wordChainTurnEl.textContent = wordChainTurn;
-            wordChainCurrentWordEl.textContent = wordChainLastWord;
-            
-            const requiredLetter = wordChainLastWord.slice(-1).toUpperCase();
-            wordChainRequiredLetterEl.textContent = requiredLetter;
-            
-            wordChainInputEl.value = '';
-            wordChainInputEl.disabled = false;
-            wordChainSubmitBtn.disabled = false;
-            wordChainFeedbackEl.textContent = '';
-            wordChainFeedbackEl.classList.remove('text-green-500', 'text-red-500');
-            wordChainInputEl.focus();
-        }
-
-        function checkWordChainAnswer() {
-            const userGuess = wordChainInputEl.value.trim().toUpperCase();
-            const requiredLetter = wordChainLastWord.slice(-1).toUpperCase();
-            
-            // 1. 檢查是否為空
-            if (!userGuess) {
-                wordChainFeedbackEl.textContent = "請輸入一個單字。";
-                wordChainFeedbackEl.classList.add('text-red-500');
-                return;
-            }
-
-            // 2. 檢查是否以正確的字母開頭
-            if (userGuess[0] !== requiredLetter) {
-                wordChainFeedbackEl.textContent = `❌ 必須以 "${requiredLetter}" 開頭。`;
-                wordChainFeedbackEl.classList.add('text-red-500');
-                return;
-            }
-
-            // 3. 檢查是否在允許的詞庫中 (簡化：要求在 wordPairs 裡)
-            if (!wordChainWords.includes(userGuess)) {
-                wordChainFeedbackEl.textContent = `❌ 單字 "${userGuess}" 不在詞庫中，請換一個。`;
-                wordChainFeedbackEl.classList.add('text-red-500');
-                return;
-            }
-
-            // 4. 檢查是否已被使用
-            if (wordChainUsedWords.has(userGuess)) {
-                wordChainFeedbackEl.textContent = `❌ 單字 "${userGuess}" 已經被使用過了！`;
-                wordChainFeedbackEl.classList.add('text-red-500');
-                return;
-            }
-
-            // 成功：進入下一回合 (玩家回合結束)
-            wordChainUsedWords.add(userGuess);
-            wordChainLastWord = userGuess;
-            wordChainTurn++;
-            wordChainFeedbackEl.textContent = `✅ 您的單字: ${userGuess}! 換電腦了...`;
-            wordChainFeedbackEl.classList.remove('text-red-500');
-            wordChainFeedbackEl.classList.add('text-green-500');
-            wordChainSubmitBtn.disabled = true;
-            wordChainInputEl.disabled = true;
-
-            setTimeout(aiTurn, 1500);
-        }
-        
-        function aiTurn() {
-            const requiredLetter = wordChainLastWord.slice(-1).toUpperCase();
-            
-            // AI 邏輯：從詞庫中找出符合規則且未被使用的單字
-            const possibleWords = wordChainWords.filter(word => 
-                word[0] === requiredLetter && !wordChainUsedWords.has(word)
+                {/* TPR Action Box */}
+                <div className="bg-sky-50/70 p-6 rounded-[2rem] w-full mb-8 border border-sky-100/50 relative">
+                  <p className="text-[11px] uppercase tracking-[0.3em] font-black text-sky-400 mb-3 text-center flex items-center justify-center gap-2">
+                    🏃 TPR ACTION
+                  </p>
+                  <p className="text-base text-sky-800 font-bold italic text-center leading-relaxed">
+                    "{animal.tpr}"
+                  </p>
+                </div>
+                
+                {/* Action Buttons */}
+                <div className="flex gap-4 w-full mt-auto">
+                  <button onClick={() => speak(animal.name)} className="flex-1 bg-amber-400 hover:bg-amber-500 text-white py-5 rounded-[1.5rem] font-black transition-all shadow-lg active:scale-95 flex items-center justify-center gap-3 shadow-amber-100"><Volume2 size={24}/>Word</button>
+                  <button onClick={() => speak(sentenceText)} className="flex-1 bg-sky-500 hover:bg-sky-600 text-white py-5 rounded-[1.5rem] font-black transition-all shadow-lg active:scale-95 flex items-center justify-center gap-3 shadow-sky-100"><Play size={24}/>Sentence</button>
+                </div>
+              </div>
             );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
 
-            if (possibleWords.length > 0) {
-                // 隨機選擇一個 AI 單字
-                const aiWord = possibleWords[Math.floor(Math.random() * possibleWords.length)];
-                wordChainUsedWords.add(aiWord);
-                wordChainLastWord = aiWord;
-                wordChainTurn++;
+// --- Downloads View ---
 
-                wordChainFeedbackEl.textContent = `🤖 AI 接龍: ${aiWord}! 您的回合。`;
-                renderWordChain(); // 重新渲染並啟用輸入
-            } else {
-                // AI 輸了
-                wordChainFeedbackEl.textContent = "🎉 恭喜！電腦接不上單字了。您贏了！";
-                wordChainFeedbackEl.classList.remove('text-green-500', 'text-indigo-500');
-                wordChainFeedbackEl.classList.add('text-success-color');
-                wordChainSubmitBtn.disabled = true;
-                wordChainInputEl.disabled = true;
+function AaDownloadsView({ onHome }) {
+  const [downloading, setDownloading] = useState(null);
+  const [slideIndex, setSlideIndex] = useState(0);
+  const slideUrls = ["https://i.ibb.co/YFGTvyp2/1.png", "https://i.ibb.co/3myx4BBH/2.png", "https://i.ibb.co/HDm9jRm4/3.png", "https://i.ibb.co/nMQmTqbN/4.png", "https://i.ibb.co/1YNMxSfK/5.png", "https://i.ibb.co/j9Lk6HtL/6.png", "https://i.ibb.co/2Yj2vV40/7.png", "https://i.ibb.co/1Gpk35C0/8.png", "https://i.ibb.co/WwL1KwF/9.png", "https://i.ibb.co/nsCm7Cdq/10.png", "https://i.ibb.co/JFj24v2w/11.png", "https://i.ibb.co/1GSXjsDh/12.png", "https://i.ibb.co/prPkxYsd/13.png", "https://i.ibb.co/S703kGRp/14.png", "https://i.ibb.co/Vc1VDSpJ/15.png"];
+  
+  const handleDownload = (type) => {
+    setDownloading(type);
+    const url = type === 'pdf' ? "https://raw.githubusercontent.com/JOUCHUCHEN/CurioCat/main/animals/Animal_Field_Guide.pdf" : "https://github.com/JOUCHUCHEN/CurioCat/blob/main/animals/Animal_Field_Guide.pptx?raw=true";
+    window.open(url, '_blank');
+    setTimeout(() => setDownloading(null), 2000);
+  };
+
+  return (
+    <div className="flex flex-col h-full animate-in fade-in">
+      <button onClick={onHome} className="p-3 bg-white text-orange-500 rounded-2xl shadow-sm border mb-6 w-12 hover:bg-orange-50 active:scale-90 transition-all"><ArrowLeft size={24}/></button>
+      <div className="flex-1 flex flex-col lg:flex-row gap-8 overflow-hidden">
+        {/* Left: Preview */}
+        <div className="w-full lg:w-7/12 bg-white rounded-[3rem] border p-8 flex flex-col shadow-sm border-orange-50">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-lg font-black flex items-center gap-3 text-gray-800 tracking-tight uppercase">
+              <MonitorPlay size={24} className="text-orange-500" /> Preview
+            </h3>
+            <span className="text-[11px] bg-orange-50 text-orange-600 px-4 py-1.5 rounded-full font-black uppercase tracking-widest">
+              Slide {slideIndex + 1} / {slideUrls.length}
+            </span>
+          </div>
+          <div className="flex-1 bg-gray-950 rounded-[2.5rem] overflow-hidden relative flex items-center justify-center border border-gray-900 shadow-2xl">
+            <img src={slideUrls[slideIndex]} className="h-full w-full object-contain" alt={`Slide ${slideIndex + 1}`} />
+            <button onClick={() => setSlideIndex((prev) => (prev - 1 + slideUrls.length) % slideUrls.length)} className="absolute left-6 bg-black/40 hover:bg-white p-4 rounded-full text-white hover:text-orange-600 active:scale-90 transition-all backdrop-blur-md"><ChevronLeft size={32} /></button>
+            <button onClick={() => setSlideIndex((prev) => (prev + 1) % slideUrls.length)} className="absolute right-6 bg-black/40 hover:bg-white p-4 rounded-full text-white hover:text-orange-600 active:scale-90 transition-all backdrop-blur-md"><ChevronRight size={32} /></button>
+          </div>
+        </div>
+
+        {/* Right: Download Section */}
+        <div className="w-full lg:w-5/12 bg-white rounded-[3rem] border p-12 flex flex-col items-center justify-center text-center h-full shadow-sm border-orange-50">
+          <div className="bg-orange-50 p-8 rounded-[3rem] mb-8 text-orange-500 shadow-inner relative group">
+             <Download size={56} className="group-hover:translate-y-1 transition-transform" />
+             <div className="absolute inset-0 bg-orange-400/5 animate-ping rounded-[3rem]"></div>
+          </div>
+          <h3 className="text-4xl font-black text-gray-900 mb-4 tracking-tighter">Get the Materials</h3>
+          <p className="text-sm text-gray-400 mb-12 max-w-[280px] font-bold leading-relaxed opacity-70">
+            Take the learning further! Download the full animal collection in your preferred format and start your adventure.
+          </p>
+          <div className="w-full space-y-4">
+            <button 
+              onClick={() => handleDownload('ppt')} 
+              disabled={downloading} 
+              className="w-full bg-indigo-500 hover:bg-indigo-600 text-white py-5 rounded-[1.5rem] font-black text-base flex items-center justify-center gap-4 active:scale-95 disabled:opacity-50 transition-all shadow-xl shadow-indigo-100"
+            >
+              <MonitorPlay size={20} /> 
+              Download PPTX
+            </button>
+            <button 
+              onClick={() => handleDownload('pdf')} 
+              disabled={downloading} 
+              className="w-full bg-rose-500 hover:bg-rose-600 text-white py-5 rounded-[1.5rem] font-black text-base flex items-center justify-center gap-4 active:scale-95 disabled:opacity-50 transition-all shadow-xl shadow-rose-100"
+            >
+              <FileText size={20} /> 
+              Download PDF
+            </button>
+          </div>
+        </div>
+      </div>
+      <AdBanner />
+    </div>
+  );
+}
+
+// --- Main App Component ---
+
+export default function App() {
+  const [currentView, setCurrentView] = useState('home');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const scrollToSection = (sectionId) => {
+    if (currentView !== 'home') {
+      setCurrentView('home');
+      setTimeout(() => {
+        document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else {
+      document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+    }
+    setIsMobileMenuOpen(false);
+  };
+
+  const Navbar = () => (
+    <nav className="bg-white shadow-sm h-16 border-b flex-shrink-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 h-full flex justify-between items-center">
+        <div className="flex items-center cursor-pointer group" onClick={() => scrollToSection('top')}>
+          <img 
+            src="https://i.ibb.co/CFC5v9L/Curio-Cat-Logo.png" 
+            alt="CurioCat Official Logo" 
+            className="w-10 h-10 mr-3 rounded-xl shadow-sm border border-orange-100 group-hover:scale-110 group-hover:rotate-6 transition-all"
+          />
+          <span className="font-black text-2xl text-gray-900 tracking-tighter">
+            Curio<span className="text-orange-600">Cat</span>
+          </span>
+        </div>
+        <div className="hidden md:flex items-center space-x-12">
+          <button onClick={() => scrollToSection('top')} className={`font-bold text-sm uppercase tracking-widest transition-colors ${currentView === 'home' ? 'text-orange-600' : 'text-gray-500 hover:text-orange-600'}`}>Home</button>
+          <button onClick={() => scrollToSection('elementary')} className="text-gray-500 font-bold text-sm hover:text-orange-600 uppercase tracking-widest tracking-wide transition-colors">Elementary</button>
+          <button onClick={() => scrollToSection('steam')} className="text-gray-500 font-bold text-sm hover:text-orange-600 uppercase tracking-widest tracking-wide transition-colors">STEAM</button>
+        </div>
+        <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="md:hidden text-gray-600 p-2"><Menu size={28} /></button>
+      </div>
+    </nav>
+  );
+
+  const AmazingAnimalsPage = () => {
+    const [moduleView, setModuleView] = useState('home');
+    return (
+      <div className="h-[calc(100vh-64px)] bg-sky-50 flex flex-col relative overflow-hidden">
+        <main className="flex-1 p-6 max-w-7xl mx-auto w-full h-full overflow-y-auto overflow-x-hidden">
+          {moduleView === 'home' && <AaHomeView setModuleView={setModuleView} />}
+          {moduleView === 'learn' && <AaLearnView onHome={() => setModuleView('home')} />}
+          {moduleView === 'swatter' && <AaSwatterGameView onHome={() => setModuleView('home')} />}
+          {moduleView === 'memory' && <AaMemoryGameView onHome={() => setModuleView('home')} />}
+          {moduleView === 'downloads' && <AaDownloadsView onHome={() => setModuleView('home')} />}
+        </main>
+        <style dangerouslySetInnerHTML={{ __html: `
+          .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; } 
+          .no-scrollbar::-webkit-scrollbar { display: none; } 
+          .perspective { perspective: 1000px; }
+          .transform-style-3d { transform-style: preserve-3d; transition: transform 0.5s cubic-bezier(0.4, 0.2, 0.2, 1); } 
+          .backface-hidden { backface-visibility: hidden; } 
+          .rotate-y-180 { transform: rotateY(180deg); }
+          .no-select { user-select: none; -webkit-user-select: none; }
+        `}} />
+      </div>
+    );
+  };
+
+  return (
+    <div 
+      className="min-h-screen bg-gray-50 flex flex-col h-screen overflow-hidden"
+      style={{ fontFamily: "'Noto Sans TC', sans-serif" }}
+    >
+      <style dangerouslySetInnerHTML={{ __html: `
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+      `}} />
+      
+      <Navbar />
+
+      <div className="flex-1 overflow-hidden">
+        {currentView === 'amazing-animals' ? <AmazingAnimalsPage /> : 
+         currentView === 'steam-video' ? <SteamVideoPage onBack={() => setCurrentView('home')} /> : (
+          <div className="h-full overflow-y-auto custom-scroll">
+            <div id="top" className="max-w-7xl mx-auto px-4 pt-6"><AdBanner /></div>
+            
+            <header className="max-w-7xl mx-auto px-4 py-10 text-center animate-in fade-in slide-in-from-top-4">
+              <h1 className="text-4xl md:text-6xl font-black text-gray-900 mb-4 tracking-tight leading-none">Creative Resource Hub</h1>
+              <p className="text-gray-500 text-lg md:text-xl font-bold leading-relaxed max-w-3xl mx-auto text-center tracking-wide opacity-80">
+                Providing free, professional English and STEAM teaching resources for educators worldwide.
+              </p>
+            </header>
+
+            <main className="max-w-7xl mx-auto px-4 py-6 flex flex-col lg:flex-row gap-10">
+              <div className="lg:w-4/5">
+                <section id="elementary" className="mb-14">
+                  <div className="flex items-center mb-10">
+                    <LayoutGrid className="text-orange-600 mr-5" size={32} />
+                    <h2 className="text-3xl font-black text-gray-900 uppercase tracking-[0.01em]">Elementary English</h2>
+                  </div>
+                  
+                  {/* Amazing Animals Module (Moved) */}
+                  <div className="mb-8">
+                    <div onClick={() => setCurrentView('amazing-animals')} className="bg-gradient-to-br from-orange-400 to-amber-700 rounded-[3rem] p-10 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.02] transition-all relative overflow-hidden h-56 flex items-center justify-between group shadow-xl">
+                      <div className="absolute right-6 top-1/2 -translate-y-1/2 opacity-20 group-hover:opacity-40 transition-opacity transform group-hover:scale-125 duration-700"><span className="text-[12rem]">🦁</span></div>
+                      <div className="relative z-10">
+                        <span className="bg-white/20 px-5 py-2 rounded-full text-[11px] font-black tracking-[0.2em] uppercase mb-5 inline-block shadow-sm backdrop-blur-md">Interactive Module</span>
+                        <h3 className="text-4xl font-black mb-2 drop-shadow-2xl">🐾 Amazing Animals</h3>
+                        <p className="text-orange-50 text-base opacity-90 font-bold mt-2">Interactive audio games & fun TPR activities</p>
+                      </div>
+                      <div className="bg-white/20 p-4 rounded-full group-hover:scale-110 transition-all shadow-md backdrop-blur-md">
+                        <ChevronRight size={36} />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-8">
+                    {elementaryResources.map(item => <ResourceCard key={item.id} item={item} icon={Star} />)}
+                  </div>
+                </section>
+
+                <section id="steam" className="mb-14">
+                  <div className="flex items-center mb-10">
+                    <Rocket className="text-orange-600 mr-5" size={32} />
+                    <h2 className="text-3xl font-black text-gray-900 uppercase tracking-[0.01em]">STEAM Learning</h2>
+                  </div>
+
+                  {/* LEGO DIY Bow Video Lesson (Moved) */}
+                  <div className="mb-8">
+                    <div onClick={() => setCurrentView('steam-video')} className="bg-gradient-to-br from-indigo-500 to-purple-800 rounded-[3rem] p-10 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.02] transition-all relative overflow-hidden h-56 flex items-center justify-between group shadow-xl">
+                      <div className="absolute right-6 top-1/2 -translate-y-1/2 opacity-20 group-hover:opacity-40 transition-opacity transform group-hover:scale-125 duration-700"><span className="text-[12rem]">🏹</span></div>
+                      <div className="relative z-10">
+                        <span className="bg-white/20 px-5 py-2 rounded-full text-[11px] font-black tracking-[0.2em] uppercase mb-5 inline-block shadow-sm backdrop-blur-md">STEAM Video Lesson</span>
+                        <h3 className="text-4xl font-black mb-2 drop-shadow-2xl">🧱 LEGO DIY Bow</h3>
+                        <p className="text-indigo-50 text-base opacity-90 font-bold mt-2">Hands-on creation and mechanical logic</p>
+                      </div>
+                      <div className="bg-white/20 p-4 rounded-full group-hover:scale-110 transition-all shadow-md backdrop-blur-md">
+                        <Youtube size={36} />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-8">
+                    {steamResources.map(item => <ResourceCard key={item.id} item={item} icon={Rocket} />)}
+                  </div>
+                </section>
+              </div>
+
+              <aside className="lg:w-1/5">
+                <div className="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 p-8 sticky top-28">
+                  <h3 className="font-black text-gray-800 mb-8 pb-4 border-b text-[10px] uppercase tracking-[0.4em]">Popular Tags</h3>
+                  <div className="flex flex-wrap gap-3">
+                    {['Phonics', 'Animals', 'Science', 'STEAM', 'Grammar', 'Flashcards', 'Games'].map(tag => (
+                      <span key={tag} className="px-4 py-2 bg-gray-50 text-gray-600 text-[11px] font-black rounded-full hover:bg-orange-100 hover:text-orange-600 cursor-pointer border border-gray-100 transition-all active:scale-95">#{tag}</span>
+                    ))}
+                  </div>
+                </div>
+              </aside>
+            </main>
+
+            <footer className="bg-gray-900 text-white py-20 text-center mt-12">
+              <div className="max-w-7xl mx-auto px-4">
+                <div className="flex items-center justify-center mb-10 text-3xl font-black tracking-tighter uppercase">
+                  CurioCat
+                </div>
+                <div className="pt-10 border-t border-gray-800 text-gray-600 text-[9px] font-black tracking-[0.5em] uppercase">© 2026 CurioCat. All rights reserved.</div>
+              </div>
+            </footer>
+          </div>
+        )}
+      </div>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        .custom-scroll::-webkit-scrollbar { width: 8px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #f8fafc; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 20px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+      `}} />
+    </div>
+  );
+}
+
+// --- Game Logic: Swatter ---
+function AaSwatterGameView({ onHome }) {
+  const [target, setTarget] = useState(null);
+  const [options, setOptions] = useState([]);
+  const [score, setScore] = useState(0);
+  const [feedback, setFeedback] = useState(null); 
+  const [timeLeft, setTimeLeft] = useState(60);
+  const [gameOver, setGameOver] = useState(false);
+
+  const playDingDong = () => {
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      const ctx = new AudioContext();
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(987.77, ctx.currentTime);
+      gain1.gain.setValueAtTime(0.5, ctx.currentTime);
+      gain1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+      osc1.start(ctx.currentTime);
+      osc1.stop(ctx.currentTime + 0.3);
+
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(783.99, ctx.currentTime + 0.2);
+      gain2.gain.setValueAtTime(0.5, ctx.currentTime + 0.2);
+      gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+      osc2.start(ctx.currentTime + 0.2);
+      osc2.stop(ctx.currentTime + 0.6);
+    } catch (e) { console.error("Audio API not supported", e); }
+  };
+
+  const playGameOverSound = () => {
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      const ctx = new AudioContext();
+      const now = ctx.currentTime;
+      const playNote = (freq, startTime, duration) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, startTime);
+        gain.gain.setValueAtTime(0.3, startTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(startTime);
+        osc.stop(startTime + duration);
+      };
+      playNote(523.25, now, 0.2);
+      playNote(659.25, now + 0.15, 0.2);
+      playNote(783.99, now + 0.3, 0.2);
+      playNote(1046.50, now + 0.45, 0.8);
+    } catch (e) { console.error("Audio API not supported", e); }
+  };
+
+  const startRound = () => {
+    const randomTarget = animalsData[Math.floor(Math.random() * animalsData.length)];
+    setTarget(randomTarget);
+    const distractors = animalsData.filter(a => a.id !== randomTarget.id);
+    const selectedDistractors = shuffleArray(distractors).slice(0, 4);
+    setOptions(shuffleArray([randomTarget, ...selectedDistractors]));
+    setFeedback(null);
+    speak(randomTarget.name);
+  };
+
+  useEffect(() => { startRound(); }, []);
+
+  useEffect(() => {
+    if (timeLeft > 0 && !gameOver) {
+      const timerId = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+      return () => clearTimeout(timerId);
+    } else if (timeLeft === 0 && !gameOver) {
+      setGameOver(true);
+      playGameOverSound();
+    }
+  }, [timeLeft, gameOver]);
+
+  const handleTap = (animal) => {
+    if (feedback?.type === 'success' || gameOver) return; 
+    if (animal.id === target.id) {
+      playDingDong();
+      setScore(s => s + 1);
+      setFeedback({ type: 'success', text: `✨ Correct!` });
+      setTimeout(startRound, 1200);
+    } else {
+      speak('Try again.');
+      setFeedback({ type: 'error', text: `Try again!` });
+      setTimeout(() => setFeedback(null), 800);
+    }
+  };
+
+  const restartGame = () => {
+    setScore(0);
+    setTimeLeft(60);
+    setGameOver(false);
+    startRound();
+  };
+
+  if (gameOver) {
+    return (
+      <div className="flex flex-col h-full animate-in fade-in zoom-in max-h-screen">
+         <button onClick={onHome} className="p-3 bg-white text-orange-500 rounded-2xl shadow-sm border mb-6 w-12 active:scale-90 transition-all"><ArrowLeft size={24}/></button>
+         <div className="flex-1 flex flex-col items-center justify-center max-w-xl mx-auto w-full pb-8 -translate-y-[10vh]">
+           <div className="bg-white p-12 rounded-[3.5rem] shadow-xl w-full flex flex-col items-center text-center relative border border-sky-50">
+              <h2 className="text-4xl font-black text-gray-800 mb-4">Time's Up!</h2>
+              <div className="text-6xl mb-6">🏆</div>
+              <p className="text-xl font-bold text-gray-500 mb-8">Your final score is <span className="text-orange-500 text-3xl mx-2">{score}</span></p>
+              <button onClick={restartGame} className="bg-orange-500 text-white px-10 py-4 rounded-full font-black text-lg hover:scale-105 active:scale-95 transition-all shadow-lg flex items-center gap-3">
+                <RotateCcw size={24} /> Play Again
+              </button>
+           </div>
+         </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col h-full animate-in fade-in zoom-in max-h-screen">
+      <button onClick={onHome} className="p-3 bg-white text-orange-500 rounded-2xl shadow-sm border mb-6 w-12 active:scale-90 transition-all"><ArrowLeft size={24}/></button>
+      <div className="flex-1 flex flex-col items-center justify-center max-w-xl mx-auto w-full pb-8 -translate-y-[10vh]">
+        <div className="bg-white p-12 rounded-[3.5rem] shadow-xl mb-12 w-full flex flex-col items-center text-center relative border border-sky-50">
+          <div className="flex gap-4 mb-8">
+            <div className="bg-rose-50 text-rose-500 px-6 py-2 rounded-full font-black text-sm shadow-sm tracking-widest uppercase">Score: {score}</div>
+            <div className={`bg-orange-50 ${timeLeft <= 10 ? 'text-red-500 animate-pulse' : 'text-orange-500'} px-6 py-2 rounded-full font-black text-sm shadow-sm tracking-widest uppercase`}>
+              Time: {timeLeft}s
+            </div>
+          </div>
+          <button onClick={() => speak(target?.name)} className="w-28 h-28 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 mb-8 hover:scale-105 active:scale-95 shadow-inner transition-all"><Volume2 size={56} /></button>
+          <div className="text-2xl font-black text-gray-600 uppercase tracking-tighter">{feedback ? feedback.text : `Where is the ${target?.name}?`}</div>
+        </div>
+        <div className="grid grid-cols-5 gap-4 w-full">
+          {options.map((animal) => (
+            <button key={animal.id} onClick={() => handleTap(animal)} className="bg-white aspect-square rounded-[2rem] shadow-sm border-2 border-transparent hover:border-orange-300 hover:bg-orange-50 active:scale-90 transition-all p-3 flex items-center justify-center shadow-orange-100/50">
+              <AnimalIcon name={animal.name} emoji={animal.emoji} className="text-5xl w-full h-full object-contain" />
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// --- Game Logic: Memory Match (Ported from game.html) ---
+const memoryAnimalData = [
+  { id: 'snake', name: 'Snake', icon: '🐍', imgUrl: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f40d.svg' },
+  { id: 'crow', name: 'Crow', icon: '🐦‍⬛', imgUrl: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f426-200d-2b1b.svg' },
+  { id: 'horse', name: 'Horse', icon: '🐴', imgUrl: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f434.svg' },
+  { id: 'dog', name: 'Dog', icon: '🐶', imgUrl: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f436.svg' },
+  { id: 'whale', name: 'Whale', icon: '🐳', imgUrl: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f433.svg' },
+  { id: 'elephant', name: 'Elephant', icon: '🐘', imgUrl: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f418.svg' },
+  { id: 'lion', name: 'Lion', icon: '🦁', imgUrl: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f981.svg' },
+  { id: 'human', name: 'Human', icon: '👦', imgUrl: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f466.svg' }, 
+  { id: 'seal', name: 'Seal', icon: '🦭', imgUrl: 'https://raw.githubusercontent.com/googlefonts/noto-emoji/main/svg/emoji_u1f9ad.svg' },
+  { id: 'eagle', name: 'Eagle', icon: '🦅', imgUrl: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f985.svg' }
+];
+
+function AaMemoryGameView({ onHome }) {
+  const [cards, setCards] = useState([]);
+  const [flipped, setFlipped] = useState([]);
+  const [solved, setSolved] = useState([]);
+  const [disabled, setDisabled] = useState(false);
+  const [moves, setMoves] = useState(0);
+  const [matches, setMatches] = useState(0);
+  
+  const [showIntro, setShowIntro] = useState(true);
+  const [showWin, setShowWin] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [toasts, setToasts] = useState([]);
+
+  const audioCtxRef = useRef(null);
+  const fadeIntervalRef = useRef(null);
+  const bgMusicRef = useRef(new Audio('https://raw.githubusercontent.com/JOUCHUCHEN/CurioCat/main/animals/amazing_animals_bgm.mp3'));
+  const matchSoundRef = useRef(new Audio('https://raw.githubusercontent.com/JOUCHUCHEN/CurioCat/main/correct.mp3'));
+  const errorSoundRef = useRef(new Audio('https://raw.githubusercontent.com/JOUCHUCHEN/CurioCat/main/error.mp3'));
+  const winSoundRef = useRef(new Audio('https://raw.githubusercontent.com/JOUCHUCHEN/CurioCat/main/freesound_crunchpixstudio-purchase-success-384963.mp3'));
+
+  useEffect(() => {
+    bgMusicRef.current.loop = true;
+    return () => {
+      bgMusicRef.current.pause();
+      if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
+    };
+  }, []);
+
+  const initAudio = () => {
+    if (!audioCtxRef.current) {
+      audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtxRef.current.state === 'suspended') {
+      audioCtxRef.current.resume();
+    }
+  };
+
+  const playTone = (freq, type, duration, vol) => {
+    if (!audioCtxRef.current || isMuted) return;
+    const osc = audioCtxRef.current.createOscillator();
+    const gain = audioCtxRef.current.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtxRef.current.currentTime);
+    gain.gain.setValueAtTime(0, audioCtxRef.current.currentTime);
+    gain.gain.linearRampToValueAtTime(vol, audioCtxRef.current.currentTime + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtxRef.current.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(audioCtxRef.current.destination);
+    osc.start();
+    osc.stop(audioCtxRef.current.currentTime + duration);
+  };
+
+  const playSfx = (type) => {
+    if (isMuted) return;
+    if (type === 'flip') {
+      playTone(600, 'sine', 0.1, 0.05);
+    } else if (type === 'match') {
+      matchSoundRef.current.currentTime = 0;
+      matchSoundRef.current.play().catch(() => {});
+    } else if (type === 'error') {
+      errorSoundRef.current.currentTime = 0;
+      errorSoundRef.current.play().catch(() => {});
+    } else if (type === 'win') {
+      winSoundRef.current.currentTime = 0;
+      winSoundRef.current.play().catch(() => {});
+    }
+  };
+
+  const playMusicWithFadeIn = () => {
+    bgMusicRef.current.volume = 0;
+    const playPromise = bgMusicRef.current.play();
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
+        let vol = 0;
+        fadeIntervalRef.current = setInterval(() => {
+          if (isMuted) {
+            clearInterval(fadeIntervalRef.current);
+            return;
+          }
+          vol += 0.025;
+          if (vol >= 0.20) {
+            bgMusicRef.current.volume = 0.20;
+            clearInterval(fadeIntervalRef.current);
+          } else {
+            bgMusicRef.current.volume = vol;
+          }
+        }, 100);
+      }).catch((e) => {
+        console.warn("BGM playback failed", e);
+      });
+    }
+  };
+
+  const toggleMusic = () => {
+    initAudio();
+    if (!isMuted) {
+      if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
+      bgMusicRef.current.pause();
+    } else {
+      playMusicWithFadeIn();
+    }
+    setIsMuted(!isMuted);
+  };
+
+  const showToast = (message, type = 'info') => {
+    const id = Date.now() + Math.random();
+    setToasts(prev => [...prev, { id, message, type }]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 4000);
+  };
+
+  const fetchAnimalFunFact = async (animalName) => {
+    if (!apiKey) {
+      showToast(`Great! You found the ${animalName}!`, 'success');
+      return;
+    }
+    showToast(`Asking the AI teacher for a fun fact about ${animalName}...`, 'info');
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+    const prompt = `Give a fun fact about the animal "${animalName}" for a 7-year-old child in English. Keep it under one short sentence, playful and cute, no introductory greetings.`;
+    const payload = {
+      contents: [{ parts: [{ text: prompt }] }],
+      systemInstruction: { parts: [{ text: "You are an animal expert who is great at interacting with kids." }] }
+    };
+    let retries = 0;
+    let delay = 1000;
+    while (retries < 5) {
+      try {
+        const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        if (!response.ok) throw new Error('API Request Failed');
+        const data = await response.json();
+        const fact = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (fact) {
+          showToast(`🤖 AI Teacher says: ${fact}`, 'success');
+          return;
+        }
+      } catch (error) {
+        retries++;
+        if (retries >= 5) {
+          showToast(`Oops, the AI teacher is a bit busy right now. Try again later for a fun fact about ${animalName}!`, 'error');
+          return;
+        }
+        await new Promise(res => setTimeout(res, delay));
+        delay *= 2;
+      }
+    }
+  };
+
+  const initGame = () => {
+    setShowWin(false);
+    setToasts([]);
+    setMoves(0);
+    setMatches(0);
+    setFlipped([]);
+    setSolved([]);
+    setDisabled(false);
+
+    let gameCards = [];
+    memoryAnimalData.forEach(animal => {
+      gameCards.push({ ...animal, type: 'image', uid: Math.random().toString(36).substr(2, 9) });
+      gameCards.push({ ...animal, type: 'text', uid: Math.random().toString(36).substr(2, 9) });
+    });
+    setCards(shuffleArray(gameCards));
+  };
+
+  useEffect(() => { initGame(); }, []);
+
+  const handleStartGame = () => {
+    setShowIntro(false);
+    initAudio();
+    if (isMuted) {
+      setIsMuted(false);
+      setTimeout(() => playMusicWithFadeIn(), 100);
+    }
+  };
+
+  const handleCardClick = (index) => {
+    if (disabled || flipped.includes(index) || solved.includes(index)) return;
+    
+    playSfx('flip');
+    const newFlipped = [...flipped, index];
+    setFlipped(newFlipped);
+
+    if (newFlipped.length === 2) {
+      setDisabled(true);
+      setMoves(m => m + 1);
+      
+      const match = cards[newFlipped[0]].id === cards[newFlipped[1]].id;
+      if (match) {
+        setTimeout(() => playSfx('match'), 500);
+        setTimeout(() => {
+          setSolved(prev => {
+            const newSolved = [...prev, newFlipped[0], newFlipped[1]];
+            setMatches(newSolved.length / 2);
+            if (newSolved.length === cards.length) {
+              setTimeout(() => {
+                playSfx('win');
+                setShowWin(true);
+              }, 500);
             }
-        }
+            return newSolved;
+          });
+          fetchAnimalFunFact(cards[newFlipped[0]].name);
+          setFlipped([]);
+          setDisabled(false);
+        }, 300);
+      } else {
+        setTimeout(() => playSfx('error'), 500);
+        setTimeout(() => {
+          setFlipped([]);
+          setDisabled(false);
+        }, 1000);
+      }
+    }
+  };
 
-        // ====================================================================
-        // --- 遊戲 9: 同義詞大作戰 (Synonym Battle) 邏輯 ---
-        // ====================================================================
-        
-        function initSynonymBattleGame() {
-            synonymWords = wordPairs.map(p => ({ word: p.word.toUpperCase(), synonym: p.synonym.toUpperCase() }));
-            shuffle(synonymWords);
-            currentSynonymIndex = 0;
-            synonymCheckBtn.onclick = checkSynonymAnswer;
-            synonymNextBtn.onclick = nextSynonymWord;
-            synonymInputEl.onkeyup = (e) => { if (e.key === 'Enter' && !synonymCheckBtn.disabled) checkSynonymAnswer(); };
-            renderSynonymWord();
-        }
+  return (
+    <div className="flex flex-col h-full relative font-sans animate-in fade-in duration-500">
+      {/* Absolute Back Button */}
+      <button onClick={onHome} className="absolute top-0 left-0 p-3 bg-white text-sky-500 rounded-2xl shadow-sm border w-12 hover:bg-sky-50 active:scale-90 transition-all z-40">
+        <ArrowLeft size={24}/>
+      </button>
 
-        function renderSynonymWord() {
-            synonymCountEl.textContent = `${currentSynonymIndex + 1}/${synonymWords.length}`;
-            synonymFeedbackEl.textContent = '';
-            synonymCheckBtn.disabled = false;
-            synonymNextBtn.disabled = true;
-            synonymInputEl.disabled = false;
-            
-            if (currentSynonymIndex >= synonymWords.length) {
-                synonymWordEl.innerHTML = "<span class='text-4xl text-green-600'>挑戰完成！</span>";
-                synonymCheckBtn.style.display = 'none';
-                synonymNextBtn.style.display = 'none';
-                synonymInputEl.style.display = 'none';
-                return;
-            }
+      {/* Intro Modal */}
+      {showIntro && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-[60]">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md text-center shadow-2xl mx-4 animate-in zoom-in duration-300">
+            <div className="text-5xl sm:text-6xl mb-4">🐾</div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-sky-600 mb-4">Welcome to Amazing Animals!</h2>
+            <div className="text-base sm:text-lg text-gray-700 mb-6 text-left bg-sky-50 p-4 rounded-xl border border-sky-100">
+              <strong>How to play:</strong><br/>
+              <ul className="list-disc pl-5 mt-2 space-y-1">
+                <li>Click on the cards to flip them.</li>
+                <li>Match the animal picture with its English name.</li>
+                <li>Find all 10 pairs to win!</li>
+              </ul>
+            </div>
+            <button onClick={handleStartGame} className="bg-amber-400 hover:bg-amber-500 text-amber-900 font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105 active:scale-95 text-xl border-b-4 border-amber-600">
+              Start Game
+            </button>
+          </div>
+        </div>
+      )}
 
-            const wordData = synonymWords[currentSynonymIndex];
-            synonymWordEl.textContent = wordData.word;
-            
-            synonymInputEl.value = '';
-            synonymInputEl.style.display = 'block';
-            synonymCheckBtn.style.display = 'inline-block';
-            synonymNextBtn.style.display = 'inline-block';
-            synonymInputEl.focus();
-        }
+      {/* Win Modal */}
+      {showWin && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[60] animate-in fade-in duration-300">
+          <div className="bg-white rounded-3xl p-8 max-w-sm text-center shadow-2xl animate-in zoom-in duration-300">
+            <div className="text-6xl mb-4">🎉</div>
+            <h2 className="text-3xl font-bold text-green-600 mb-2">Great Job!</h2>
+            <p className="text-lg text-gray-700 mb-6">You found all the animals!<br/>It took you <span className="font-bold text-amber-500">{moves}</span> moves.</p>
+            <button onClick={initGame} className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full shadow-md transform transition hover:scale-105 active:scale-95 text-lg">
+              Play Again
+            </button>
+          </div>
+        </div>
+      )}
 
-        function checkSynonymAnswer() {
-            const userGuess = synonymInputEl.value.trim().toUpperCase();
-            const correctSynonym = synonymWords[currentSynonymIndex].synonym;
-            
-            if (userGuess === correctSynonym) {
-                synonymFeedbackEl.textContent = `✅ 正確！ (${correctSynonym})`;
-                synonymFeedbackEl.classList.remove('text-red-500');
-                synonymFeedbackEl.classList.add('text-green-500');
-                synonymCheckBtn.disabled = true;
-                synonymNextBtn.disabled = false;
-                synonymInputEl.disabled = true;
-            } else {
-                synonymFeedbackEl.textContent = `❌ 錯誤，答案是：${correctSynonym}。`;
-                synonymFeedbackEl.classList.remove('text-green-500');
-                synonymFeedbackEl.classList.add('text-red-500');
-                // 猜錯也跳下一題，防止無限猜測
-                synonymCheckBtn.disabled = true;
-                synonymNextBtn.disabled = false;
-                synonymInputEl.disabled = true;
-            }
-        }
+      {/* Music Toggle */}
+      <div className="absolute top-0 right-0 z-40">
+        <button onClick={toggleMusic} className="bg-white w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full shadow border-2 border-sky-200 hover:bg-sky-50 text-xl transition-colors no-select">
+          {isMuted ? '🔇' : '🎵'}
+        </button>
+      </div>
 
-        function nextSynonymWord() {
-            currentSynonymIndex++;
-            renderSynonymWord();
-        }
+      {/* Header & Stats */}
+      <div className="text-center mb-2 flex-shrink-0 pt-2">
+        <h1 className="text-2xl sm:text-3xl font-bold text-amber-600 mb-1 drop-shadow-md border-b-4 border-amber-400 pb-1 inline-block">🐾 Amazing Animals 🐾</h1>
+        <div className="mt-2 flex justify-center gap-4 text-sm sm:text-base font-bold text-sky-800">
+          <div className="bg-white px-3 py-1 sm:px-4 sm:py-2 rounded-full shadow-sm border-2 border-sky-200">
+            Moves: <span className="text-amber-500">{moves}</span>
+          </div>
+          <div className="bg-white px-3 py-1 sm:px-4 sm:py-2 rounded-full shadow-sm border-2 border-sky-200">
+            Matches: <span className="text-green-500">{matches}</span> / 10
+          </div>
+        </div>
+      </div>
 
-        // ====================================================================
-        // --- 遊戲 10: 每日單字 (Daily Word) 邏輯 ---
-        // ====================================================================
+      {/* Game Board */}
+      <div className="flex-1 flex justify-center items-center pb-2 px-4 w-full">
+        <div className="grid grid-cols-4 grid-rows-5 sm:grid-cols-5 sm:grid-rows-4 gap-2 sm:gap-3 w-full max-w-4xl h-full perspective">
+          {cards.map((card, index) => {
+            const isFlipped = flipped.includes(index) || solved.includes(index);
+            const isSolved = solved.includes(index);
 
-        function initDailyWordGame() {
-            // 根據今天的日期決定每日單字 (確保每天只出現一次)
-            const today = new Date();
-            const dayIndex = today.getDate() % wordPairs.length;
-            const dailyWord = wordPairs[dayIndex];
-            
-            dailyWordWordEl.textContent = dailyWord.word;
-            dailyWordMeaningEl.textContent = dailyWord.meaning;
-            dailyWordSentenceEl.textContent = dailyWord.sentence.replace('___', dailyWord.word);
-        }
+            return (
+              <div key={card.uid} onClick={() => handleCardClick(index)} className="relative w-full h-full cursor-pointer no-select perspective">
+                <div className={`w-full h-full absolute transform-style-3d rounded-xl shadow-md ${isFlipped ? 'rotate-y-180' : ''}`}>
+                  {/* Card Back (Grass/Leaf) */}
+                  <div className="w-full h-full absolute backface-hidden bg-gradient-to-br from-emerald-400 to-green-600 rounded-xl flex items-center justify-center border-4 border-white hover:opacity-90 transition-opacity">
+                    <span className="text-3xl sm:text-4xl text-white opacity-50">🍃</span>
+                  </div>
+                  {/* Card Front (Animal Image or Text) */}
+                  <div className={`w-full h-full absolute backface-hidden rotate-y-180 rounded-xl flex flex-col items-center justify-center border-4 p-1 sm:p-2 text-center transition-colors ${isSolved ? 'border-green-500 bg-green-50' : 'border-amber-300 bg-white'}`}>
+                    {card.type === 'image' ? (
+                      <img 
+                        src={card.imgUrl} 
+                        alt={card.name} 
+                        className="w-12 h-12 sm:w-16 sm:h-16 drop-shadow-sm pointer-events-none object-contain" 
+                        draggable="false" 
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'block';
+                        }} 
+                      />
+                    ) : (
+                      <span className="text-base sm:text-xl font-bold text-slate-800 break-words w-full px-1">{card.name}</span>
+                    )}
+                    {/* Fallback Emoji */}
+                    {card.type === 'image' && <span className="text-4xl sm:text-5xl drop-shadow-sm hidden">{card.icon}</span>}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
+      {/* Restart Button */}
+      <div className="mt-2 mb-2 sm:mb-4 flex-shrink-0 text-center">
+        <button onClick={initGame} className="bg-amber-400 hover:bg-amber-500 text-amber-900 font-bold py-2 px-6 rounded-full shadow-lg transform transition hover:scale-105 active:scale-95 text-base sm:text-lg border-b-4 border-amber-600">
+          🔄 Restart
+        </button>
+      </div>
 
-        // --- 初始化與事件監聽器 (Back Buttons) ---
-        
-        window.onload = function() {
-            // Memory Game controls
-            resetButton.addEventListener('click', initMemoryGame);
-            modalResetButton.addEventListener('click', () => { modal.style.display = 'none'; initMemoryGame(); });
-            document.getElementById('memory-back-button').addEventListener('click', () => showPage('home'));
-
-            // Back buttons for all games
-            document.getElementById('flashcard-back-button').addEventListener('click', () => showPage('home'));
-            document.getElementById('jumble-back-button').addEventListener('click', () => showPage('home'));
-            document.getElementById('listening-back-button').addEventListener('click', () => showPage('home'));
-            document.getElementById('fill_in-back-button').addEventListener('click', () => showPage('home'));
-            document.getElementById('scramble-back-button').addEventListener('click', () => showPage('home'));
-            document.getElementById('pronunciation-back-button').addEventListener('click', () => showPage('home'));
-            document.getElementById('word_chain-back-button').addEventListener('click', () => showPage('home'));
-            document.getElementById('synonym-back-button').addEventListener('click', () => showPage('home'));
-            document.getElementById('daily_word-back-button').addEventListener('click', () => showPage('home'));
-
-            // Initial view is 'home'
-            showPage('home'); 
-        };
-
-    </script>
-</body>
-</html>
+      {/* Toasts */}
+      <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 w-[90%] max-w-md z-[100] flex flex-col gap-2 pointer-events-none">
+        {toasts.map(toast => {
+          const bgColor = toast.type === 'success' ? 'bg-green-100 border-green-400 text-green-800' : 
+                          toast.type === 'error' ? 'bg-red-100 border-red-400 text-red-800' : 
+                          'bg-blue-100 border-blue-400 text-blue-800';
+          return (
+            <div key={toast.id} className={`p-4 rounded-xl shadow-lg border-2 ${bgColor} flex items-center gap-3 pointer-events-auto animate-in slide-in-from-bottom-5 fade-in duration-300`}>
+              <span className="text-2xl">{toast.type === 'success' ? '✨' : toast.type === 'error' ? '❌' : '🤖'}</span>
+              <p className="font-bold text-sm sm:text-base">{toast.message}</p>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
