@@ -136,11 +136,12 @@
 
           // 處理導覽列行為：跳轉回首頁對應區塊
           const handleNavAction = (targetId) => {
+            const baseUrl = 'https://jouchuchen.github.io/machiknow/';
             if (targetId === 'top') {
-                window.location.href = 'index.html';
+                window.location.href = baseUrl;
             } else {
-                // 使用絕對路徑或確保跳轉到首頁的錨點
-                window.location.assign(`index.html#${targetId}`);
+                // 跳轉至首頁並附加錨點
+                window.location.href = `${baseUrl}#${targetId}`;
             }
             setIsMobileMenuOpen(false);
           };
