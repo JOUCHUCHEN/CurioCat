@@ -97,7 +97,7 @@
 
           const Navbar = () => (
             <nav className="bg-white shadow-sm h-20 border-b flex-shrink-0 z-50 sticky top-0">
-              {/* 完全同步範例代碼：max-w-7xl px-4 */}
+              {/* 完全同步範例代碼：max-w-7xl mx-auto px-4 */}
               <div className="max-w-7xl mx-auto px-4 h-full flex justify-between items-center">
                 <div className="flex items-center cursor-pointer group" onClick={handleNavAction}>
                   <img 
@@ -128,11 +128,11 @@
               <Navbar />
 
               <main className="flex-1 w-full">
-                {/* 內容容器同步對齊導覽列：max-w-7xl px-4 */}
-                <div className="py-10 max-w-7xl mx-auto px-4 w-full flex flex-col lg:px-10">
+                {/* 內容容器對齊同步：使用 max-w-6xl 搭配 p-6 lg:p-10 */}
+                <div className="p-6 lg:p-10 max-w-6xl mx-auto w-full flex flex-col">
                     
                     {/* Header 區塊 */}
-                    <div className="mb-10 text-left px-2">
+                    <div className="mb-10 text-left">
                         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight mb-3">LEGO 9868 SPM: Bow & Arrow</h2>
                         <div className="flex items-center justify-start gap-2 text-slate-400 font-bold tracking-wider uppercase text-xs">
                             <PlayCircle size={14} className="text-orange-500" />
@@ -142,8 +142,9 @@
                         </div>
                     </div>
 
-                    {/* Video Frame */}
+                    {/* Video Frame: 尺寸與比例控制 */}
                     <div className="w-full relative group">
+                        {/* 背景裝飾陰影 */}
                         <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 to-rose-500 rounded-[3rem] blur opacity-15 group-hover:opacity-25 transition duration-1000"></div>
                         
                         <div className="relative bg-white p-3 md:p-4 rounded-[3.5rem] shadow-2xl border border-slate-100">
@@ -181,6 +182,7 @@
                     {/* 資訊區域 */}
                     <div className="mt-16 mb-20 grid grid-cols-1 lg:grid-cols-3 gap-8">
                       <div className="lg:col-span-2 bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm relative overflow-hidden group">
+                         {/* 裝飾背景 */}
                          <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:scale-110 transition-transform duration-700">
                             <Lightbulb size={120} className="text-orange-600" />
                          </div>
@@ -194,6 +196,7 @@
                          </p>
                       </div>
                       
+                      {/* Ad Box */}
                       <div className="flex flex-col">
                          <AdBanner format="square" className="!my-0 w-full h-full min-h-[300px] border-slate-200" />
                       </div>
@@ -201,7 +204,8 @@
                 </div>
               </main>
 
-              <footer className="bg-gray-900 text-white py-12 text-center mt-auto">
+              {/* 頁尾：與範例代碼結構一致 */}
+              <footer className="bg-gray-900 text-white py-12 text-center mt-auto shrink-0">
                 <div className="max-w-7xl mx-auto px-4">
                   <div className="flex items-center justify-center mb-6 text-2xl font-black tracking-tighter uppercase text-center">
                     MachiKnow
