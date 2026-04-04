@@ -139,7 +139,8 @@
             if (targetId === 'top') {
                 window.location.href = 'index.html';
             } else {
-                window.location.href = `index.html#${targetId}`;
+                // 使用絕對路徑或確保跳轉到首頁的錨點
+                window.location.assign(`index.html#${targetId}`);
             }
             setIsMobileMenuOpen(false);
           };
