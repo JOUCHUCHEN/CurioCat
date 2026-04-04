@@ -65,7 +65,7 @@
           </div>
         );
 
-        // --- Main App Component (Pure Home Page) ---
+        // --- Main App Component ---
         function App() {
           const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -126,8 +126,11 @@
                       </div>
                       
                       <div>
-                        {/* 已經移除 onClick 路由事件，僅保留視覺樣式 */}
-                        <div className="bg-gradient-to-br from-orange-400 to-amber-700 rounded-[3rem] p-8 sm:p-10 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.02] transition-all relative overflow-hidden min-h-[12rem] sm:h-44 flex items-center justify-between group shadow-xl">
+                        {/* 連結至 amazing_animals.html */}
+                        <div 
+                          onClick={() => window.location.href = 'amazing_animals.html'}
+                          className="bg-gradient-to-br from-orange-400 to-amber-700 rounded-[3rem] p-8 sm:p-10 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.02] transition-all relative overflow-hidden min-h-[12rem] sm:h-44 flex items-center justify-between group shadow-xl"
+                        >
                           <div className="absolute right-6 top-1/2 -translate-y-1/2 opacity-20 group-hover:opacity-40 transition-opacity transform group-hover:scale-125 duration-700">
                             <span className="text-[9rem] sm:text-[10rem]">🦁</span>
                           </div>
@@ -151,8 +154,11 @@
                       </div>
 
                       <div>
-                        {/* 已經移除 onClick 路由事件，僅保留視覺樣式 */}
-                        <div className="bg-gradient-to-br from-indigo-500 to-purple-800 rounded-[3rem] p-8 sm:p-10 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.02] transition-all relative overflow-hidden min-h-[12rem] sm:h-44 flex items-center justify-between group shadow-xl">
+                        {/* 連結至 spm9686_001.html */}
+                        <div 
+                          onClick={() => window.location.href = 'spm9686_001.html'}
+                          className="bg-gradient-to-br from-indigo-500 to-purple-800 rounded-[3rem] p-8 sm:p-10 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.02] transition-all relative overflow-hidden min-h-[12rem] sm:h-44 flex items-center justify-between group shadow-xl"
+                        >
                           <div className="absolute right-6 top-1/2 -translate-y-1/2 opacity-20 group-hover:opacity-40 transition-opacity transform group-hover:scale-125 duration-700">
                             <span className="text-[9rem] sm:text-[10rem]">🏹</span>
                           </div>
