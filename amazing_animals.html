@@ -40,7 +40,7 @@
         .no-select { user-select: none; -webkit-user-select: none; }
     </style>
 
-    <!-- Import Maps: 讓瀏覽器可以直接載入 React 與 Lucide Icons -->
+    <!-- Import Maps -->
     <script type="importmap">
     {
         "imports": {
@@ -51,7 +51,7 @@
     }
     </script>
 
-    <!-- Babel Standalone: 在瀏覽器中即時編譯 JSX -->
+    <!-- Babel Standalone -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body class="bg-sky-50 h-screen overflow-hidden">
@@ -64,10 +64,11 @@
         import { createRoot } from 'react-dom/client';
         import { 
           BookOpen, Download, ChevronRight, ArrowLeft, Volume2, 
-          Hand, LayoutGrid, RotateCcw, Play, MonitorPlay, ChevronLeft, FileText, FileImage
+          Hand, LayoutGrid, RotateCcw, Play, MonitorPlay, ChevronLeft, 
+          FileText, FileImage, Menu, X
         } from 'lucide-react';
 
-        const apiKey = ""; // 系統會自動提供金鑰
+        const apiKey = ""; 
 
         // --- Custom Animal Icon Component ---
         const AnimalIcon = ({ name, emoji, className = "" }) => {
@@ -211,7 +212,7 @@
 
               {/* Filter Nav */}
               <div className="flex items-center justify-between mb-8 bg-white p-3 rounded-3xl shadow-sm border border-sky-100">
-                <button onClick={onHome} className="p-3 text-sky-500 hover:bg-sky-50 rounded-2xl transition-all shadow-sm active:scale-90"><ArrowLeft size={28} /></button>
+                <button onClick={onHome} className="p-3 text-orange-600 hover:bg-orange-50 rounded-2xl transition-all shadow-sm active:scale-90"><ArrowLeft size={28} /></button>
                 <div className="flex gap-3 overflow-x-auto no-scrollbar py-1">
                   {categories.map(cat => (
                     <button 
@@ -272,58 +273,6 @@
           const [timeLeft, setTimeLeft] = useState(60);
           const [gameOver, setGameOver] = useState(false);
 
-          const playDingDong = () => {
-            try {
-              const AudioContext = window.AudioContext || window.webkitAudioContext;
-              const ctx = new AudioContext();
-              const osc1 = ctx.createOscillator();
-              const gain1 = ctx.createGain();
-              osc1.type = 'sine';
-              osc1.frequency.setValueAtTime(987.77, ctx.currentTime);
-              gain1.gain.setValueAtTime(0.5, ctx.currentTime);
-              gain1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-              osc1.connect(gain1);
-              gain1.connect(ctx.destination);
-              osc1.start(ctx.currentTime);
-              osc1.stop(ctx.currentTime + 0.3);
-
-              const osc2 = ctx.createOscillator();
-              const gain2 = ctx.createGain();
-              osc2.type = 'sine';
-              osc2.frequency.setValueAtTime(783.99, ctx.currentTime + 0.2);
-              gain2.gain.setValueAtTime(0.5, ctx.currentTime + 0.2);
-              gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
-              osc2.connect(gain2);
-              gain2.connect(ctx.destination);
-              osc2.start(ctx.currentTime + 0.2);
-              osc2.stop(ctx.currentTime + 0.6);
-            } catch (e) { console.error("Audio API not supported", e); }
-          };
-
-          const playGameOverSound = () => {
-            try {
-              const AudioContext = window.AudioContext || window.webkitAudioContext;
-              const ctx = new AudioContext();
-              const now = ctx.currentTime;
-              const playNote = (freq, startTime, duration) => {
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(freq, startTime);
-                gain.gain.setValueAtTime(0.3, startTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start(startTime);
-                osc.stop(startTime + duration);
-              };
-              playNote(523.25, now, 0.2);
-              playNote(659.25, now + 0.15, 0.2);
-              playNote(783.99, now + 0.3, 0.2);
-              playNote(1046.50, now + 0.45, 0.8);
-            } catch (e) { console.error("Audio API not supported", e); }
-          };
-
           const startRound = () => {
             const randomTarget = animalsData[Math.floor(Math.random() * animalsData.length)];
             setTarget(randomTarget);
@@ -342,14 +291,12 @@
               return () => clearTimeout(timerId);
             } else if (timeLeft === 0 && !gameOver) {
               setGameOver(true);
-              playGameOverSound();
             }
           }, [timeLeft, gameOver]);
 
           const handleTap = (animal) => {
             if (feedback?.type === 'success' || gameOver) return; 
             if (animal.id === target.id) {
-              playDingDong();
               setScore(s => s + 1);
               setFeedback({ type: 'success', text: `✨ Correct!` });
               setTimeout(startRound, 1200);
@@ -370,7 +317,7 @@
           if (gameOver) {
             return (
               <div className="flex flex-col h-full animate-in fade-in zoom-in max-h-screen">
-                 <button onClick={onHome} className="p-3 bg-white text-orange-500 rounded-2xl shadow-sm border mb-6 w-12 active:scale-90 transition-all"><ArrowLeft size={24}/></button>
+                 <button onClick={onHome} className="p-3 bg-white text-orange-600 rounded-2xl shadow-sm border mb-6 w-12 active:scale-90 transition-all hover:bg-orange-50"><ArrowLeft size={24}/></button>
                  <div className="flex-1 flex flex-col items-center justify-center max-w-xl mx-auto w-full pb-8">
                    <div className="bg-white p-12 rounded-[3.5rem] shadow-xl w-full flex flex-col items-center text-center relative border border-sky-50">
                       <h2 className="text-4xl font-black text-gray-800 mb-4">Time's Up!</h2>
@@ -387,7 +334,7 @@
 
           return (
             <div className="flex flex-col h-full animate-in fade-in zoom-in max-h-screen">
-              <button onClick={onHome} className="p-3 bg-white text-orange-500 rounded-2xl shadow-sm border mb-6 w-12 active:scale-90 transition-all"><ArrowLeft size={24}/></button>
+              <button onClick={onHome} className="p-3 bg-white text-orange-600 rounded-2xl shadow-sm border mb-6 w-12 active:scale-90 transition-all hover:bg-orange-50"><ArrowLeft size={24}/></button>
               <div className="flex-1 flex flex-col items-center justify-center max-w-xl mx-auto w-full pb-8">
                 <div className="bg-white p-10 sm:p-12 rounded-[3.5rem] shadow-xl mb-8 sm:mb-12 w-full flex flex-col items-center text-center relative border border-sky-50">
                   <div className="flex gap-4 mb-8">
@@ -431,175 +378,18 @@
           const [disabled, setDisabled] = useState(false);
           const [moves, setMoves] = useState(0);
           const [matches, setMatches] = useState(0);
-          
           const [showIntro, setShowIntro] = useState(true);
           const [showWin, setShowWin] = useState(false);
-          const [isMuted, setIsMuted] = useState(true);
-          const [toasts, setToasts] = useState([]);
 
-          const audioCtxRef = useRef(null);
-          const fadeIntervalRef = useRef(null);
-          
-          const bgMusicRef = useRef(null);
-          const matchSoundRef = useRef(null);
-          const errorSoundRef = useRef(null);
-          const winSoundRef = useRef(null);
-
-          useEffect(() => {
-            bgMusicRef.current = new Audio('https://raw.githubusercontent.com/JOUCHUCHEN/CurioCat/main/animals/amazing_animals_bgm.mp3');
-            bgMusicRef.current.loop = true;
-            bgMusicRef.current.preload = 'auto';
-
-            matchSoundRef.current = new Audio('https://raw.githubusercontent.com/JOUCHUCHEN/CurioCat/main/correct.mp3');
-            matchSoundRef.current.preload = 'auto';
-
-            errorSoundRef.current = new Audio('https://raw.githubusercontent.com/JOUCHUCHEN/CurioCat/main/error.mp3');
-            errorSoundRef.current.preload = 'auto';
-
-            winSoundRef.current = new Audio('https://raw.githubusercontent.com/JOUCHUCHEN/CurioCat/main/freesound_crunchpixstudio-purchase-success-384963.mp3');
-            winSoundRef.current.preload = 'auto';
-
-            initGame();
-
-            return () => {
-              if (bgMusicRef.current) {
-                bgMusicRef.current.pause();
-                bgMusicRef.current.src = "";
-              }
-              if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
-            };
-          }, []);
-
-          const initAudio = () => {
-            if (!audioCtxRef.current) {
-              audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (audioCtxRef.current.state === 'suspended') {
-              audioCtxRef.current.resume();
-            }
-          };
-
-          const playTone = (freq, type, duration, vol) => {
-            if (!audioCtxRef.current || isMuted) return;
-            const osc = audioCtxRef.current.createOscillator();
-            const gain = audioCtxRef.current.createGain();
-            osc.type = type;
-            osc.frequency.setValueAtTime(freq, audioCtxRef.current.currentTime);
-            gain.gain.setValueAtTime(0, audioCtxRef.current.currentTime);
-            gain.gain.linearRampToValueAtTime(vol, audioCtxRef.current.currentTime + 0.05);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtxRef.current.currentTime + duration);
-            osc.connect(gain);
-            gain.connect(audioCtxRef.current.destination);
-            osc.start();
-            osc.stop(audioCtxRef.current.currentTime + duration);
-          };
-
-          const playSfx = (type) => {
-            if (isMuted) return;
-            if (type === 'flip') {
-              playTone(600, 'sine', 0.1, 0.05);
-            } else if (type === 'match' && matchSoundRef.current) {
-              matchSoundRef.current.currentTime = 0;
-              matchSoundRef.current.play().catch(() => {});
-            } else if (type === 'error' && errorSoundRef.current) {
-              errorSoundRef.current.currentTime = 0;
-              errorSoundRef.current.play().catch(() => {});
-            } else if (type === 'win' && winSoundRef.current) {
-              winSoundRef.current.currentTime = 0;
-              winSoundRef.current.play().catch(() => {});
-            }
-          };
-
-          const playMusicWithFadeIn = () => {
-            if (!bgMusicRef.current) return;
-            bgMusicRef.current.volume = 0;
-            const playPromise = bgMusicRef.current.play();
-            
-            if (playPromise !== undefined) {
-              playPromise.then(() => {
-                setIsMuted(false);
-                if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
-                let vol = 0;
-                fadeIntervalRef.current = setInterval(() => {
-                  vol += 0.025;
-                  if (vol >= 0.20) {
-                    if (bgMusicRef.current) bgMusicRef.current.volume = 0.20;
-                    clearInterval(fadeIntervalRef.current);
-                  } else {
-                    if (bgMusicRef.current) bgMusicRef.current.volume = vol;
-                  }
-                }, 100);
-              }).catch((e) => {
-                console.warn("BGM playback failed. Browser might have blocked it.", e);
-                setIsMuted(true);
-              });
-            }
-          };
-
-          const toggleMusic = () => {
-            initAudio();
-            if (!isMuted) {
-              if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
-              if (bgMusicRef.current) bgMusicRef.current.pause();
-              setIsMuted(true);
-            } else {
-              playMusicWithFadeIn();
-            }
-          };
-
-          const showToast = (message, type = 'info') => {
-            const id = Date.now() + Math.random();
-            setToasts(prev => [...prev, { id, message, type }]);
-            setTimeout(() => {
-              setToasts(prev => prev.filter(t => t.id !== id));
-            }, 4000);
-          };
-
-          const fetchAnimalFunFact = async (animalName) => {
-            if (!apiKey) {
-              showToast(`Great! You found the ${animalName}!`, 'success');
-              return;
-            }
-            showToast(`Asking the AI teacher for a fun fact about ${animalName}...`, 'info');
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-            const prompt = `Give a fun fact about the animal "${animalName}" for a 7-year-old child in English. Keep it under one short sentence, playful and cute, no introductory greetings.`;
-            const payload = {
-              contents: [{ parts: [{ text: prompt }] }],
-              systemInstruction: { parts: [{ text: "You are an animal expert who is great at interacting with kids." }] }
-            };
-            let retries = 0;
-            let delay = 1000;
-            while (retries < 5) {
-              try {
-                const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                if (!response.ok) throw new Error('API Request Failed');
-                const data = await response.json();
-                const fact = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                if (fact) {
-                  showToast(`🤖 AI Teacher says: ${fact}`, 'success');
-                  return;
-                }
-              } catch (error) {
-                retries++;
-                if (retries >= 5) {
-                  showToast(`Oops, the AI teacher is a bit busy right now. Try again later for a fun fact about ${animalName}!`, 'error');
-                  return;
-                }
-                await new Promise(res => setTimeout(res, delay));
-                delay *= 2;
-              }
-            }
-          };
+          useEffect(() => { initGame(); }, []);
 
           const initGame = () => {
             setShowWin(false);
-            setToasts([]);
             setMoves(0);
             setMatches(0);
             setFlipped([]);
             setSolved([]);
             setDisabled(false);
-
             let gameCards = [];
             memoryAnimalData.forEach(animal => {
               gameCards.push({ ...animal, type: 'image', uid: Math.random().toString(36).substr(2, 9) });
@@ -608,44 +398,23 @@
             setCards(shuffleArray(gameCards));
           };
 
-          const handleStartGame = () => {
-            setShowIntro(false);
-            initAudio();
-            playMusicWithFadeIn();
-          };
-
           const handleCardClick = (index) => {
             if (disabled || flipped.includes(index) || solved.includes(index)) return;
-            
-            playSfx('flip');
             const newFlipped = [...flipped, index];
             setFlipped(newFlipped);
-
             if (newFlipped.length === 2) {
               setDisabled(true);
               setMoves(m => m + 1);
-              
-              const match = cards[newFlipped[0]].id === cards[newFlipped[1]].id;
-              if (match) {
-                setTimeout(() => playSfx('match'), 500);
-                setTimeout(() => {
-                  setSolved(prev => {
-                    const newSolved = [...prev, newFlipped[0], newFlipped[1]];
-                    setMatches(newSolved.length / 2);
-                    if (newSolved.length === cards.length) {
-                      setTimeout(() => {
-                        playSfx('win');
-                        setShowWin(true);
-                      }, 500);
-                    }
-                    return newSolved;
-                  });
-                  fetchAnimalFunFact(cards[newFlipped[0]].name);
-                  setFlipped([]);
-                  setDisabled(false);
-                }, 300);
+              if (cards[newFlipped[0]].id === cards[newFlipped[1]].id) {
+                setSolved(prev => {
+                  const newSolved = [...prev, newFlipped[0], newFlipped[1]];
+                  setMatches(newSolved.length / 2);
+                  if (newSolved.length === cards.length) setShowWin(true);
+                  return newSolved;
+                });
+                setFlipped([]);
+                setDisabled(false);
               } else {
-                setTimeout(() => playSfx('error'), 500);
                 setTimeout(() => {
                   setFlipped([]);
                   setDisabled(false);
@@ -656,89 +425,54 @@
 
           return (
             <div className="flex flex-col h-full relative font-sans animate-in fade-in duration-500">
-              <button onClick={onHome} className="absolute top-0 left-0 p-3 bg-white text-sky-500 rounded-2xl shadow-sm border w-12 hover:bg-sky-50 active:scale-90 transition-all z-40">
+              <button onClick={onHome} className="absolute top-0 left-0 p-3 bg-white text-orange-600 rounded-2xl shadow-sm border w-12 hover:bg-orange-50 active:scale-90 transition-all z-40">
                 <ArrowLeft size={24}/>
               </button>
-
+              
               {showIntro && (
-                <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-[60]">
-                  <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md text-center shadow-2xl mx-4 animate-in zoom-in duration-300">
-                    <div className="text-5xl sm:text-6xl mb-4">🐾</div>
-                    <h2 className="text-2xl sm:text-3xl font-bold text-sky-600 mb-4">Welcome to Amazing Animals!</h2>
-                    <div className="text-base sm:text-lg text-gray-700 mb-6 text-left bg-sky-50 p-4 rounded-xl border border-sky-100">
-                      <strong>How to play:</strong><br/>
-                      <ul className="list-disc pl-5 mt-2 space-y-1">
-                        <li>Click on the cards to flip them.</li>
-                        <li>Match the animal picture with its English name.</li>
-                        <li>Find all 10 pairs to win!</li>
-                      </ul>
-                    </div>
-                    <button onClick={handleStartGame} className="bg-amber-400 hover:bg-amber-500 text-amber-900 font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105 active:scale-95 text-xl border-b-4 border-amber-600">
-                      Start Game
-                    </button>
+                <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-[60]">
+                  <div className="bg-white rounded-3xl p-8 max-w-md text-center shadow-2xl mx-4">
+                    <div className="text-6xl mb-4">🐾</div>
+                    <h2 className="text-3xl font-bold text-sky-600 mb-6">Memory Game!</h2>
+                    <button onClick={() => setShowIntro(false)} className="bg-amber-400 hover:bg-amber-500 text-amber-900 font-bold py-3 px-8 rounded-full shadow-lg text-xl">Start Game</button>
                   </div>
                 </div>
               )}
 
               {showWin && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[60] animate-in fade-in duration-300">
-                  <div className="bg-white rounded-3xl p-8 max-w-sm text-center shadow-2xl animate-in zoom-in duration-300">
-                    <div className="text-6xl mb-4">🎉</div>
-                    <h2 className="text-3xl font-bold text-green-600 mb-2">Great Job!</h2>
-                    <p className="text-lg text-gray-700 mb-6">You found all the animals!<br/>It took you <span className="font-bold text-amber-500">{moves}</span> moves.</p>
-                    <button onClick={initGame} className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full shadow-md transform transition hover:scale-105 active:scale-95 text-lg">
-                      Play Again
-                    </button>
+                <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[60]">
+                  <div className="bg-white rounded-3xl p-8 text-center shadow-2xl">
+                    <h2 className="text-3xl font-bold text-green-600 mb-6">Great Job! 🎉</h2>
+                    <button onClick={initGame} className="bg-green-500 text-white font-bold py-3 px-8 rounded-full">Play Again</button>
                   </div>
                 </div>
               )}
 
-              <div className="absolute top-0 right-0 z-40">
-                <button onClick={toggleMusic} className="bg-white w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full shadow border-2 border-sky-200 hover:bg-sky-50 text-xl transition-colors no-select">
-                  {isMuted ? '🔇' : '🎵'}
-                </button>
-              </div>
-
-              <div className="text-center mb-2 flex-shrink-0 pt-2">
-                <h1 className="text-2xl sm:text-3xl font-bold text-amber-600 mb-1 drop-shadow-md border-b-4 border-amber-400 pb-1 inline-block">🐾 Amazing Animals 🐾</h1>
-                <div className="mt-2 flex justify-center gap-4 text-sm sm:text-base font-bold text-sky-800">
-                  <div className="bg-white px-3 py-1 sm:px-4 sm:py-2 rounded-full shadow-sm border-2 border-sky-200">
-                    Moves: <span className="text-amber-500">{moves}</span>
-                  </div>
-                  <div className="bg-white px-3 py-1 sm:px-4 sm:py-2 rounded-full shadow-sm border-2 border-sky-200">
-                    Matches: <span className="text-green-500">{matches}</span> / 10
-                  </div>
+              <div className="text-center mb-6 pt-2">
+                <h1 className="text-3xl font-bold text-amber-600 mb-2">Matching Game</h1>
+                <div className="flex justify-center gap-4 text-sky-800 font-bold">
+                  <span className="bg-white px-4 py-2 rounded-full border border-sky-200 shadow-sm">Moves: {moves}</span>
+                  <span className="bg-white px-4 py-2 rounded-full border border-sky-200 shadow-sm">Matches: {matches}/10</span>
                 </div>
               </div>
 
-              <div className="flex-1 flex justify-center items-center pb-2 px-4 w-full">
-                <div className="grid grid-cols-4 grid-rows-5 sm:grid-cols-5 sm:grid-rows-4 gap-2 sm:gap-3 w-full max-w-4xl h-full perspective">
+              <div className="flex-1 flex justify-center items-center pb-4 px-4 w-full">
+                <div className="grid grid-cols-4 sm:grid-cols-5 gap-3 w-full max-w-4xl h-full perspective">
                   {cards.map((card, index) => {
                     const isFlipped = flipped.includes(index) || solved.includes(index);
                     const isSolved = solved.includes(index);
-
                     return (
-                      <div key={card.uid} onClick={() => handleCardClick(index)} className="relative w-full h-full cursor-pointer no-select perspective">
-                        <div className={`w-full h-full absolute transform-style-3d rounded-xl shadow-md ${isFlipped ? 'rotate-y-180' : ''}`}>
-                          <div className="w-full h-full absolute backface-hidden bg-gradient-to-br from-emerald-400 to-green-600 rounded-xl flex items-center justify-center border-4 border-white hover:opacity-90 transition-opacity">
-                            <span className="text-3xl sm:text-4xl text-white opacity-50">🍃</span>
+                      <div key={card.uid} onClick={() => handleCardClick(index)} className="relative w-full h-full cursor-pointer perspective">
+                        <div className={`w-full h-full absolute transform-style-3d rounded-xl shadow-md transition-all duration-500 ${isFlipped ? 'rotate-y-180' : ''}`}>
+                          <div className="w-full h-full absolute backface-hidden bg-gradient-to-br from-emerald-400 to-green-600 rounded-xl flex items-center justify-center border-4 border-white">
+                            <span className="text-4xl text-white opacity-50">🍃</span>
                           </div>
-                          <div className={`w-full h-full absolute backface-hidden rotate-y-180 rounded-xl flex flex-col items-center justify-center border-4 p-1 sm:p-2 text-center transition-colors ${isSolved ? 'border-green-500 bg-green-50' : 'border-amber-300 bg-white'}`}>
+                          <div className={`w-full h-full absolute backface-hidden rotate-y-180 rounded-xl flex flex-col items-center justify-center border-4 p-2 text-center ${isSolved ? 'border-green-500 bg-green-50' : 'border-amber-300 bg-white'}`}>
                             {card.type === 'image' ? (
-                              <img 
-                                src={card.imgUrl} 
-                                alt={card.name} 
-                                className="w-12 h-12 sm:w-16 sm:h-16 drop-shadow-sm pointer-events-none object-contain" 
-                                draggable="false" 
-                                onError={(e) => {
-                                  e.target.style.display = 'none';
-                                  e.target.nextSibling.style.display = 'block';
-                                }} 
-                              />
+                              <img src={card.imgUrl} alt={card.name} className="w-16 h-16 object-contain" />
                             ) : (
-                              <span className="text-base sm:text-xl font-bold text-slate-800 break-words w-full px-1">{card.name}</span>
+                              <span className="text-xl font-bold text-slate-800">{card.name}</span>
                             )}
-                            {card.type === 'image' && <span className="text-4xl sm:text-5xl drop-shadow-sm hidden">{card.icon}</span>}
                           </div>
                         </div>
                       </div>
@@ -746,102 +480,43 @@
                   })}
                 </div>
               </div>
-
-              <div className="mt-2 mb-2 sm:mb-4 flex-shrink-0 text-center">
-                <button onClick={initGame} className="bg-amber-400 hover:bg-amber-500 text-amber-900 font-bold py-2 px-6 rounded-full shadow-lg transform transition hover:scale-105 active:scale-95 text-base sm:text-lg border-b-4 border-amber-600">
-                  🔄 Restart
-                </button>
-              </div>
-
-              <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 w-[90%] max-w-md z-[100] flex flex-col gap-2 pointer-events-none">
-                {toasts.map(toast => {
-                  const bgColor = toast.type === 'success' ? 'bg-green-100 border-green-400 text-green-800' : 
-                                  toast.type === 'error' ? 'bg-red-100 border-red-400 text-red-800' : 
-                                  'bg-blue-100 border-blue-400 text-blue-800';
-                  return (
-                    <div key={toast.id} className={`p-4 rounded-xl shadow-lg border-2 ${bgColor} flex items-center gap-3 pointer-events-auto animate-in slide-in-from-bottom-5 fade-in duration-300`}>
-                      <span className="text-2xl">{toast.type === 'success' ? '✨' : toast.type === 'error' ? '❌' : '🤖'}</span>
-                      <p className="font-bold text-sm sm:text-base">{toast.message}</p>
-                    </div>
-                  );
-                })}
-              </div>
             </div>
           );
         }
 
         function AaDownloadsView({ onHome }) {
-          const [downloading, setDownloading] = useState(null);
           const [slideIndex, setSlideIndex] = useState(0);
-          const slideUrls = ["https://i.ibb.co/YFGTvyp2/1.png", "https://i.ibb.co/3myx4BBH/2.png", "https://i.ibb.co/HDm9jRm4/3.png", "https://i.ibb.co/nMQmTqbN/4.png", "https://i.ibb.co/1YNMxSfK/5.png", "https://i.ibb.co/j9Lk6HtL/6.png", "https://i.ibb.co/2Yj2vV40/7.png", "https://i.ibb.co/1Gpk35C0/8.png", "https://i.ibb.co/WwL1KwF/9.png", "https://i.ibb.co/nsCm7Cdq/10.png", "https://i.ibb.co/JFj24v2w/11.png", "https://i.ibb.co/1GSXjsDh/12.png", "https://i.ibb.co/prPkxYsd/13.png", "https://i.ibb.co/S703kGRp/14.png", "https://i.ibb.co/Vc1VDSpJ/15.png"];
+          const slideUrls = ["https://i.ibb.co/YFGTvyp2/1.png", "https://i.ibb.co/3myx4BBH/2.png", "https://i.ibb.co/HDm9jRm4/3.png", "https://i.ibb.co/nMQmTqbN/4.png", "https://i.ibb.co/1YNMxSfK/5.png"];
           
           const handleDownload = (type) => {
-            setDownloading(type);
             let url = "";
-            if (type === 'pdf') {
-              url = "https://raw.githubusercontent.com/JOUCHUCHEN/CurioCat/main/animals/Animal_Field_Guide.pdf";
-            } else if (type === 'ppt') {
-              url = "https://github.com/JOUCHUCHEN/CurioCat/blob/main/animals/Animal_Field_Guide.pptx?raw=true";
-            } else if (type === 'flashcards') {
-              url = "https://github.com/JOUCHUCHEN/CurioCat/blob/main/animals/Flashcards.zip?raw=true";
-            }
+            if (type === 'pdf') url = "https://raw.githubusercontent.com/JOUCHUCHEN/CurioCat/main/animals/Animal_Field_Guide.pdf";
+            else if (type === 'ppt') url = "https://github.com/JOUCHUCHEN/CurioCat/blob/main/animals/Animal_Field_Guide.pptx?raw=true";
             window.open(url, '_blank');
-            setTimeout(() => setDownloading(null), 2000);
           };
 
           return (
             <div className="flex flex-col h-full animate-in fade-in">
-              <button onClick={onHome} className="p-3 bg-white text-orange-500 rounded-2xl shadow-sm border mb-6 w-12 hover:bg-orange-50 active:scale-90 transition-all"><ArrowLeft size={24}/></button>
-              <div className="flex-1 flex flex-col lg:flex-row gap-8 overflow-hidden">
-                <div className="w-full lg:w-2/3 bg-white rounded-[3rem] border p-8 flex flex-col shadow-sm border-orange-50">
+              <button onClick={onHome} className="p-3 bg-white text-orange-600 rounded-2xl shadow-sm border mb-6 w-12 active:scale-90 transition-all hover:bg-orange-50"><ArrowLeft size={24}/></button>
+              <div className="flex-1 flex flex-col lg:flex-row gap-8">
+                <div className="w-full lg:w-2/3 bg-white rounded-[3rem] border p-8 flex flex-col shadow-sm">
                   <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-lg font-black flex items-center gap-3 text-gray-800 tracking-tight uppercase">
-                      <MonitorPlay size={24} className="text-orange-500" /> Preview
-                    </h3>
-                    <span className="text-[11px] bg-orange-50 text-orange-600 px-4 py-1.5 rounded-full font-black uppercase tracking-widest">
-                      Slide {slideIndex + 1} / {slideUrls.length}
-                    </span>
+                    <h3 className="text-lg font-black flex items-center gap-3 text-gray-800 uppercase"><MonitorPlay size={24} className="text-orange-500" /> Preview</h3>
+                    <span className="text-xs bg-orange-50 text-orange-600 px-4 py-1 rounded-full font-black">Slide {slideIndex + 1} / {slideUrls.length}</span>
                   </div>
-                  <div className="flex-1 bg-gray-950 rounded-[2.5rem] overflow-hidden relative flex items-center justify-center border border-gray-900 shadow-2xl">
-                    <img src={slideUrls[slideIndex]} className="h-full w-full object-contain" alt={`Slide ${slideIndex + 1}`} />
-                    <button onClick={() => setSlideIndex((prev) => (prev - 1 + slideUrls.length) % slideUrls.length)} className="absolute left-6 bg-black/40 hover:bg-white p-4 rounded-full text-white hover:text-orange-600 active:scale-90 transition-all backdrop-blur-md"><ChevronLeft size={32} /></button>
-                    <button onClick={() => setSlideIndex((prev) => (prev + 1) % slideUrls.length)} className="absolute right-6 bg-black/40 hover:bg-white p-4 rounded-full text-white hover:text-orange-600 active:scale-90 transition-all backdrop-blur-md"><ChevronRight size={32} /></button>
+                  <div className="flex-1 bg-gray-950 rounded-[2rem] overflow-hidden relative flex items-center justify-center">
+                    <img src={slideUrls[slideIndex]} className="h-full w-full object-contain" alt="Preview" />
+                    <button onClick={() => setSlideIndex((prev) => (prev - 1 + slideUrls.length) % slideUrls.length)} className="absolute left-4 bg-black/40 p-3 rounded-full text-white"><ChevronLeft size={28} /></button>
+                    <button onClick={() => setSlideIndex((prev) => (prev + 1) % slideUrls.length)} className="absolute right-4 bg-black/40 p-3 rounded-full text-white"><ChevronRight size={28} /></button>
                   </div>
                 </div>
 
-                <div className="w-full lg:w-1/3 bg-white rounded-[3rem] border p-8 flex flex-col items-center justify-center text-center h-full shadow-sm border-orange-50">
-                  <div className="bg-orange-50 p-6 rounded-[2.5rem] mb-6 text-orange-500 shadow-inner flex items-center justify-center">
-                     <Download size={48} />
-                  </div>
-                  <h3 className="text-3xl font-black text-gray-900 mb-3 tracking-tighter">Get the Materials</h3>
-                  <p className="text-xs text-gray-400 mb-8 max-w-[260px] font-bold leading-relaxed opacity-70">
-                    Take the learning further! Download the full animal collection in your preferred format and start your adventure.
-                  </p>
+                <div className="w-full lg:w-1/3 bg-white rounded-[3rem] border p-8 flex flex-col items-center justify-center text-center shadow-sm">
+                  <div className="bg-orange-50 p-6 rounded-full mb-6 text-orange-500"><Download size={48} /></div>
+                  <h3 className="text-2xl font-black mb-6">Materials</h3>
                   <div className="w-full space-y-3">
-                    <button 
-                      onClick={() => handleDownload('ppt')} 
-                      disabled={downloading} 
-                      className="w-full bg-indigo-500 hover:bg-indigo-600 text-white py-4 rounded-[1.25rem] font-black text-sm flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50 transition-all shadow-xl shadow-indigo-100"
-                    >
-                      <MonitorPlay size={18} /> 
-                      Download PPTX
-                    </button>
-                    <button 
-                      onClick={() => handleDownload('pdf')} 
-                      disabled={downloading} 
-                      className="w-full bg-rose-500 hover:bg-rose-600 text-white py-4 rounded-[1.25rem] font-black text-sm flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50 transition-all shadow-xl shadow-rose-100"
-                    >
-                      <FileText size={18} /> 
-                      Download PDF
-                    </button>
-                    <button 
-                      onClick={() => handleDownload('flashcards')} 
-                      disabled={downloading} 
-                      className="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-4 rounded-[1.25rem] font-black text-sm flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50 transition-all shadow-xl shadow-emerald-100"
-                    >
-                      <FileImage size={18} /> 
-                      Download Flashcards
-                    </button>
+                    <button onClick={() => handleDownload('ppt')} className="w-full bg-indigo-500 text-white py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 active:scale-95 transition-all"><MonitorPlay size={18} /> PPTX</button>
+                    <button onClick={() => handleDownload('pdf')} className="w-full bg-rose-500 text-white py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 active:scale-95 transition-all"><FileText size={18} /> PDF</button>
                   </div>
                 </div>
               </div>
@@ -849,26 +524,63 @@
           );
         }
 
-        // --- Main Independent App Component ---
+        // --- Main App Component ---
         function App() {
           const [moduleView, setModuleView] = useState('home');
+          const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+          // --- Navbar Component (Consistent Orange Color) ---
+          const Navbar = () => (
+            <nav className="bg-white shadow-sm h-20 border-b flex-shrink-0 z-50 sticky top-0">
+              <div className="max-w-7xl mx-auto px-4 h-full flex justify-between items-center">
+                <div className="flex items-center cursor-pointer group" onClick={() => { setModuleView('home'); setIsMobileMenuOpen(false); }}>
+                  <img 
+                    src="https://i.ibb.co/CFC5v9L/Machi-Know-Logo.png" 
+                    alt="MachiKnow Logo" 
+                    className="w-12 h-12 mr-3 rounded-xl shadow-sm border border-orange-100 group-hover:scale-110 group-hover:rotate-6 transition-all"
+                  />
+                  <span className="font-black text-3xl text-gray-900 tracking-tighter">
+                    Machi<span className="text-orange-600">Know</span>
+                  </span>
+                </div>
+                
+                {/* Desktop Menu - Active State: orange-600 */}
+                <div className="hidden md:flex items-center space-x-12">
+                  <button 
+                    onClick={() => setModuleView('home')} 
+                    className={`font-bold text-base uppercase tracking-widest transition-colors ${moduleView === 'home' ? 'text-orange-600' : 'text-gray-500 hover:text-orange-600'}`}
+                  >
+                    Home
+                  </button>
+                </div>
+
+                {/* Mobile Menu Toggle */}
+                <button 
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+                  className="md:hidden text-gray-600 p-2"
+                >
+                  {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+                </button>
+              </div>
+              
+              {/* Mobile Menu Overlay */}
+              {isMobileMenuOpen && (
+                <div className="absolute top-20 left-0 w-full bg-white shadow-xl border-b md:hidden flex flex-col p-6 space-y-4 z-40 animate-in slide-in-from-top-2 duration-300">
+                  <button 
+                    onClick={() => { setModuleView('home'); setIsMobileMenuOpen(false); }} 
+                    className={`text-left font-bold text-lg transition-colors ${moduleView === 'home' ? 'text-orange-600' : 'text-gray-700 hover:text-orange-600'}`}
+                  >
+                    Home
+                  </button>
+                </div>
+              )}
+            </nav>
+          );
 
           return (
-            <div className="min-h-screen bg-sky-50 flex flex-col font-sans h-screen overflow-hidden">
-                {/* 簡單乾淨的標頭，專為獨立動物模組設計 */}
-                <header className="bg-white shadow-sm py-4 px-6 flex items-center justify-between z-10 shrink-0">
-                    <div className="flex items-center gap-3">
-                        <span className="text-2xl">🦁</span>
-                        <h1 className="text-xl font-black text-sky-900 tracking-tight">Amazing Animals</h1>
-                    </div>
-                    {moduleView !== 'home' && (
-                        <button onClick={() => setModuleView('home')} className="text-sm font-bold text-sky-600 bg-sky-50 px-4 py-2 rounded-full hover:bg-sky-100 transition active:scale-95">
-                            Back to Menu
-                        </button>
-                    )}
-                </header>
+            <div className="min-h-screen bg-sky-50 flex flex-col h-screen overflow-hidden">
+                <Navbar />
                 
-                {/* 內容顯示區塊 */}
                 <main className="flex-1 overflow-y-auto overflow-x-hidden relative custom-scroll p-4 md:p-6">
                   <div className="max-w-7xl mx-auto h-full">
                     {moduleView === 'home' && <AaHomeView setModuleView={setModuleView} />}
@@ -878,6 +590,10 @@
                     {moduleView === 'downloads' && <AaDownloadsView onHome={() => setModuleView('home')} />}
                   </div>
                 </main>
+
+                <footer className="bg-white/80 backdrop-blur-sm border-t py-4 text-center shrink-0">
+                  <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.3em]">© 2026 MachiKnow. All rights reserved.</p>
+                </footer>
             </div>
           );
         }
