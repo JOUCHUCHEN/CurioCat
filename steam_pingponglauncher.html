@@ -66,7 +66,7 @@
         import React, { useState } from 'react';
         import { createRoot } from 'react-dom/client';
         import { 
-            Lightbulb, Rocket, PlayCircle, Wrench, Cpu, FileDown, Box
+            Lightbulb, Rocket, PlayCircle, Wrench, Cpu, FileDown
         } from 'lucide-react';
 
         // --- 共用元件：廣告版位 ---
@@ -83,20 +83,24 @@
                 id: 'spm',
                 title: "LEGO 9686 SPM: Ping Pong Launcher",
                 subtitle: "Mechanical Engineering Design",
-                imageUrl: "https://i.ibb.co/5xWX3X9y/Ping-Pong-Ball-Machine.png", // SPM 圖片
+                imageUrl: "https://i.ibb.co/5xWX3X9y/Ping-Pong-Ball-Machine.png",
                 ioLink: "https://raw.githubusercontent.com/JOUCHUCHEN/machiknow/main/steam/pingponglauncher/Ping_Pong_Launcher(spm_version).io", 
-                description: "In this lesson, we will build a powerful mechanical Ping Pong Launcher using the LEGO 9686 set! Students will explore concepts of potential and kinetic energy, lever principles, and gear systems. Through hands-on practice, they will construct a stable framework capable of storing mechanical tension to shoot a ping pong ball with impressive accuracy and distance.",
+                description: "The LEGO 9686 Launcher is a fun machine that uses a motor and rubber wheels to shoot ping pong balls. It uses a battery to spin two wheels very fast. When you put a ball in, the wheels \"grab\" it and flick it forward! It is a great way for students to see how gears work and how energy turns into fast motion.",
                 pdfLink: "https://raw.githubusercontent.com/JOUCHUCHEN/machiknow/main/steam/pingponglauncher/Ping_Pong_Launcher(spm_version).pdf", 
+                lessonPlanEn: "https://raw.githubusercontent.com/JOUCHUCHEN/machiknow/main/steam/pingponglauncher/LEGO%209686%20SPM%20Ping%20Pong%20Launcher%20Lesson%20Plan.pdf",
+                lessonPlanCh: "https://raw.githubusercontent.com/JOUCHUCHEN/machiknow/main/steam/pingponglauncher/%E5%B8%AB%E8%B3%87%E5%9F%B9%E8%A8%93%E6%95%99%E6%A1%88%EF%BC%9ALEGO%209686%20%E4%B9%92%E4%B9%93%E7%90%83%E7%99%BC%E5%B0%84%E5%99%A8.pdf",
                 themeColor: "indigo"
             },
             wedo: {
                 id: 'wedo',
                 title: "LEGO WeDo 2.0: Smart Ping Pong Launcher",
                 subtitle: "Robotics & Automation Design",
-                imageUrl: "https://i.ibb.co/dsnqrs3k/Ping-Pong-Ball-Machine-Wedo2.png", // WeDo 圖片替換
-                ioLink: "https://raw.githubusercontent.com/JOUCHUCHEN/machiknow/main/steam/pingponglauncher/Ping_Pong_Launcher(wedo2.0_version).io", // 更新 WeDo io 連結
+                imageUrl: "https://i.ibb.co/dsnqrs3k/Ping-Pong-Ball-Machine-Wedo2.png",
+                ioLink: "https://raw.githubusercontent.com/JOUCHUCHEN/machiknow/main/steam/pingponglauncher/Ping_Pong_Launcher(wedo2.0_version).io",
                 description: "Take your launcher to the next level by making it smart! In this WeDo 2.0 project, students will integrate motors and sensors to create an automated Ping Pong Launcher. We will learn how to write block-based code to trigger the launching mechanism precisely when an object is detected. This seamlessly combines physical engineering with basic programming.",
-                pdfLink: "https://raw.githubusercontent.com/JOUCHUCHEN/machiknow/main/steam/pingponglauncher/Ping_Pong_Launcher(wedo2.0_version).pdf", // 更新 WeDo pdf 連結
+                pdfLink: "https://raw.githubusercontent.com/JOUCHUCHEN/machiknow/main/steam/pingponglauncher/Ping_Pong_Launcher(wedo2.0_version).pdf", 
+                lessonPlanEn: "https://raw.githubusercontent.com/JOUCHUCHEN/machiknow/main/steam/pingponglauncher/LEGO%20WeDo%202.0%20Advanced%20Lesson%20Plan.pdf",
+                lessonPlanCh: "https://raw.githubusercontent.com/JOUCHUCHEN/machiknow/main/steam/pingponglauncher/%E5%B8%AB%E8%B3%87%E5%9F%B9%E8%A8%93%E9%80%B2%E9%9A%8E%E6%95%99%E6%A1%88%EF%BC%9AWeDo%202.0%20%E6%99%BA%E6%85%A7%E6%84%9F%E6%87%89%E7%99%BC%E5%B0%84%E5%99%A8.pdf",
                 themeColor: "emerald"
             }
         };
@@ -110,13 +114,12 @@
 
           // 處理檔案下載 (解決跨域連結直接變成空白頁面的問題)
           const handleDownload = async (e, url, filename) => {
-              e.preventDefault(); // 阻止原本 a 標籤的跳轉行為
+              e.preventDefault(); 
               try {
                   const response = await fetch(url);
                   const blob = await response.blob();
                   const blobUrl = window.URL.createObjectURL(blob);
                   
-                  // 建立隱藏的 a 標籤來觸發下載
                   const link = document.createElement('a');
                   link.href = blobUrl;
                   link.download = filename;
@@ -126,7 +129,6 @@
                   window.URL.revokeObjectURL(blobUrl);
               } catch (error) {
                   console.error('Download failed, falling back to new tab', error);
-                  // 萬一轉換失敗，退回另開視窗模式
                   window.open(url, '_blank');
               }
           };
@@ -138,11 +140,11 @@
               setTimeout(() => {
                   setActiveTab(tabId);
                   setIsAnimating(false);
-              }, 200); // 動畫過渡時間
+              }, 200); 
           };
 
           return (
-            <div className="h-full flex flex-col font-sans">
+            <div className="h-full flex flex-col font-sans text-slate-900">
                 {/* 獨立模組標頭 */}
                 <header className="bg-white/80 backdrop-blur-md border-b border-slate-100 py-4 px-8 flex items-center justify-between z-20 shrink-0">
                     <div className="flex items-center gap-3">
@@ -190,7 +192,6 @@
                     {/* 資訊區域 (Project Overview) */}
                     <div className="mb-10 w-full">
                       <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden group">
-                         {/* 裝飾背景 */}
                          <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:scale-110 transition-transform duration-700">
                             <Lightbulb size={100} className={activeTab === 'spm' ? "text-indigo-600" : "text-emerald-600"} />
                          </div>
@@ -209,7 +210,6 @@
 
                     {/* Image Frame */}
                     <div className="w-full max-w-5xl mx-auto relative group">
-                        {/* 背景裝飾陰影 - 依據版本切換顏色 */}
                         <div className={`absolute -inset-1 rounded-[3rem] blur opacity-15 group-hover:opacity-25 transition duration-1000 ${activeTab === 'spm' ? 'bg-gradient-to-r from-indigo-500 to-rose-500' : 'bg-gradient-to-r from-emerald-400 to-cyan-500'}`}></div>
                         
                         <div className="relative bg-white p-3 md:p-4 rounded-[3.5rem] shadow-2xl border border-slate-100">
@@ -223,30 +223,52 @@
                         </div>
                     </div>
 
-                    {/* 按鈕區塊 (PDF & IO 檔案下載) */}
-                    <div className="mt-10 mb-20 flex flex-col sm:flex-row items-center justify-center gap-4">
-                        {/* 按鈕 1: Download Instruction PDF (左側) */}
-                        <a 
-                            href={currentData.pdfLink} 
-                            onClick={(e) => handleDownload(e, currentData.pdfLink, `Ping_Pong_Launcher_${activeTab}.pdf`)}
-                            className="w-full sm:w-auto flex items-center justify-center gap-3 text-base font-bold text-slate-700 px-8 py-4 bg-white border-2 border-slate-200 hover:border-slate-300 hover:text-slate-900 rounded-full shadow-sm transition-all hover:scale-105 active:scale-95 group"
-                        >
-                            <FileDown size={22} className="group-hover:-translate-y-1 transition-transform" /> 
-                            Download Instruction (PDF)
-                        </a>
+                    {/* 下載按鈕區域 */}
+                    <div className="mt-12 mb-20 flex flex-col items-center gap-6">
+                        {/* 第一排: Instructions (PDF & io) */}
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
+                            <a 
+                                href={currentData.pdfLink} 
+                                onClick={(e) => handleDownload(e, currentData.pdfLink, `Instruction_${activeTab}.pdf`)}
+                                className="w-full sm:w-80 h-16 flex items-center justify-center gap-3 text-base font-bold text-slate-700 px-6 bg-white border-2 border-slate-200 hover:border-slate-300 hover:text-slate-900 rounded-full shadow-sm transition-all hover:scale-105 active:scale-95 group"
+                            >
+                                <FileDown size={22} className="group-hover:-translate-y-1 transition-transform" /> 
+                                Download Instruction (PDF)
+                            </a>
 
-                        {/* 按鈕 2: Download Instruction io file (右側) */}
-                        <a 
-                            href={currentData.ioLink} 
-                            onClick={(e) => handleDownload(e, currentData.ioLink, `Ping_Pong_Launcher_${activeTab}.io`)}
-                            className="w-full sm:w-auto flex items-center justify-center gap-3 text-base font-bold text-white px-8 py-4 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 rounded-full shadow-[0_10px_40px_-10px_rgba(244,63,94,0.4)] transition-all hover:scale-105 active:scale-95 group"
-                        >
-                            <FileDown size={22} className="group-hover:-translate-y-1 transition-transform" /> 
-                            Download Instruction (io)
-                        </a>
+                            <a 
+                                href={currentData.ioLink} 
+                                onClick={(e) => handleDownload(e, currentData.ioLink, `Instruction_${activeTab}.io`)}
+                                className="w-full sm:w-80 h-16 flex items-center justify-center gap-3 text-base font-bold text-white px-6 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 rounded-full shadow-[0_10px_40px_-10px_rgba(244,63,94,0.4)] transition-all hover:scale-105 active:scale-95 group"
+                            >
+                                <FileDown size={22} className="group-hover:-translate-y-1 transition-transform" /> 
+                                Download Instruction (io)
+                            </a>
+                        </div>
+
+                        {/* 第二排: Lesson Plans (English & Chinese) */}
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
+                            <a 
+                                href={currentData.lessonPlanEn} 
+                                onClick={(e) => handleDownload(e, currentData.lessonPlanEn, `LessonPlan_EN_${activeTab}.pdf`)}
+                                className="w-full sm:w-80 h-16 flex items-center justify-center gap-3 text-base font-bold text-slate-600 px-6 bg-slate-50 border-2 border-slate-200 hover:border-slate-300 hover:text-slate-800 rounded-full shadow-sm transition-all hover:scale-105 active:scale-95 group"
+                            >
+                                <FileDown size={22} className="text-blue-500 group-hover:-translate-y-1 transition-transform" /> 
+                                Lesson Plan (English)
+                            </a>
+
+                            <a 
+                                href={currentData.lessonPlanCh} 
+                                onClick={(e) => handleDownload(e, currentData.lessonPlanCh, `LessonPlan_CH_${activeTab}.pdf`)}
+                                className="w-full sm:w-80 h-16 flex items-center justify-center gap-3 text-base font-bold text-slate-600 px-6 bg-slate-50 border-2 border-slate-200 hover:border-slate-300 hover:text-slate-800 rounded-full shadow-sm transition-all hover:scale-105 active:scale-95 group"
+                            >
+                                <FileDown size={22} className="text-red-500 group-hover:-translate-y-1 transition-transform" /> 
+                                Lesson Plan (Chinese)
+                            </a>
+                        </div>
                     </div>
 
-                    {/* Ad Box - 移至最下方 */}
+                    {/* Ad Box */}
                     <div className="mt-6 mb-20 w-full max-w-3xl mx-auto flex flex-col">
                        <AdBanner format="horizontal" className="!my-0 w-full h-24 border-slate-200" />
                     </div>
@@ -257,7 +279,6 @@
           );
         }
 
-        // Render the App
         const root = createRoot(document.getElementById('root'));
         root.render(<App />);
     </script>
