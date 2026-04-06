@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MaachiiKnow - Creative Resource Hub</title>
     
+    <!-- 引入 Noto Sans TC 字體 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
     
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -22,6 +24,7 @@
         }
     </script>
 
+    <!-- 自訂 CSS -->
     <style>
         body { font-family: 'Noto Sans TC', sans-serif; }
         .custom-scroll::-webkit-scrollbar { width: 8px; }
@@ -32,6 +35,7 @@
         a { text-decoration: none; display: block; }
     </style>
 
+    <!-- Import Maps -->
     <script type="importmap">
     {
         "imports": {
@@ -42,9 +46,11 @@
     }
     </script>
 
+    <!-- Babel Standalone -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body class="bg-gray-50 h-screen overflow-hidden">
+    <!-- React 掛載點 -->
     <div id="root" class="h-full"></div>
 
     <script type="text/babel" data-type="module">
@@ -148,7 +154,7 @@
 
                 <main className="max-w-7xl mx-auto px-4 py-6 flex flex-col lg:flex-row gap-10">
                   <div className="lg:w-4/5">
-                    {/* Elementary Section */}
+                    {/* 小學英語區塊 */}
                     <section id="elementary" className="mb-14">
                       <div className="flex items-center mb-6">
                         <LayoutGrid className="text-orange-600 mr-4" size={28} />
@@ -163,11 +169,11 @@
                       </div>
                     </section>
 
-                    {/* Bricks & Robotics Section */}
+                    {/* Bricks & Robotics 教學區塊 (統一顏色與標籤文字) */}
                     <section id="steam" className="mb-14">
                       <div className="flex items-center mb-6">
                         <Rocket className="text-orange-600 mr-4" size={28} />
-                        <h2 className="text-2xl font-black text-gray-900 uppercase">Bricks & Robotics</h2>
+                        <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tight">Bricks & Robotics</h2>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -176,8 +182,14 @@
                           <div className="w-full h-36 rounded-xl overflow-hidden mb-4 bg-white/10 flex items-center justify-center">
                             <img src="https://i.ibb.co/dsnqrs3k/Ping-Pong-Ball-Machine-Wedo2.png" alt="LEGO Ping Pong Launcher" className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" />
                           </div>
-                          <div className="relative z-10 flex-1"><h3 className="text-lg font-black mb-1 drop-shadow-md leading-tight">LEGO Ping Pong Launcher</h3><p className="text-emerald-50 text-xs opacity-90 font-bold line-clamp-2">Transforming LEGO SPM mechanics into WeDo 2.0 system.</p></div>
-                          <div className="absolute bottom-4 right-4 bg-white/20 p-3 rounded-full backdrop-blur-md"><PlayCircle size={24} /></div>
+                          <div className="relative z-10 flex-1">
+                            <h3 className="text-lg font-black mb-1 drop-shadow-md leading-tight">LEGO Ping Pong Launcher</h3>
+                            <p className="text-emerald-50 text-xs opacity-90 font-bold line-clamp-2">Transforming LEGO SPM mechanics into WeDo 2.0 system.</p>
+                            {/* 統一標籤樣式 */}
+                            <div className="mt-3 flex items-center text-[10px] font-black uppercase tracking-widest bg-black/20 w-fit px-2 py-1 rounded-md">
+                                <span className="text-yellow-300">SPM</span> <ChevronRight size={10} className="mx-1 text-white opacity-40"/> <span className="text-cyan-300">Wedo 2.0</span>
+                            </div>
+                          </div>
                         </a>
 
                         {/* Featured: Bow & Arrow */}
@@ -185,11 +197,17 @@
                           <div className="w-full h-36 rounded-xl overflow-hidden mb-4 bg-white/10 flex items-center justify-center">
                             <img src="https://i.ibb.co/p6JXLyd9/45.png" alt="LEGO Bow and Arrow" className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" />
                           </div>
-                          <div className="relative z-10 flex-1"><h3 className="text-lg font-black mb-1 drop-shadow-md leading-tight">LEGO 9686 SPM: Bow & Arrow</h3><p className="text-indigo-50 text-xs opacity-90 font-bold line-clamp-2">Mastering mechanical logic through high-precision LEGO construction.</p></div>
-                          <div className="absolute bottom-4 right-4 bg-white/20 p-3 rounded-full backdrop-blur-md"><Youtube size={24} /></div>
+                          <div className="relative z-10 flex-1">
+                            <h3 className="text-lg font-black mb-1 drop-shadow-md leading-tight">LEGO 9686 SPM: Bow & Arrow</h3>
+                            <p className="text-indigo-50 text-xs opacity-90 font-bold line-clamp-2">Mastering mechanical logic through high-precision LEGO construction.</p>
+                            {/* 統一標籤樣式：改為 SPM 且顏色統一 */}
+                            <div className="mt-3 flex items-center text-[10px] font-black uppercase tracking-widest bg-black/20 w-fit px-2 py-1 rounded-md">
+                                <span className="text-yellow-300">SPM</span>
+                            </div>
+                          </div>
                         </a>
 
-                        {/* Dynamic STEM L1 Projects (Including updated Rubber Band Car) */}
+                        {/* 動態生成的 STEM L1 專案 */}
                         {stemL1Projects.map((project, index) => {
                             const themes = ["from-slate-600 to-gray-900", "from-blue-600 to-indigo-900", "from-teal-600 to-emerald-900", "from-violet-600 to-purple-900"];
                             const themeClass = themes[index % 4];
@@ -207,28 +225,58 @@
                                   <div className="relative z-10 flex-1">
                                     <h3 className="text-lg font-black mb-1 drop-shadow-md leading-tight">{project.title}</h3>
                                     <p className="text-white/80 text-xs font-bold line-clamp-1">Mechanical structure & logic</p>
-                                    <div className="mt-3 flex items-center text-[10px] font-black uppercase tracking-widest bg-white/20 w-fit px-2 py-1 rounded-md backdrop-blur-sm"><span>MECHANICS</span></div>
+                                    {/* 統一標籤樣式：文字改為 SPM，顏色統一黃色 */}
+                                    <div className="mt-3 flex items-center text-[10px] font-black uppercase tracking-widest bg-black/20 w-fit px-2 py-1 rounded-md backdrop-blur-sm">
+                                        <span className="text-yellow-300">SPM</span>
+                                    </div>
                                   </div>
-                                  <div className="absolute bottom-4 right-4 bg-white/20 p-3 rounded-full backdrop-blur-md"><PlayCircle size={24} /></div>
                                 </a>
                             );
                         })}
                       </div>
                     </section>
 
-                    {/* Scratch Section */}
+                    {/* Scratch 互動遊戲區塊 */}
                     <section id="scratch" className="mb-14">
                       <div className="flex items-center mb-6">
                         <Gamepad2 className="text-orange-600 mr-4" size={28} />
                         <h2 className="text-2xl font-black text-gray-900 uppercase">Scratch Interactive</h2>
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                        {/* 1. 貓翻翻樂 */}
                         <a href="./scratch_cat_match.html" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-[2rem] p-5 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all relative overflow-hidden flex flex-col justify-between group shadow-lg min-h-[11rem]">
                           <div className="absolute right-2 bottom-2 opacity-20 group-hover:opacity-40 transition-opacity transform group-hover:scale-110 duration-700"><span className="text-[5rem]">🐱</span></div>
                           <div className="relative z-10"><h3 className="text-xl font-black mb-1">🐾 貓翻翻樂 (English)</h3><p className="text-yellow-50 text-xs opacity-90 font-bold">Cat Memory Game</p></div>
                           <div className="relative z-10 self-end mt-3"><div className="bg-white/20 p-2.5 rounded-full"><PlayCircle size={20} /></div></div>
                         </a>
-                        {/* 其他 Scratch 項目... */}
+                        
+                        {/* 2. 時空穿越 */}
+                        <a href="./scratch_time_travel.html" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-violet-500 to-fuchsia-700 rounded-[2rem] p-5 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all relative overflow-hidden flex flex-col justify-between group shadow-lg min-h-[11rem]">
+                          <div className="absolute right-2 bottom-2 opacity-20 group-hover:opacity-40 transition-opacity transform group-hover:scale-110 duration-700"><span className="text-[5rem]">⏳</span></div>
+                          <div className="relative z-10"><h3 className="text-xl font-black mb-1">🌌 英文教材-時空穿越</h3><p className="text-violet-50 text-xs opacity-90 font-bold">Time Travel ESL Material</p></div>
+                          <div className="relative z-10 self-end mt-3"><div className="bg-white/20 p-2.5 rounded-full"><PlayCircle size={20} /></div></div>
+                        </a>
+
+                        {/* 3. 拍拍打怪獸 */}
+                        <a href="./scratch_whack_monster.html" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-rose-500 to-red-700 rounded-[2rem] p-5 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all relative overflow-hidden flex flex-col justify-between group shadow-lg min-h-[11rem]">
+                          <div className="absolute right-2 bottom-2 opacity-20 group-hover:opacity-40 transition-opacity transform group-hover:scale-110 duration-700"><span className="text-[5rem]">👾</span></div>
+                          <div className="relative z-10"><h3 className="text-xl font-black mb-1">🔨 英文教材-拍拍打怪獸</h3><p className="text-rose-50 text-xs opacity-90 font-bold">Whack-a-Monster Practice</p></div>
+                          <div className="relative z-10 self-end mt-3"><div className="bg-white/20 p-2.5 rounded-full"><PlayCircle size={20} /></div></div>
+                        </a>
+
+                        {/* 4. What are you doing? */}
+                        <a href="./scratch_what_are_you_doing.html" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-blue-400 to-cyan-600 rounded-[2rem] p-5 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all relative overflow-hidden flex flex-col justify-between group shadow-lg min-h-[11rem]">
+                          <div className="absolute right-2 bottom-2 opacity-20 group-hover:opacity-40 transition-opacity transform group-hover:scale-110 duration-700"><span className="text-[5rem]">🏃‍♂️</span></div>
+                          <div className="relative z-10"><h3 className="text-xl font-black mb-1">💬 What are you doing?</h3><p className="text-blue-50 text-xs opacity-90 font-bold">Action Verbs Interactive</p></div>
+                          <div className="relative z-10 self-end mt-3"><div className="bg-white/20 p-2.5 rounded-full"><PlayCircle size={20} /></div></div>
+                        </a>
+
+                        {/* 5. Preposition - OIIA CAT */}
+                        <a href="./scratch_oiia_cat.html" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-teal-400 to-emerald-600 rounded-[2rem] p-5 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all relative overflow-hidden flex flex-col justify-between group shadow-lg min-h-[11rem]">
+                          <div className="absolute right-2 bottom-2 opacity-20 group-hover:opacity-40 transition-opacity transform group-hover:scale-110 duration-700"><span className="text-[5rem]">📦</span></div>
+                          <div className="relative z-10"><h3 className="text-xl font-black mb-1 leading-tight">🐈 Preposition of Location</h3><p className="text-teal-50 text-xs opacity-90 font-bold">OIIA CAT Version</p></div>
+                          <div className="relative z-10 self-end mt-3"><div className="bg-white/20 p-2.5 rounded-full"><PlayCircle size={20} /></div></div>
+                        </a>
                       </div>
                     </section>
                   </div>
