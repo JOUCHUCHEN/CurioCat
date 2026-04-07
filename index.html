@@ -58,10 +58,10 @@
         import { createRoot } from 'react-dom/client';
         import { Menu, LayoutGrid, Rocket, ChevronRight, Youtube, PlayCircle, Gamepad2, Wrench } from 'lucide-react';
 
-        // --- STEM 課程資料 (全部整合在此陣列) ---
+        // --- STEM 課程資料 ---
         const stemProjects = [
             { id: 'p1', title: 'Ping Pong Launcher', link: './steam_pingponglauncher.html', cover: 'https://i.ibb.co/dsnqrs3k/Ping-Pong-Ball-Machine-Wedo2.png', desc: 'Transforming LEGO SPM mechanics into WeDo 2.0 system.', tags: ['SPM', 'Wedo 2.0'] },
-            { id: 'p2', title: 'Bow & Arrow', link: './steam_bow&arrow.html', cover: 'https://i.ibb.co/p6JXLyd9/45.png', desc: 'Mechanical structure & logic', tags: ['SPM']},
+            { id: 'p2', title: 'Bow & Arrow', link: './steam_bow&arrow.html', cover: 'https://i.ibb.co/bjhp6x9d/image.png', desc: 'Mechanical structure & logic', tags: ['SPM']},
             { id: 2, title: 'Rubber Band Car', link: './steam_rubberbandcar.html', cover: 'https://i.ibb.co/LD5jgtpF/45.png', desc: 'Mechanical structure & logic', tags: ['SPM'] },
             { id: 3, title: 'Gun', desc: 'Mechanical structure & logic', tags: ['SPM'] },
             { id: 4, title: 'Tesla', desc: 'Mechanical structure & logic', tags: ['SPM'] },
@@ -120,7 +120,6 @@
                                 </div>
                                 <div className="relative z-10 flex-1 flex flex-col">
                                     <h3 className="text-lg font-black mb-0.5 drop-shadow-md leading-tight">{project.title}</h3>
-                                    {/* 修改處：縮小 desc 與 tag 之間的 mb 間距 */}
                                     <p className="text-white/80 text-xs font-bold line-clamp-2 mb-1 opacity-90">{project.desc}</p>
                                     
                                     <div className="mt-1 flex flex-wrap gap-2">
@@ -244,35 +243,35 @@
                         <a href="./scratch_cat_match.html" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-[2rem] p-5 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all relative overflow-hidden flex flex-col justify-between group shadow-lg min-h-[11rem]">
                           <div className="absolute right-2 bottom-2 opacity-20 group-hover:opacity-40 transition-opacity transform group-hover:scale-110 duration-700"><span className="text-[5rem]">🐱</span></div>
                           <div className="relative z-10"><h3 className="text-xl font-black mb-1">🐾 貓翻翻樂 (English)</h3><p className="text-yellow-50 text-xs opacity-90 font-bold">Cat Memory Game</p></div>
-                          <div className="relative z-10 self-end mt-3"><div className="bg-white/20 p-2.5 rounded-full"><PlayCircle size={20} /></div></div>
                         </a>
                         
-                        {/* 2. 時空穿越 */}
+                        {/* 2. What time is it? */}
                         <a href="./scratch_time_travel.html" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-violet-500 to-fuchsia-700 rounded-[2rem] p-5 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all relative overflow-hidden flex flex-col justify-between group shadow-lg min-h-[11rem]">
-                          <div className="absolute right-2 bottom-2 opacity-20 group-hover:opacity-40 transition-opacity transform group-hover:scale-110 duration-700"><span className="text-[5rem]">⏳</span></div>
-                          <div className="relative z-10"><h3 className="text-xl font-black mb-1">🌌 英文教材-時空穿越</h3><p className="text-violet-50 text-xs opacity-90 font-bold">Time Travel ESL Material</p></div>
-                          <div className="relative z-10 self-end mt-3"><div className="bg-white/20 p-2.5 rounded-full"><PlayCircle size={20} /></div></div>
+                          <div className="absolute -right-4 -bottom-4 opacity-100 transition-opacity transform group-hover:scale-110 duration-700">
+                            <img src="https://i.ibb.co/G43S36BY/time-cover.png" className="w-40 h-40 object-contain" alt="Time" />
+                          </div>
+                          <div className="relative z-10">
+                            <h3 className="text-xl font-black mb-1 drop-shadow-md">⏰ What time is it?</h3>
+                            <p className="text-violet-50 text-xs opacity-90 font-bold">Time & Clock ESL Material</p>
+                          </div>
                         </a>
 
                         {/* 3. 拍拍打怪獸 */}
                         <a href="./scratch_whack_monster.html" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-rose-500 to-red-700 rounded-[2rem] p-5 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all relative overflow-hidden flex flex-col justify-between group shadow-lg min-h-[11rem]">
                           <div className="absolute right-2 bottom-2 opacity-20 group-hover:opacity-40 transition-opacity transform group-hover:scale-110 duration-700"><span className="text-[5rem]">👾</span></div>
-                          <div className="relative z-10"><h3 className="text-xl font-black mb-1">🔨 英文教材-拍拍打怪獸</h3><p className="text-rose-50 text-xs opacity-90 font-bold">Whack-a-Monster Practice</p></div>
-                          <div className="relative z-10 self-end mt-3"><div className="bg-white/20 p-2.5 rounded-full"><PlayCircle size={20} /></div></div>
+                          <div className="relative z-10"><h3 className="text-xl font-black mb-1">🔨 拍拍打怪獸 (English)</h3><p className="text-rose-50 text-xs opacity-90 font-bold">Whack-a-Monster Practice</p></div>
                         </a>
 
                         {/* 4. What are you doing? */}
                         <a href="./scratch_what_are_you_doing.html" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-blue-400 to-cyan-600 rounded-[2rem] p-5 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all relative overflow-hidden flex flex-col justify-between group shadow-lg min-h-[11rem]">
                           <div className="absolute right-2 bottom-2 opacity-20 group-hover:opacity-40 transition-opacity transform group-hover:scale-110 duration-700"><span className="text-[5rem]">🏃‍♂️</span></div>
                           <div className="relative z-10"><h3 className="text-xl font-black mb-1">💬 What are you doing?</h3><p className="text-blue-50 text-xs opacity-90 font-bold">Action Verbs Interactive</p></div>
-                          <div className="relative z-10 self-end mt-3"><div className="bg-white/20 p-2.5 rounded-full"><PlayCircle size={20} /></div></div>
                         </a>
 
                         {/* 5. Preposition - OIIA CAT */}
                         <a href="./scratch_oiia_cat.html" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-teal-400 to-emerald-600 rounded-[2rem] p-5 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all relative overflow-hidden flex flex-col justify-between group shadow-lg min-h-[11rem]">
                           <div className="absolute right-2 bottom-2 opacity-20 group-hover:opacity-40 transition-opacity transform group-hover:scale-110 duration-700"><span className="text-[5rem]">📦</span></div>
                           <div className="relative z-10"><h3 className="text-xl font-black mb-1 leading-tight">🐈 Preposition of Location</h3><p className="text-teal-50 text-xs opacity-90 font-bold">OIIA CAT Version</p></div>
-                          <div className="relative z-10 self-end mt-3"><div className="bg-white/20 p-2.5 rounded-full"><PlayCircle size={20} /></div></div>
                         </a>
                       </div>
                     </section>
