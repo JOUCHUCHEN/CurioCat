@@ -45,76 +45,133 @@
         }
     </style>
 </head>
-<body class="bg-sky-100 h-[100dvh] flex flex-col items-center py-2 sm:py-4 font-sans overflow-hidden">
+<body class="bg-sky-100 h-[100dvh] flex flex-col font-sans overflow-hidden">
 
-    <!-- 開場遊戲指南對話框 (Intro Modal) -->
-    <div id="intro-modal" class="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-[60]">
-        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md text-center shadow-2xl transform scale-100 transition-transform mx-4">
-            <div class="text-5xl sm:text-6xl mb-4">🐾</div>
-            <h2 class="text-2xl sm:text-3xl font-bold text-sky-600 mb-4">Welcome to Amazing Animals!</h2>
-            <div class="text-base sm:text-lg text-gray-700 mb-6 text-left bg-sky-50 p-4 rounded-xl border border-sky-100">
-                <strong>How to play:</strong><br>
-                <ul class="list-disc pl-5 mt-2 space-y-1">
-                    <li>Click on the cards to flip them.</li>
-                    <li>Match the animal picture with its English name.</li>
-                    <li>Find all 10 pairs to win!</li>
-                </ul>
+    <!-- 導航欄 (Navbar) -->
+    <nav class="bg-white shadow-sm h-20 border-b flex-shrink-0 z-50 sticky top-0 w-full">
+        <div class="max-w-7xl mx-auto px-4 h-full flex justify-between items-center">
+            <!-- Logo -->
+            <div class="flex items-center cursor-pointer group" onclick="window.location.href='index.html'">
+                <img src="https://i.ibb.co/CFC5v9L/Machi-Know-Logo.png" alt="MaachiiKonw Logo" class="w-16 h-16 object-contain group-hover:scale-110 group-hover:rotate-6 transition-all relative -top-1 left-0 z-0">
+                <span class="font-black text-3xl text-gray-900 tracking-tighter relative z-10 ml-0">
+                    Maachii<span class="text-orange-600">Konw</span>
+                </span>
             </div>
-            <button id="start-btn" class="bg-amber-400 hover:bg-amber-500 text-amber-900 font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105 active:scale-95 text-xl border-b-4 border-amber-600">
-                Start Game
+            
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center space-x-12">
+                <button onclick="window.location.href='index.html'" class="font-bold text-base text-gray-500 hover:text-orange-600 uppercase tracking-widest transition-colors">
+                    Home
+                </button>
+            </div>
+
+            <!-- Mobile Menu Toggle -->
+            <button id="mobile-menu-btn" class="md:hidden text-gray-600 p-2">
+                <!-- Menu Icon -->
+                <svg id="menu-icon-open" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+                <!-- Close Icon (Hidden by default) -->
+                <svg id="menu-icon-close" class="hidden" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
             </button>
         </div>
-    </div>
-
-    <!-- 音樂控制按鈕 -->
-    <div class="fixed top-2 right-2 sm:top-4 sm:right-4 z-50">
-        <button id="music-toggle" class="bg-white w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full shadow border-2 border-sky-200 hover:bg-sky-50 text-xl transition-colors no-select">
-            🔇
-        </button>
-    </div>
-
-    <!-- 遊戲標題與計分板 -->
-    <div class="text-center mb-2 flex-shrink-0">
-        <h1 class="text-2xl sm:text-3xl font-bold text-amber-600 mb-1 drop-shadow-md border-b-4 border-amber-400 pb-1 inline-block">🐾 Amazing Animals 🐾</h1>
-        <div class="mt-2 flex justify-center gap-4 text-sm sm:text-base font-bold text-sky-800">
-            <div class="bg-white px-3 py-1 sm:px-4 sm:py-2 rounded-full shadow-sm border-2 border-sky-200">
-                Moves: <span id="moves" class="text-amber-500">0</span>
-            </div>
-            <div class="bg-white px-3 py-1 sm:px-4 sm:py-2 rounded-full shadow-sm border-2 border-sky-200">
-                Matches: <span id="matches" class="text-green-500">0</span> / 10
-            </div>
-        </div>
-    </div>
-
-    <!-- 遊戲網格 -->
-    <div id="game-board" class="grid grid-cols-4 grid-rows-5 sm:grid-cols-5 sm:grid-rows-4 gap-2 sm:gap-3 max-w-4xl w-full px-4 flex-1 min-h-0 perspective pb-2">
-        <!-- 卡片將由 JavaScript 動態生成 -->
-    </div>
-
-    <!-- 控制按鈕 -->
-    <div class="mt-2 mb-2 sm:mb-4 flex-shrink-0">
-        <button onclick="initGame()" class="bg-amber-400 hover:bg-amber-500 text-amber-900 font-bold py-2 px-6 rounded-full shadow-lg transform transition hover:scale-105 active:scale-95 text-base sm:text-lg border-b-4 border-amber-600">
-            🔄 Restart
-        </button>
-    </div>
-
-    <!-- 勝利視窗 (預設隱藏) -->
-    <div id="win-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-50">
-        <div class="bg-white rounded-3xl p-8 max-w-sm text-center shadow-2xl transform scale-100 transition-transform">
-            <div class="text-6xl mb-4">🎉</div>
-            <h2 class="text-3xl font-bold text-green-600 mb-2">Great Job!</h2>
-            <p class="text-lg text-gray-700 mb-6">You found all the animals!<br>It took you <span id="final-moves" class="font-bold text-amber-500"></span> moves.</p>
-            <button onclick="initGame()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full shadow-md transform transition hover:scale-105 active:scale-95 text-lg">
-                Play Again
+        
+        <!-- Mobile Menu Overlay (Hidden by default) -->
+        <div id="mobile-menu" class="hidden absolute top-20 left-0 w-full bg-white shadow-xl border-b md:hidden flex-col p-6 space-y-4 z-40 transition-all">
+            <button onclick="window.location.href='index.html'" class="text-left font-bold text-gray-700">
+                Home
             </button>
         </div>
-    </div>
+    </nav>
 
-    <!-- AI 知識小學堂 (Toast 通知區) -->
-    <div id="toast-container" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 w-[90%] max-w-md z-50 flex flex-col gap-2 pointer-events-none"></div>
+    <!-- 遊戲主體區域 Wrapper -->
+    <main class="flex-1 flex flex-col items-center py-2 sm:py-4 relative min-h-0 w-full overflow-hidden">
+        
+        <!-- 開場遊戲指南對話框 (Intro Modal) -->
+        <div id="intro-modal" class="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-[60]">
+            <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md text-center shadow-2xl transform scale-100 transition-transform mx-4">
+                <div class="text-5xl sm:text-6xl mb-4">🐾</div>
+                <h2 class="text-2xl sm:text-3xl font-bold text-sky-600 mb-4">Welcome to Amazing Animals!</h2>
+                <div class="text-base sm:text-lg text-gray-700 mb-6 text-left bg-sky-50 p-4 rounded-xl border border-sky-100">
+                    <strong>How to play:</strong><br>
+                    <ul class="list-disc pl-5 mt-2 space-y-1">
+                        <li>Click on the cards to flip them.</li>
+                        <li>Match the animal picture with its English name.</li>
+                        <li>Find all 10 pairs to win!</li>
+                    </ul>
+                </div>
+                <button id="start-btn" class="bg-amber-400 hover:bg-amber-500 text-amber-900 font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105 active:scale-95 text-xl border-b-4 border-amber-600">
+                    Start Game
+                </button>
+            </div>
+        </div>
+
+        <!-- 音樂控制按鈕 (改為 absolute 讓他相對於 main 容器右上角，不被導航欄遮擋) -->
+        <div class="absolute top-2 right-2 sm:top-4 sm:right-4 z-40">
+            <button id="music-toggle" class="bg-white w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full shadow border-2 border-sky-200 hover:bg-sky-50 text-xl transition-colors no-select">
+                🔇
+            </button>
+        </div>
+
+        <!-- 遊戲標題與計分板 -->
+        <div class="text-center mb-2 flex-shrink-0 pt-2 sm:pt-0">
+            <h1 class="text-2xl sm:text-3xl font-bold text-amber-600 mb-1 drop-shadow-md border-b-4 border-amber-400 pb-1 inline-block">🐾 Amazing Animals 🐾</h1>
+            <div class="mt-2 flex justify-center gap-4 text-sm sm:text-base font-bold text-sky-800">
+                <div class="bg-white px-3 py-1 sm:px-4 sm:py-2 rounded-full shadow-sm border-2 border-sky-200">
+                    Moves: <span id="moves" class="text-amber-500">0</span>
+                </div>
+                <div class="bg-white px-3 py-1 sm:px-4 sm:py-2 rounded-full shadow-sm border-2 border-sky-200">
+                    Matches: <span id="matches" class="text-green-500">0</span> / 10
+                </div>
+            </div>
+        </div>
+
+        <!-- 遊戲網格 -->
+        <div id="game-board" class="grid grid-cols-4 grid-rows-5 sm:grid-cols-5 sm:grid-rows-4 gap-2 sm:gap-3 max-w-4xl w-full px-4 flex-1 min-h-0 perspective pb-2">
+            <!-- 卡片將由 JavaScript 動態生成 -->
+        </div>
+
+        <!-- 控制按鈕 -->
+        <div class="mt-2 mb-2 flex-shrink-0">
+            <button onclick="initGame()" class="bg-amber-400 hover:bg-amber-500 text-amber-900 font-bold py-2 px-6 rounded-full shadow-lg transform transition hover:scale-105 active:scale-95 text-base sm:text-lg border-b-4 border-amber-600">
+                🔄 Restart
+            </button>
+        </div>
+
+        <!-- 勝利視窗 (預設隱藏) -->
+        <div id="win-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-50">
+            <div class="bg-white rounded-3xl p-8 max-w-sm text-center shadow-2xl transform scale-100 transition-transform">
+                <div class="text-6xl mb-4">🎉</div>
+                <h2 class="text-3xl font-bold text-green-600 mb-2">Great Job!</h2>
+                <p class="text-lg text-gray-700 mb-6">You found all the animals!<br>It took you <span id="final-moves" class="font-bold text-amber-500"></span> moves.</p>
+                <button onclick="initGame()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full shadow-md transform transition hover:scale-105 active:scale-95 text-lg">
+                    Play Again
+                </button>
+            </div>
+        </div>
+
+        <!-- AI 知識小學堂 (Toast 通知區) -->
+        <div id="toast-container" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 w-[90%] max-w-md z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    </main>
 
     <script>
         const apiKey = ""; // 系統會自動提供金鑰
+
+        // ==========================================
+        // 🍔 導航欄手機版選單控制
+        // ==========================================
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuIconOpen = document.getElementById('menu-icon-open');
+        const menuIconClose = document.getElementById('menu-icon-close');
+
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                mobileMenu.classList.toggle('flex');
+                menuIconOpen.classList.toggle('hidden');
+                menuIconClose.classList.toggle('hidden');
+            });
+        }
 
         // ==========================================
         // 🎵 音效與背景音樂設定
@@ -126,17 +183,17 @@
         const startBtn = document.getElementById('start-btn');
 
         // 設定您指定的背景音樂與外部音效 (轉換為 Raw URL 以便讀取音檔)
-        const bgMusic = new Audio('https://raw.githubusercontent.com/JOUCHUCHEN/CurioCat/main/animals/amazing_animals_bgm.mp3');
+        const bgMusic = new Audio('https://raw.githubusercontent.com/JOUCHUCHEN/maachiiknow/main/animals/amazing_animals_bgm.mp3');
         bgMusic.loop = true;
         
         // 淡入效果與目標音量設定 (音量從 0.25 再降低 10% 變成 0.15)
-        const targetVolume = 0.20; 
+        const targetVolume = 0.15; 
         bgMusic.volume = 0; // 初始音量設為 0 以便淡入
         let fadeInterval = null;
 
-        const matchSound = new Audio('https://raw.githubusercontent.com/JOUCHUCHEN/CurioCat/main/correct.mp3');
-        const errorSound = new Audio('https://raw.githubusercontent.com/JOUCHUCHEN/CurioCat/main/error.mp3');
-        const winSound = new Audio('https://raw.githubusercontent.com/JOUCHUCHEN/CurioCat/main/freesound_crunchpixstudio-purchase-success-384963.mp3');
+        const matchSound = new Audio('https://raw.githubusercontent.com/JOUCHUCHEN/maachiiknow/main/animals/correct.mp3');
+        const errorSound = new Audio('https://raw.githubusercontent.com/JOUCHUCHEN/maachiiknow/main/animals/error.mp3');
+        const winSound = new Audio('https://raw.githubusercontent.com/JOUCHUCHEN/maachiiknow/main/animals/freesound_crunchpixstudio-purchase-success-384963.mp3');
 
         // 初始化音效引擎 (僅用於翻牌的基礎特效音)
         function initAudio() {
@@ -183,6 +240,17 @@
                 winSound.play().catch(err => console.log("音效播放提示:", err.message));
             }
         }
+
+        // 語音朗讀功能 (Text-to-Speech)
+        const speak = (text) => {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // 停止前一個未唸完的單字
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.85; // 稍微放慢語速，讓小朋友聽得更清楚
+                window.speechSynthesis.speak(utterance);
+            }
+        };
 
         // 播放音樂並加入淡入效果 (Fade-in)
         function playMusicWithFadeIn() {
@@ -339,6 +407,11 @@
 
             // 播放翻牌音效
             playSfx('flip');
+            
+            // 讀出相應的動物名字
+            if (!isMuted) {
+                speak(card.dataset.name);
+            }
 
             // 執行翻轉動畫
             inner.classList.add('rotate-y-180');
