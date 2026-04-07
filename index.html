@@ -58,40 +58,92 @@
         import { createRoot } from 'react-dom/client';
         import { Menu, LayoutGrid, Rocket, ChevronRight, Youtube, PlayCircle, Gamepad2, Wrench } from 'lucide-react';
 
-        // --- STEM L1 課程資料 ---
-        const stemL1Projects = [
-            { id: 2, title: 'Rubber Band Car', customLink: './steam_rubberbandcar.html', cover: 'https://i.ibb.co/LD5jgtpF/45.png' },
-            { id: 3, title: 'Gun' },
-            { id: 4, title: 'Tesla' },
-            { id: 6, title: 'Frog' },
-            { id: 7, title: 'Rebound LEGO Car' },
-            { id: 8, title: 'Pac-Man Car' },
-            { id: 9, title: 'Basic Crane Mechanism' },
-            { id: 10, title: 'Snail' },
-            { id: 11, title: 'Machine Gun' },
-            { id: 12, title: 'Kayak' },
-            { id: 14, title: 'Power Driller' },
-            { id: 15, title: 'Supercharged Car' },
-            { id: 17, title: 'Sailboat' },
-            { id: 18, title: 'Swing' },
-            { id: 19, title: 'Catapult' },
-            { id: 20, title: 'Whale' },
-            { id: 21, title: 'Fishing Rod' },
-            { id: 22, title: 'Crane' },
-            { id: 23, title: 'Auto Grabber' },
-            { id: 24, title: 'Motorcycle with Rubber Band' },
-            { id: 25, title: 'Hammer' },
-            { id: 26, title: 'Jet' },
-            { id: 27, title: 'Bird' },
-            { id: 28, title: 'Boxing' },
-            { id: 29, title: 'Paperplane Shooter' },
-            { id: 30, title: 'Balance Scale' },
-            { id: 31, title: 'Quadrupedalism' },
-            { id: 33, title: 'Motorcycle' },
-            { id: 34, title: 'Pathfinding Car' },
-            { id: 35, title: 'Alligator' },
-            { id: 36, title: 'Racing Car' }
+        // --- STEM 課程資料 (全部整合在此陣列) ---
+        const stemProjects = [
+            { id: 'p1', title: 'Ping Pong Launcher', link: './steam_pingponglauncher.html', cover: 'https://i.ibb.co/dsnqrs3k/Ping-Pong-Ball-Machine-Wedo2.png', desc: 'Transforming LEGO SPM mechanics into WeDo 2.0 system.', tags: ['SPM', 'Wedo 2.0'] },
+            { id: 'p2', title: 'Bow & Arrow', link: './steam_bow&arrow.html', cover: 'https://i.ibb.co/p6JXLyd9/45.png', desc: 'Mastering mechanical logic through high-precision construction.', tags: ['SPM']},
+            { id: 2, title: 'Rubber Band Car', link: './steam_rubberbandcar.html', cover: 'https://i.ibb.co/LD5jgtpF/45.png', desc: 'Mechanical structure & logic', tags: ['SPM'] },
+            { id: 3, title: 'Gun', desc: 'Mechanical structure & logic', tags: ['SPM'] },
+            { id: 4, title: 'Tesla', desc: 'Mechanical structure & logic', tags: ['SPM'] },
+            { id: 6, title: 'Frog', desc: 'Mechanical structure & logic', tags: ['SPM'] },
+            { id: 7, title: 'Rebound LEGO Car', desc: 'Mechanical structure & logic', tags: ['SPM'] },
+            { id: 8, title: 'Pac-Man Car', desc: 'Mechanical structure & logic', tags: ['SPM'] },
+            { id: 9, title: 'Basic Crane Mechanism', desc: 'Mechanical structure & logic', tags: ['SPM'] },
+            { id: 10, title: 'Snail', desc: 'Mechanical structure & logic', tags: ['SPM'] },
+            { id: 11, title: 'Machine Gun', desc: 'Mechanical structure & logic', tags: ['SPM'] },
+            { id: 12, title: 'Kayak', desc: 'Mechanical structure & logic', tags: ['SPM'] },
+            { id: 14, title: 'Power Driller', desc: 'Mechanical structure & logic', tags: ['SPM'] },
+            { id: 15, title: 'Supercharged Car', desc: 'Mechanical structure & logic', tags: ['SPM'] },
+            { id: 17, title: 'Sailboat', desc: 'Mechanical structure & logic', tags: ['SPM'] },
+            { id: 18, title: 'Swing', desc: 'Mechanical structure & logic', tags: ['SPM'] },
+            { id: 19, title: 'Catapult', desc: 'Mechanical structure & logic', tags: ['SPM'] },
+            { id: 20, title: 'Whale', desc: 'Mechanical structure & logic', tags: ['SPM'] },
+            { id: 21, title: 'Fishing Rod', desc: 'Mechanical structure & logic', tags: ['SPM'] },
+            { id: 22, title: 'Crane', desc: 'Mechanical structure & logic', tags: ['SPM'] },
+            { id: 23, title: 'Auto Grabber', desc: 'Mechanical structure & logic', tags: ['SPM'] },
+            { id: 24, title: 'Motorcycle with Rubber Band', desc: 'Mechanical structure & logic', tags: ['SPM'] },
+            { id: 25, title: 'Hammer', desc: 'Mechanical structure & logic', tags: ['SPM'] },
+            { id: 26, title: 'Jet', desc: 'Mechanical structure & logic', tags: ['SPM'] },
+            { id: 27, title: 'Bird', desc: 'Mechanical structure & logic', tags: ['SPM'] },
+            { id: 28, title: 'Boxing', desc: 'Mechanical structure & logic', tags: ['SPM'] },
+            { id: 29, title: 'Paperplane Shooter', desc: 'Mechanical structure & logic', tags: ['SPM'] },
+            { id: 30, title: 'Balance Scale', desc: 'Mechanical structure & logic', tags: ['SPM'] },
+            { id: 31, title: 'Quadrupedalism', desc: 'Mechanical structure & logic', tags: ['SPM'] },
+            { id: 33, title: 'Motorcycle', desc: 'Mechanical structure & logic', tags: ['SPM'] },
+            { id: 34, title: 'Pathfinding Car', desc: 'Mechanical structure & logic', tags: ['SPM'] },
+            { id: 35, title: 'Alligator', desc: 'Mechanical structure & logic', tags: ['SPM'] },   
         ];
+
+        // --- 專案渲染組件 ---
+        const StemProjectsGrid = () => {
+            const themes = [
+                "from-teal-600 to-emerald-900",   // 綠
+                "from-violet-600 to-purple-900",  // 紫
+                "from-slate-600 to-gray-900",     // 灰
+                "from-blue-600 to-indigo-900"     // 藍
+            ];
+            
+            return (
+                <React.Fragment>
+                    {stemProjects.map((project, index) => {
+                        const themeClass = themes[index % 4];
+                        const link = project.link || `./stem_l1_u1_${project.id}.html`;
+                        
+                        return (
+                            <a key={project.id} href={link} target="_blank" rel="noopener noreferrer" className={`bg-gradient-to-br ${themeClass} rounded-[2rem] p-5 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all relative overflow-hidden flex flex-col group shadow-lg min-h-[16rem]`}>
+                                <div className="w-full h-36 rounded-xl overflow-hidden mb-4 bg-white/10 flex items-center justify-center relative">
+                                    {project.cover ? (
+                                        <img src={project.cover} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" alt={project.title} />
+                                    ) : (
+                                        <span className="text-[6rem] drop-shadow-2xl group-hover:scale-110 transition-transform duration-500">⚙️</span>
+                                    )}
+                                </div>
+                                <div className="relative z-10 flex-1 flex flex-col">
+                                    <h3 className="text-lg font-black mb-0.5 drop-shadow-md leading-tight">{project.title}</h3>
+                                    {/* 修改處：縮小 desc 與 tag 之間的 mb 間距 */}
+                                    <p className="text-white/80 text-xs font-bold line-clamp-2 mb-1 opacity-90">{project.desc}</p>
+                                    
+                                    <div className="mt-1 flex flex-wrap gap-2">
+                                        <div className="flex items-center text-[10px] font-black uppercase tracking-widest bg-black/20 w-fit px-2 py-1 rounded-md backdrop-blur-sm">
+                                            {project.tags.map((tag, tIdx) => (
+                                                <React.Fragment key={tag}>
+                                                    <span className={tag === 'SPM' ? 'text-yellow-300' : 'text-cyan-300'}>
+                                                        {tag}
+                                                    </span>
+                                                    {tIdx < project.tags.length - 1 && (
+                                                        <ChevronRight size={10} className="mx-1 text-white opacity-40"/>
+                                                    )}
+                                                </React.Fragment>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        );
+                    })}
+                </React.Fragment>
+            );
+        };
 
         const AdBanner = ({ format = 'horizontal', className = "" }) => (
           <div className={`relative flex items-center justify-center bg-gray-100 border-2 border-dashed border-gray-300 text-gray-400 rounded-lg overflow-hidden ${format === 'horizontal' ? 'w-full h-20 my-2' : 'w-full aspect-square max-h-[250px] my-4'} ${className}`}>
@@ -122,7 +174,6 @@
                 </div>
                 <div className="hidden md:flex items-center space-x-8 lg:space-x-12">
                   <button onClick={() => scrollToSection('top')} className="font-bold text-sm lg:text-base text-gray-500 hover:text-orange-600 uppercase tracking-widest transition-colors">Home</button>
-                  {/* 修改處：將 Elementary 改為 ENGLISH */}
                   <button onClick={() => scrollToSection('elementary')} className="text-gray-500 font-bold text-sm lg:text-base hover:text-orange-600 uppercase tracking-widest transition-colors">ENGLISH</button>
                   <button onClick={() => scrollToSection('steam')} className="text-gray-500 font-bold text-sm lg:text-base hover:text-orange-600 uppercase tracking-widest transition-colors">Bricks</button>
                   <button onClick={() => scrollToSection('scratch')} className="text-gray-500 font-bold text-sm lg:text-base hover:text-orange-600 uppercase tracking-widest transition-colors">Scratch</button>
@@ -132,7 +183,6 @@
               {isMobileMenuOpen && (
                 <div className="absolute top-20 left-0 w-full bg-white shadow-xl border-b md:hidden flex flex-col p-6 space-y-4 z-40">
                   <button onClick={() => scrollToSection('top')} className="text-left font-bold text-gray-700">Home</button>
-                  {/* 修改處：手機版選單同樣將 Elementary 改為 ENGLISH */}
                   <button onClick={() => scrollToSection('elementary')} className="text-left font-bold text-gray-700">ENGLISH</button>
                   <button onClick={() => scrollToSection('steam')} className="text-left font-bold text-gray-700">Bricks</button>
                   <button onClick={() => scrollToSection('scratch')} className="text-left font-bold text-gray-700">Scratch</button>
@@ -156,7 +206,7 @@
 
                 <main className="max-w-7xl mx-auto px-4 py-6 flex flex-col lg:flex-row gap-10">
                   <div className="lg:w-4/5">
-                    {/* 小學英語區塊 */}
+                    {/* ENGLISH Section */}
                     <section id="elementary" className="mb-14">
                       <div className="flex items-center mb-6">
                         <LayoutGrid className="text-orange-600 mr-4" size={28} />
@@ -171,7 +221,7 @@
                       </div>
                     </section>
 
-                    {/* Bricks & Robotics 教學區塊 (統一顏色與標籤文字) */}
+                    {/* Bricks & Robotics Section */}
                     <section id="steam" className="mb-14">
                       <div className="flex items-center mb-6">
                         <Rocket className="text-orange-600 mr-4" size={28} />
@@ -179,63 +229,11 @@
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                        {/* Featured: Ping Pong Launcher */}
-                        <a href="./steam_pingponglauncher.html" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-emerald-500 to-cyan-800 rounded-[2rem] p-5 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all relative overflow-hidden flex flex-col group shadow-lg min-h-[18rem]">
-                          <div className="w-full h-36 rounded-xl overflow-hidden mb-4 bg-white/10 flex items-center justify-center">
-                            <img src="https://i.ibb.co/dsnqrs3k/Ping-Pong-Ball-Machine-Wedo2.png" alt="LEGO Ping Pong Launcher" className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" />
-                          </div>
-                          <div className="relative z-10 flex-1">
-                            <h3 className="text-lg font-black mb-1 drop-shadow-md leading-tight">LEGO Ping Pong Launcher</h3>
-                            <p className="text-emerald-50 text-xs opacity-90 font-bold line-clamp-2">Transforming LEGO SPM mechanics into WeDo 2.0 system.</p>
-                            <div className="mt-3 flex items-center text-[10px] font-black uppercase tracking-widest bg-black/20 w-fit px-2 py-1 rounded-md">
-                                <span className="text-yellow-300">SPM</span> <ChevronRight size={10} className="mx-1 text-white opacity-40"/> <span className="text-cyan-300">Wedo 2.0</span>
-                            </div>
-                          </div>
-                        </a>
-
-                        {/* Featured: Bow & Arrow */}
-                        <a href="./steam_bow&arrow.html" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-indigo-500 to-purple-800 rounded-[2rem] p-5 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all relative overflow-hidden flex flex-col group shadow-lg min-h-[18rem]">
-                          <div className="w-full h-36 rounded-xl overflow-hidden mb-4 bg-white/10 flex items-center justify-center">
-                            <img src="https://i.ibb.co/p6JXLyd9/45.png" alt="LEGO Bow and Arrow" className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" />
-                          </div>
-                          <div className="relative z-10 flex-1">
-                            <h3 className="text-lg font-black mb-1 drop-shadow-md leading-tight">LEGO 9686 SPM: Bow & Arrow</h3>
-                            <p className="text-indigo-50 text-xs opacity-90 font-bold line-clamp-2">Mastering mechanical logic through high-precision LEGO construction.</p>
-                            <div className="mt-3 flex items-center text-[10px] font-black uppercase tracking-widest bg-black/20 w-fit px-2 py-1 rounded-md">
-                                <span className="text-yellow-300">SPM</span>
-                            </div>
-                          </div>
-                        </a>
-
-                        {/* 動態生成的 STEM L1 專案 */}
-                        {stemL1Projects.map((project, index) => {
-                            const themes = ["from-slate-600 to-gray-900", "from-blue-600 to-indigo-900", "from-teal-600 to-emerald-900", "from-violet-600 to-purple-900"];
-                            const themeClass = themes[index % 4];
-                            const link = project.customLink || `./stem_l1_u1_${project.id}.html`;
-                            
-                            return (
-                                <a key={project.id} href={link} target="_blank" rel="noopener noreferrer" className={`bg-gradient-to-br ${themeClass} rounded-[2rem] p-5 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all relative overflow-hidden flex flex-col group shadow-lg min-h-[18rem]`}>
-                                  <div className="w-full h-36 rounded-xl overflow-hidden mb-4 bg-white/10 flex items-center justify-center relative">
-                                    {project.cover ? (
-                                        <img src={project.cover} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" alt={project.title} />
-                                    ) : (
-                                        <span className="text-[6rem] drop-shadow-2xl group-hover:scale-110 transition-transform duration-500">⚙️</span>
-                                    )}
-                                  </div>
-                                  <div className="relative z-10 flex-1">
-                                    <h3 className="text-lg font-black mb-1 drop-shadow-md leading-tight">{project.title}</h3>
-                                    <p className="text-white/80 text-xs font-bold line-clamp-1">Mechanical structure & logic</p>
-                                    <div className="mt-3 flex items-center text-[10px] font-black uppercase tracking-widest bg-black/20 w-fit px-2 py-1 rounded-md backdrop-blur-sm">
-                                        <span className="text-yellow-300">SPM</span>
-                                    </div>
-                                  </div>
-                                </a>
-                            );
-                        })}
+                        <StemProjectsGrid />
                       </div>
                     </section>
 
-                    {/* Scratch 互動遊戲區塊 */}
+                    {/* Scratch Interactive Section */}
                     <section id="scratch" className="mb-14">
                       <div className="flex items-center mb-6">
                         <Gamepad2 className="text-orange-600 mr-4" size={28} />
