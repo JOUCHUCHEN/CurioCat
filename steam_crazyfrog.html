@@ -32,7 +32,7 @@
     <style>
         body { 
             font-family: 'Roboto', sans-serif;
-            overflow-x: hidden;
+            overflow: hidden; /* 防止整個網頁出現預設滾動條，讓滾動條只出現在內容區 */
         }
         
         /* 滾動條樣式優化 */
@@ -93,9 +93,9 @@
           };
 
           return (
-            <div className="flex flex-col min-h-screen font-sans">
-              {/* 導覽列 */}
-              <nav className="bg-white shadow-sm h-20 border-b flex-shrink-0 z-50 sticky top-0">
+            <div className="flex flex-col h-screen font-sans">
+              {/* 導覽列 (移除 sticky，因為外層已固定高度) */}
+              <nav className="bg-white shadow-sm h-20 border-b flex-shrink-0 z-50">
                 <div className="max-w-7xl mx-auto px-4 h-full flex justify-between items-center">
                   <div className="flex items-center cursor-pointer group" onClick={handleNavAction}>
                     <img 
@@ -122,7 +122,7 @@
                 )}
               </nav>
 
-              {/* 內容區塊 */}
+              {/* 內容區塊 (滾動條會限制在這裡面) */}
               <div className="flex-1 overflow-y-auto custom-scroll">
                 <main className="w-full">
                     <div className="p-6 lg:p-10 max-w-6xl mx-auto w-full flex flex-col">
