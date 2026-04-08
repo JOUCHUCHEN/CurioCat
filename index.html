@@ -94,7 +94,7 @@
             { id: 35, title: 'Alligator', desc: 'Mechanical structure & logic', tags: ['SPM'] },   
         ];
 
-        // --- 專案渲染組件 ---
+        // --- Bricks 渲染組件 ---
         const StemProjectsGrid = () => {
             const themes = [
                 "from-teal-600 to-emerald-900",   // 綠
@@ -232,55 +232,71 @@
                       </div>
                     </section>
 
-                    {/* Scratch Interactive Section */}
+                    {/* Scratch Interactive Section (優化：四欄佈局 + 上文字下封面) */}
                     <section id="scratch" className="mb-14">
                       <div className="flex items-center mb-6">
                         <Gamepad2 className="text-orange-600 mr-4" size={28} />
                         <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tight">Scratch Interactive</h2>
                       </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                         {/* 1. 貓翻翻樂 */}
-                        <a href="./scratch_cat_match.html" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-[2.5rem] p-6 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all relative overflow-hidden flex flex-col justify-between group shadow-lg min-h-[11rem]">
-                          <div className="absolute right-2 bottom-2 opacity-20 group-hover:opacity-40 transition-opacity transform group-hover:scale-110 duration-700"><span className="text-[5rem]">🐱</span></div>
-                          <div className="relative z-10"><h3 className="text-xl font-black mb-1">🐾 貓翻翻樂 (English)</h3><p className="text-yellow-50 text-xs opacity-90 font-bold">Cat Memory Game</p></div>
+                        <a href="./scratch_cat_match.html" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-[2.5rem] p-6 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all relative overflow-hidden flex flex-col group shadow-lg min-h-[16.5rem]">
+                          <div className="relative z-10 mb-4">
+                            <h3 className="text-lg font-black mb-1 drop-shadow-md leading-tight">🐾 貓翻翻樂 (English)</h3>
+                            <p className="text-yellow-50 text-xs opacity-90 font-bold">Cat Memory Game</p>
+                          </div>
+                          <div className="mt-auto flex justify-center transform group-hover:scale-110 transition-transform duration-500">
+                             <span className="text-[6rem] opacity-30 group-hover:opacity-60 transition-opacity">🐱</span>
+                          </div>
                         </a>
                         
-                        {/* 2. What time is it? (已優化：標題與小標往上挪移至 -translate-y-3) */}
-                        <a href="./scratch_time_travel.html" target="_blank" rel="noopener noreferrer" className={`bg-gradient-to-br from-violet-500 to-fuchsia-700 rounded-[2.5rem] p-6 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all relative overflow-hidden flex flex-col justify-center group shadow-lg min-h-[11rem]`}>
-                          {/* iPad 樣機 */}
-                          <div className="absolute right-4 top-1/2 -translate-y-1/2 transition-all transform group-hover:scale-110 group-hover:-rotate-3 group-hover:-translate-x-3 duration-700">
-                            <div className="bg-gray-900 p-2 rounded-[1.8rem] shadow-2xl border border-gray-700/50 ring-1 ring-white/10">
+                        {/* 2. What time is it? (樣機放置於下方) */}
+                        <a href="./scratch_time_travel.html" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-violet-500 to-fuchsia-700 rounded-[2.5rem] p-6 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all relative overflow-hidden flex flex-col group shadow-lg min-h-[16.5rem]">
+                          <div className="relative z-10 mb-4 -translate-y-3">
+                            <h3 className="text-lg font-black mb-1 drop-shadow-md leading-tight">What time is it?</h3>
+                            <p className="text-violet-50 text-xs opacity-90 font-bold">Time Expressions ESL Material</p>
+                          </div>
+                          {/* iPad 樣機 置底 */}
+                          <div className="mt-auto flex justify-center transition-all transform group-hover:scale-105 group-hover:-rotate-2 duration-700 pb-2">
+                            <div className="bg-gray-900 p-1.5 rounded-[1.8rem] shadow-2xl border border-gray-700/50 ring-1 ring-white/10">
                                 <div className="rounded-[1.2rem] overflow-hidden bg-black flex items-center justify-center w-40 h-24">
                                     <img src="https://i.ibb.co/G43S36BY/time-cover.png" className="w-full h-full object-contain" alt="Time" />
                                 </div>
                             </div>
                           </div>
-
-                          {/* 文字內容：調整為 -translate-y-3 往上挪動更多 */}
-                          <div className="relative z-10 max-w-[45%] pointer-events-none -translate-y-3">
-                            <h3 className="text-2xl font-black mb-0 drop-shadow-md leading-tight whitespace-nowrap">
-                                What time is it?
-                            </h3>
-                            <p className="text-violet-50 text-sm font-bold opacity-90 mt-1">Time Expressions ESL Material</p>
-                          </div>
                         </a>
 
                         {/* 3. 拍拍打怪獸 */}
-                        <a href="./scratch_whack_monster.html" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-rose-500 to-red-700 rounded-[2.5rem] p-6 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all relative overflow-hidden flex flex-col justify-between group shadow-lg min-h-[11rem]">
-                          <div className="absolute right-2 bottom-2 opacity-20 group-hover:opacity-40 transition-opacity transform group-hover:scale-110 duration-700"><span className="text-[5rem]">👾</span></div>
-                          <div className="relative z-10"><h3 className="text-xl font-black mb-1">🔨 拍拍打怪獸 (English)</h3><p className="text-rose-50 text-xs opacity-90 font-bold">Whack-a-Monster Practice</p></div>
+                        <a href="./scratch_whack_monster.html" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-rose-500 to-red-700 rounded-[2.5rem] p-6 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all relative overflow-hidden flex flex-col group shadow-lg min-h-[16.5rem]">
+                          <div className="relative z-10 mb-4">
+                            <h3 className="text-lg font-black mb-1 drop-shadow-md leading-tight">🔨 拍拍打怪獸 (English)</h3>
+                            <p className="text-rose-50 text-xs opacity-90 font-bold">Whack-a-Monster Practice</p>
+                          </div>
+                          <div className="mt-auto flex justify-center transform group-hover:scale-110 transition-transform duration-500">
+                             <span className="text-[6rem] opacity-30 group-hover:opacity-60 transition-opacity">👾</span>
+                          </div>
                         </a>
 
                         {/* 4. What are you doing? */}
-                        <a href="./scratch_what_are_you_doing.html" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-blue-400 to-cyan-600 rounded-[2.5rem] p-6 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all relative overflow-hidden flex flex-col justify-between group shadow-lg min-h-[11rem]">
-                          <div className="absolute right-2 bottom-2 opacity-20 group-hover:opacity-40 transition-opacity transform group-hover:scale-110 duration-700"><span className="text-[5rem]">🏃‍♂️</span></div>
-                          <div className="relative z-10"><h3 className="text-xl font-black mb-1">💬 What are you doing?</h3><p className="text-blue-50 text-xs opacity-90 font-bold">Action Verbs Interactive</p></div>
+                        <a href="./scratch_what_are_you_doing.html" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-blue-400 to-cyan-600 rounded-[2.5rem] p-6 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all relative overflow-hidden flex flex-col group shadow-lg min-h-[16.5rem]">
+                          <div className="relative z-10 mb-4">
+                            <h3 className="text-lg font-black mb-1 drop-shadow-md leading-tight">💬 What are you doing?</h3>
+                            <p className="text-blue-50 text-xs opacity-90 font-bold">Action Verbs Interactive</p>
+                          </div>
+                          <div className="mt-auto flex justify-center transform group-hover:scale-110 transition-transform duration-500">
+                             <span className="text-[6rem] opacity-30 group-hover:opacity-60 transition-opacity">🏃‍♂️</span>
+                          </div>
                         </a>
 
                         {/* 5. Preposition - OIIA CAT */}
-                        <a href="./scratch_oiia_cat.html" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-teal-400 to-emerald-600 rounded-[2.5rem] p-6 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all relative overflow-hidden flex flex-col justify-between group shadow-lg min-h-[11rem]">
-                          <div className="absolute right-2 bottom-2 opacity-20 group-hover:opacity-40 transition-opacity transform group-hover:scale-110 duration-700"><span className="text-[5rem]">📦</span></div>
-                          <div className="relative z-10"><h3 className="text-xl font-black mb-1 leading-tight">🐈 Preposition of Location</h3><p className="text-teal-50 text-xs opacity-90 font-bold">OIIA CAT Version</p></div>
+                        <a href="./scratch_oiia_cat.html" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-teal-400 to-emerald-600 rounded-[2.5rem] p-6 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all relative overflow-hidden flex flex-col group shadow-lg min-h-[16.5rem]">
+                          <div className="relative z-10 mb-4">
+                            <h3 className="text-lg font-black mb-1 leading-tight">🐈 Preposition of Location</h3>
+                            <p className="text-teal-50 text-xs opacity-90 font-bold">OIIA CAT Version</p>
+                          </div>
+                          <div className="mt-auto flex justify-center transform group-hover:scale-110 transition-transform duration-500">
+                             <span className="text-[6rem] opacity-30 group-hover:opacity-60 transition-opacity">📦</span>
+                          </div>
                         </a>
                       </div>
                     </section>
