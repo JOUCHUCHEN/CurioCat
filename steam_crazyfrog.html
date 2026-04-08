@@ -88,7 +88,8 @@
         function App() {
           const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
           const bilibiliUrl = "https://www.bilibili.com/video/BV12gDjB7ELB/";
-          const downloadUrl = "https://github.com/JOUCHUCHEN/maachiiknow/blob/main/steam/crazyfrog/%E9%9D%92%E8%9B%99(20240703%E4%BF%AE%E6%AD%A3).io";
+          // 修改為 raw.githubusercontent.com 連結以進行直接下載
+          const downloadUrl = "https://raw.githubusercontent.com/JOUCHUCHEN/maachiiknow/main/steam/crazyfrog/%E9%9D%92%E8%9B%99(20240703%E4%BF%AE%E6%AD%A3).io";
 
           const handleNavAction = () => {
             const baseUrl = 'https://jouchuchen.github.io/machiknow/';
@@ -175,11 +176,12 @@
                               <Icon name="external-link" size={16} className="opacity-70" />
                             </a>
 
-                            {/* 下載按鈕 */}
+                            {/* 下載按鈕: 加上 download 屬性與修改過的 URL */}
                             <a 
                               href={downloadUrl} 
                               target="_blank" 
                               rel="noopener noreferrer"
+                              download="CrazyFrog.io"
                               className="flex items-center gap-3 text-base font-bold text-white px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 rounded-full shadow-[0_10px_30px_-10px_rgba(16,185,129,0.4)] transition-all hover:scale-105 active:scale-95 group w-full sm:w-auto justify-center"
                             >
                               <Icon name="download" size={20} className="group-hover:bounce" /> 
