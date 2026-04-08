@@ -92,8 +92,9 @@
           const downloadUrl = "https://raw.githubusercontent.com/JOUCHUCHEN/maachiiknow/main/steam/crazyfrog/%E9%9D%92%E8%9B%99(20240703%E4%BF%AE%E6%AD%A3).io";
 
           const handleNavAction = () => {
-            const baseUrl = 'https://jouchuchen.github.io/machiknow/';
-            window.top.location.href = baseUrl;
+            // 改用相對路徑的 index.html 邏輯 (往上兩層回到根目錄的首頁)
+            // 如果您將所有檔案放在同一個資料夾測試，請將其改為 'index.html' 即可
+            window.top.location.href = '../../index.html';
             setIsMobileMenuOpen(false);
           };
 
