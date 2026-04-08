@@ -89,8 +89,8 @@
 
           // 處理導覽列行為：跳轉至主頁入口
           const handleNavAction = () => {
-            const baseUrl = 'https://jouchuchen.github.io/machiknow/';
-            window.top.location.href = baseUrl;
+            // 修改為相對路徑跳轉回 index.html
+            window.location.href = 'index.html';
             setIsMobileMenuOpen(false);
           };
 
