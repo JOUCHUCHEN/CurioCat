@@ -71,7 +71,7 @@
         import React, { useState } from 'react';
         import { createRoot } from 'react-dom/client';
         import { 
-          Youtube, ExternalLink, AlertCircle, Lightbulb, Rocket, PlayCircle, Menu, X
+            ExternalLink, AlertCircle, Lightbulb, Rocket, PlayCircle, Menu, X
         } from 'lucide-react';
 
         // --- 共用元件：廣告版位 ---
@@ -85,8 +85,7 @@
         // --- Main App Component ---
         function App() {
           const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-          const videoId = "ieDNvJNf0ag";
-          const youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`;
+          const bilibiliUrl = "https://www.bilibili.com/video/BV12gDjB7ELB/";
 
           // 處理導覽列行為：跳轉至主頁入口
           const handleNavAction = () => {
@@ -102,13 +101,9 @@
                   <img 
                       src="https://i.ibb.co/CFC5v9L/Machi-Know-Logo.png" 
                       alt="MaachiiKonw Logo" 
-                      /* 修改處：w-16 h-16 放大尺寸，relative 配合 -top-1 與 left-2 進行微調 */
-                      /* 修改處：z-0 確保它在圖層最底層 */
                       className="w-16 h-16 object-contain group-hover:scale-110 group-hover:rotate-6 transition-all relative -top-1 left-0 z-0"
                    />
                    <span className="font-black text-3xl text-gray-900 tracking-tighter relative z-10 ml-0">
-                     {/* 修改處：z-10 確保文字在 Logo 之上 */}
-                     {/* 修改處：ml-3 調整文字向左移動一個單位（從 ml-4 改為 ml-3） */}
                      Maachii<span className="text-orange-600">Konw</span>
                    </span>
                 </div>
@@ -155,11 +150,9 @@
                                 <div className="aspect-video w-full bg-slate-900 rounded-[2.5rem] overflow-hidden relative shadow-inner video-container">
                                     <iframe 
                                         className="absolute inset-0 w-full h-full"
-                                        src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&autohide=1&showinfo=0`} 
-                                        title="Crazy Frog"
-                                        frameBorder="0"
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                                        referrerPolicy="no-referrer-when-downgrade"
+                                        src="//player.bilibili.com/player.html?isOutside=true&aid=116368330463292&bvid=BV12gDjB7ELB&cid=37334682595&p=1" 
+                                        scrolling="no" 
+                                        frameBorder="0" 
                                         allowFullScreen
                                     ></iframe>
                                 </div>
@@ -172,13 +165,13 @@
                             <AlertCircle size={12} className="stroke-[3]" /> Playback Error?
                           </div>
                           <a 
-                            href={youtubeUrl} 
+                            href={bilibiliUrl} 
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="flex items-center gap-3 text-base font-bold text-white px-12 py-5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 rounded-full shadow-[0_10px_40px_-10px_rgba(249,115,22,0.4)] transition-all hover:scale-105 active:scale-95 group"
                           >
-                            <Youtube size={24} className="group-hover:animate-pulse" /> 
-                            Open in YouTube Player 
+                            <PlayCircle size={24} className="group-hover:animate-pulse" /> 
+                            Open in Bilibili 
                             <ExternalLink size={18} className="opacity-70" />
                           </a>
                         </div>
@@ -195,7 +188,7 @@
                                Project Overview
                              </h3>
                              <p className="text-slate-600 leading-loose text-lg font-medium relative z-10">
-                               In this lesson, we will learn how to build a fully functional toy bow and arrow using Lego 9686 set! Through hands-on practice, students will experience basic concepts of physical tension, mechanical principles, and engineering structures, turning creativity into a physical masterpiece.
+                               In this lesson, we will learn how to build a motorized mechanical frog using the Lego 9686 set! Through hands-on practice, students will explore gear transmission, motorized mechanisms, and the structural design needed to convert rotational motion into a walking action. Join us as we bring engineering principles to life!
                              </p>
                           </div>
                           
