@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ping Pong Launcher - STEAM Project</title>
     
-    <!-- 引入 Noto Sans TC 字體 -->
+    <!-- Fonts: Roboto for UI and Noto Sans TC for Brand/Fallback -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -17,7 +17,8 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['"Noto Sans TC"', 'sans-serif'],
+                        sans: ['Roboto', '"Noto Sans TC"', 'sans-serif'],
+                        brand: ['"Noto Sans TC"', 'sans-serif'],
                     },
                     borderRadius: {
                         '4xl': '2rem',
@@ -28,15 +29,15 @@
         }
     </script>
 
-    <!-- 自訂 CSS -->
+    <!-- Custom CSS -->
     <style>
-        body { font-family: 'Noto Sans TC', sans-serif; }
+        body { font-family: 'Roboto', 'Noto Sans TC', sans-serif; }
+        .brand-font { font-family: 'Noto Sans TC', sans-serif; font-weight: 900; }
         .custom-scroll::-webkit-scrollbar { width: 8px; }
         .custom-scroll::-webkit-scrollbar-track { background: #f8fafc; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 20px; }
         .custom-scroll::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
         
-        /* 防止圖片被圓角切掉的優化 */
         .video-container {
             mask-image: radial-gradient(white, black);
             -webkit-mask-image: -webkit-radial-gradient(white, black);
@@ -64,10 +65,8 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body class="bg-slate-50 h-screen overflow-hidden">
-    <!-- React 應用的掛載點 -->
     <div id="root" class="h-full"></div>
 
-    <!-- 應用程式主體程式碼 -->
     <script type="text/babel" data-type="module">
         import React, { useState } from 'react';
         import { createRoot } from 'react-dom/client';
@@ -76,7 +75,6 @@
             ChevronRight, Target, Box, BookOpen, ShieldAlert, ClipboardCheck, Zap
         } from 'lucide-react';
 
-        // --- 共用元件：廣告版位 ---
         const AdBanner = ({ format = 'horizontal', className = "" }) => (
           <div className={`relative flex items-center justify-center bg-gray-50 border-2 border-dashed border-gray-200 text-gray-400 rounded-2xl overflow-hidden ${format === 'horizontal' ? 'w-full h-20 my-2' : 'w-full aspect-square max-h-[250px] my-4'} ${className}`}>
             <span className="absolute top-2 right-3 text-[9px] bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded uppercase tracking-widest font-bold">AD Space</span>
@@ -84,7 +82,6 @@
           </div>
         );
 
-        // --- 專案資料設定 ---
         const projectData = {
             spm: {
                 id: 'spm',
@@ -162,15 +159,24 @@
                 trainerNotes: [
                     {
                         title: "1. Safety First",
-                        points: ["● Set Rules: Strictly forbid pointing the launcher at faces or eyes.", "● Component Safety: Prohibit sticking fingers into gear assemblies while the motor is running."]
+                        points: [
+                            "● Set Rules: Strictly forbid pointing the launcher at faces or eyes.",
+                            "● Component Safety: Prohibit sticking fingers into gear assemblies while the motor is running."
+                        ]
                     },
                     {
                         title: "2. Differentiation",
-                        points: ["● Advanced Students: Guide them to add an \"Automatic Feeding Device\" (funnel structure).", "● Students Needing Support: Assist in checking the polarity of the battery box and motor connections to ensure power output."]
+                        points: [
+                            "● Advanced Students: Guide them to add an \"Automatic Feeding Device\" (funnel structure).",
+                            "● Students Needing Support: Assist in checking the polarity of the battery box and motor connections to ensure power output."
+                        ]
                     },
                     {
                         title: "3. Equipment Maintenance",
-                        points: ["● Post-training, teachers must lead students in \"Part Inventory\". This is a core task in STEAM classroom management.", "● Check battery boxes for leakage risks and motors for unusual noises."]
+                        points: [
+                            "● Post-training, teachers must lead students in \"Part Inventory\". This is a core task in STEAM classroom management.",
+                            "● Check battery boxes for leakage risks and motors for unusual noises."
+                        ]
                     }
                 ],
                 logTemplate: {
@@ -301,7 +307,6 @@
             }
         };
 
-        // --- Main App Component ---
         function App() {
           const [activeTab, setActiveTab] = useState('spm');
           const [isAnimating, setIsAnimating] = useState(false);
@@ -328,7 +333,7 @@
           };
 
           const handleNavAction = () => {
-            window.top.location.href = '../../index.html';
+            window.top.location.href = 'https://jouchuchen.github.io/machiknow/';
             setIsMobileMenuOpen(false);
           };
 
@@ -347,11 +352,11 @@
                 <div className="flex items-center cursor-pointer group" onClick={handleNavAction}>
                   <img 
                       src="https://i.ibb.co/CFC5v9L/Machi-Know-Logo.png" 
-                      alt="MaachiiKonw Logo" 
+                      alt="MaachiiKnow Logo" 
                       className="w-16 h-16 object-contain group-hover:scale-110 group-hover:rotate-6 transition-all relative -top-1 left-0 z-0"
                    />
-                   <span className="font-black text-3xl text-gray-900 tracking-tighter relative z-10 ml-0">
-                     Maachii<span className="text-orange-600">Konw</span>
+                   <span className="brand-font text-3xl text-gray-900 tracking-tighter relative z-10 ml-0">
+                     Maachii<span className="text-orange-600">Know</span>
                    </span>
                 </div>
                 <div className="hidden md:flex items-center space-x-12">
@@ -375,18 +380,18 @@
                 <main id="main-content" className="flex-1 overflow-y-auto custom-scroll">
                   <div className="p-6 lg:p-10 max-w-5xl mx-auto w-full flex flex-col">
                     
-                    {/* 分頁切換器 (Tab Switcher) */}
+                    {/* Tab Switcher */}
                     <div className="flex flex-col sm:flex-row items-center gap-4 mb-10 bg-white p-2 rounded-3xl shadow-sm border border-slate-100 w-fit mx-auto">
                         <button
                             onClick={() => handleTabChange('spm')}
-                            className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-bold transition-all duration-300 ${activeTab === 'spm' ? 'bg-indigo-600 text-white shadow-md scale-105' : 'text-slate-500 hover:bg-slate-50'}`}
+                            className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-bold transition-all duration-300 ${activeTab === 'spm' ? 'bg-indigo-600 text-white shadow-md scale-105' : 'text-slate-400 hover:bg-slate-50'}`}
                         >
                             <Wrench size={18} />
                             Lego SPM Version
                         </button>
                         <button
                             onClick={() => handleTabChange('wedo')}
-                            className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-bold transition-all duration-300 ${activeTab === 'wedo' ? 'bg-emerald-500 text-white shadow-md scale-105' : 'text-slate-500 hover:bg-slate-50'}`}
+                            className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-bold transition-all duration-300 ${activeTab === 'wedo' ? 'bg-emerald-500 text-white shadow-md scale-105' : 'text-slate-400 hover:bg-slate-50'}`}
                         >
                             <Cpu size={18} />
                             WeDo 2.0 Version
@@ -394,7 +399,7 @@
                     </div>
 
                     <div className={`transition-all duration-300 ${isAnimating ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'}`}>
-                        {/* Header 區塊 */}
+                        {/* Header Section */}
                         <div className="mb-8 text-center sm:text-left">
                             <h2 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight mb-3">
                                 {currentData.title}
@@ -547,7 +552,7 @@
                             </div>
                         </section>
 
-                        {/* 下載按鈕區域 */}
+                        {/* Resource Downloads */}
                         <div className="mt-4 mb-20 flex flex-col items-center gap-6">
                             <div className="text-center mb-4">
                                 <h3 className="text-xl font-black text-slate-900 mb-1 tracking-tight">Resource Download Center</h3>
@@ -595,7 +600,6 @@
                             </div>
                         </div>
 
-                        {/* Ad Box */}
                         <div className="mt-6 mb-20 w-full max-w-3xl mx-auto flex flex-col">
                            <AdBanner format="horizontal" className="!my-0 w-full h-24 border-slate-200" />
                         </div>
@@ -604,10 +608,10 @@
 
                   <footer className="bg-gray-900 text-white py-12 text-center shrink-0">
                     <div className="max-w-7xl mx-auto px-4">
-                      <div className="flex items-center justify-center mb-6 text-2xl font-black tracking-tighter uppercase">
-                        MaachiiKonw
+                      <div className="brand-font flex items-center justify-center mb-6 text-2xl tracking-tighter uppercase">
+                        MaachiiKnow
                       </div>
-                      <div className="pt-6 border-t border-gray-800 text-gray-600 text-[9px] font-black tracking-[0.5em] uppercase">© 2026 MaachiiKonw. All rights reserved.</div>
+                      <div className="pt-6 border-t border-gray-800 text-gray-600 text-[9px] font-black tracking-[0.5em] uppercase">© 2026 MaachiiKnow. All rights reserved.</div>
                     </div>
                   </footer>
                 </main>
