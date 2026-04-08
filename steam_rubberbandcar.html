@@ -33,7 +33,7 @@
     <style>
         body { 
             font-family: 'Roboto', sans-serif;
-            overflow: hidden; /* 完全隱藏 body 捲軸，由內容區容器處理 */
+            overflow: hidden; /* 隱藏 body 捲軸，由內容區容器處理 */
             margin: 0;
             padding: 0;
         }
@@ -101,18 +101,16 @@
 
           return (
             <div className="flex flex-col h-screen font-sans">
-              {/* 導覽列：不參與滾動 */}
+              {/* 導覽列：採用 pingponglauncher 的標準排版 */}
               <nav className="bg-white shadow-sm h-20 border-b flex-shrink-0 z-50 sticky top-0">
                 <div className="max-w-7xl mx-auto px-4 h-full flex justify-between items-center">
                   <div className="flex items-center cursor-pointer group" onClick={handleNavAction}>
-                    {/* Logo: 保持 z-0 與 left-2 偏移 */}
                     <img 
                       src="https://i.ibb.co/CFC5v9L/Machi-Know-Logo.png" 
-                      alt="MaachiiKnow Logo" 
-                      className="w-16 h-16 object-contain group-hover:scale-110 group-hover:rotate-6 transition-all relative -top-1 left-2 z-0"
+                      alt="MaachiiKnow Official Logo" 
+                      className="w-12 h-12 mr-3 rounded-xl shadow-sm border border-orange-100 group-hover:scale-110 group-hover:rotate-6 transition-all"
                     />
-                    {/* 文字: ml-3 並確保使用 font-brand (Noto Sans TC) */}
-                    <span className="font-brand font-black text-3xl text-gray-900 tracking-tighter relative z-10 ml-3">
+                    <span className="font-brand font-black text-3xl text-gray-900 tracking-tighter">
                       Maachii<span className="text-orange-600">Know</span>
                     </span>
                   </div>
@@ -131,7 +129,7 @@
                 )}
               </nav>
 
-              {/* 內容區塊：獨立捲軸區域 */}
+              {/* 內容區塊 */}
               <div className="flex-1 overflow-y-auto custom-scroll">
                 <main className="w-full">
                     <div className="p-6 lg:p-10 max-w-6xl mx-auto w-full flex flex-col">
