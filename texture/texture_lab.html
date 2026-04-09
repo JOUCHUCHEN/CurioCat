@@ -34,7 +34,7 @@
         .matched-scales { border-color: #22c55e !important; background-color: #dcfce7 !important; opacity: 0.3; transform: scale(0.9); pointer-events: none; }
         .matched-feathers { border-color: #ef4444 !important; background-color: #fee2e2 !important; opacity: 0.3; transform: scale(0.9); pointer-events: none; }
         .matched-fur { border-color: #a855f7 !important; background-color: #f3e8ff !important; opacity: 0.3; transform: scale(0.9); pointer-events: none; }
-        .matched-smooth { border-color: #eab308 !important; background-color: #fef9c3 !important; opacity: 0.3; transform: scale(0.9); pointer-events: none; }
+        .matched-skin { border-color: #eab308 !important; background-color: #fef9c3 !important; opacity: 0.3; transform: scale(0.9); pointer-events: none; }
 
         @keyframes bounce-custom { 
           0%, 100% { transform: translateY(0); } 
@@ -79,22 +79,26 @@
           { id: 'scales', name: 'Scales', adjectives: 'Hard and shiny', color: 'bg-emerald-50', borderColor: 'border-emerald-200', textColor: 'text-emerald-700', activeRing: 'ring-emerald-400', icon: '🟢' },
           { id: 'feathers', name: 'Feathers', adjectives: 'Soft and light', color: 'bg-rose-50', borderColor: 'border-rose-200', textColor: 'text-rose-700', activeRing: 'ring-rose-400', icon: '🔴' },
           { id: 'fur', name: 'Fur', adjectives: 'Warm and thick', color: 'bg-purple-50', borderColor: 'border-purple-200', textColor: 'text-purple-700', activeRing: 'ring-purple-400', icon: '🟣' },
-          { id: 'smooth', name: 'Smooth Skin', adjectives: 'Thick and wet/smooth', color: 'bg-amber-50', borderColor: 'border-amber-200', textColor: 'text-amber-700', activeRing: 'ring-amber-400', icon: '🟡' }
+          { id: 'skin', name: 'Skin', adjectives: 'Thick and wet/smooth', color: 'bg-amber-50', borderColor: 'border-amber-200', textColor: 'text-amber-700', activeRing: 'ring-amber-400', icon: '🟡' }
         ];
 
         const ANIMALS_DATA = [
           { id: 1, name: 'Snake', texture: 'scales', emoji: '🐍' }, 
           { id: 2, name: 'Fish', texture: 'scales', emoji: '🐟' }, 
           { id: 3, name: 'Crocodile', texture: 'scales', emoji: '🐊' },
-          { id: 4, name: 'Eagle', texture: 'feathers', emoji: '🦅' }, 
-          { id: 5, name: 'Crow', texture: 'feathers', emoji: '🐦‍⬛' }, 
-          { id: 6, name: 'Parrot', texture: 'feathers', emoji: '🦜' },
-          { id: 7, name: 'Dog', texture: 'fur', emoji: '🐶' }, 
-          { id: 8, name: 'Lion', texture: 'fur', emoji: '🦁' }, 
-          { id: 9, name: 'Horse', texture: 'fur', emoji: '🐴' },
-          { id: 10, name: 'Whale', texture: 'smooth', emoji: '🐳' }, 
-          { id: 11, name: 'Seal', texture: 'smooth', emoji: '🦭' }, 
-          { id: 12, name: 'Elephant', texture: 'smooth', emoji: '🐘' }
+          { id: 4, name: 'Lizard', texture: 'scales', emoji: '🦎' },
+          { id: 5, name: 'Eagle', texture: 'feathers', emoji: '🦅' }, 
+          { id: 6, name: 'Crow', texture: 'feathers', emoji: '🐦‍⬛' }, 
+          { id: 7, name: 'Parrot', texture: 'feathers', emoji: '🦜' },
+          { id: 8, name: 'Owl', texture: 'feathers', emoji: '🦉' },
+          { id: 9, name: 'Dog', texture: 'fur', emoji: '🐶' }, 
+          { id: 10, name: 'Lion', texture: 'fur', emoji: '🦁' }, 
+          { id: 11, name: 'Horse', texture: 'fur', emoji: '🐴' },
+          { id: 12, name: 'Panda', texture: 'fur', emoji: '🐼' },
+          { id: 13, name: 'Whale', texture: 'skin', emoji: '🐳' }, 
+          { id: 14, name: 'Dolphin', texture: 'skin', emoji: '🐬' }, 
+          { id: 15, name: 'Frog', texture: 'skin', emoji: '🐸' },
+          { id: 16, name: 'Elephant', texture: 'skin', emoji: '🐘' }
         ];
 
         function App() {
@@ -218,7 +222,7 @@
                                 <div className="flex justify-between items-center">
                                     <div>
                                         <div className="text-[9px] text-slate-400 font-black uppercase">Score</div>
-                                        <div className="text-2xl font-black text-blue-600 tracking-tighter leading-none">{score}/12</div>
+                                        <div className="text-2xl font-black text-blue-600 tracking-tighter leading-none">{score}/16</div>
                                     </div>
                                     <button onClick={resetGame} className="bg-slate-50 hover:bg-red-50 hover:text-red-500 text-slate-400 p-2 rounded-xl transition-all">
                                         <RotateCcw size={16} />
@@ -237,7 +241,7 @@
                             </div>
                             
                             <div className="flex-grow min-h-0">
-                                <div className="grid grid-cols-4 grid-rows-3 gap-2 h-full w-full">
+                                <div className="grid grid-cols-4 grid-rows-4 gap-2 h-full w-full">
                                     {shuffledAnimals.map(animal => {
                                         const isMatched = matchedIds.has(animal.id);
                                         const isShaking = shakeId === animal.id;
@@ -252,11 +256,11 @@
                                                 `}
                                             >
                                                 <div className="flex-grow flex items-center justify-center w-full min-h-0">
-                                                    <span className={`text-4xl lg:text-5xl group-hover:scale-110 transition-transform select-none ${isMatched ? 'animate-bounce-custom' : ''}`}>
+                                                    <span className={`text-3xl lg:text-5xl group-hover:scale-110 transition-transform select-none ${isMatched ? 'animate-bounce-custom' : ''}`}>
                                                         {animal.emoji}
                                                     </span>
                                                 </div>
-                                                <div className="pb-2 bg-white text-center shrink-0 w-full rounded-b-2xl">
+                                                <div className="pb-1 sm:pb-2 bg-white text-center shrink-0 w-full rounded-b-2xl">
                                                     <span className="font-bold text-slate-500 text-[9px] uppercase tracking-tighter">{animal.name}</span>
                                                 </div>
                                             </div>
