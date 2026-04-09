@@ -64,12 +64,13 @@
         import { createRoot } from 'react-dom/client';
         import { ArrowLeft, Menu, X, MonitorPlay, ChevronLeft, ChevronRight, Download, FileText } from 'lucide-react';
 
+        // 更新為 15 張新的預覽圖
         const slideUrls = [
-          "https://i.ibb.co/Lh2g0Lzr/1.png", "https://i.ibb.co/Pz3Mxr0h/2.png", "https://i.ibb.co/rTgB29B/3.png", 
-          "https://i.ibb.co/JFjXkvY0/4.png", "https://i.ibb.co/YFQj5VyL/5.png", "https://i.ibb.co/jvSdDjqh/6.png", 
-          "https://i.ibb.co/R4C41YYB/7.png", "https://i.ibb.co/N6zWb7Kg/8.png", "https://i.ibb.co/Xfhv6vmR/9.png", 
-          "https://i.ibb.co/fzxvYRsb/10.png", "https://i.ibb.co/hRJ01Rr9/11.png", "https://i.ibb.co/BKTxp1gX/12.png", 
-          "https://i.ibb.co/5WNRFNRP/13.png"
+          "https://i.ibb.co/RTnGzrnC/1.png", "https://i.ibb.co/5hJtkr3J/2.png", "https://i.ibb.co/xq5WZPJ2/3.png", 
+          "https://i.ibb.co/RkBF7F25/4.png", "https://i.ibb.co/1f16TkZg/5.png", "https://i.ibb.co/zVg0nzjs/6.png", 
+          "https://i.ibb.co/YFT9Dzr8/7.png", "https://i.ibb.co/wh37d4hG/8.png", "https://i.ibb.co/nsWshmzX/9.png", 
+          "https://i.ibb.co/mFb7R3K0/10.png", "https://i.ibb.co/gLdd4hdk/11.png", "https://i.ibb.co/xStjYgbj/12.png", 
+          "https://i.ibb.co/qYxXpv8R/13.png", "https://i.ibb.co/TxrgGXkk/14.png", "https://i.ibb.co/xK0d3Fck/15.png"
         ];
 
         function App() {
@@ -86,10 +87,11 @@
             window.location.href = '/english_texture.html';
           };
 
+          // 更新下載連結，並保留 ?raw=true 參數確保直接下載
           const handleDownload = (type) => {
             const urls = {
-              pdf: "https://github.com/JOUCHUCHEN/maachiiknow/blob/main/texture/Animal_Texture_Lab(13p).pdf?raw=true",
-              ppt: "https://github.com/JOUCHUCHEN/maachiiknow/blob/main/texture/Animal_Texture_Lab(13p)(20MB).pptx?raw=true"
+              pdf: "https://github.com/JOUCHUCHEN/maachiiknow/blob/main/texture/Animal_Texture_Safari.pdf?raw=true",
+              ppt: "https://github.com/JOUCHUCHEN/maachiiknow/blob/main/texture/Animal_Texture_Safari(0410).pptx?raw=true"
             };
             const link = document.createElement('a');
             link.href = urls[type];
@@ -175,16 +177,16 @@
                             <MonitorPlay size={20} className="text-orange-500" /> Preview
                           </h3>
                           <span className="text-xs bg-orange-50 text-orange-600 px-3 py-1 rounded-full font-bold">
-                            Slide {slideIndex + 1} / 13
+                            Slide {slideIndex + 1} / 15
                           </span>
                         </div>
                         {/* 預覽區塊：利用 flex-1 填滿高度，並使用絕對定位控制圖片比例 */}
                         <div className="flex-1 bg-gray-900 rounded-[1.5rem] overflow-hidden relative group flex items-center justify-center border-[6px] border-gray-800 shadow-inner min-h-[250px]">
                           <img src={slideUrls[slideIndex]} className="absolute inset-0 w-full h-full object-contain" alt="Preview Slide" />
-                          <button onClick={() => setSlideIndex(i => (i - 1 + 13) % 13)} className="absolute left-3 sm:left-4 bg-white/80 p-2 sm:p-3 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button onClick={() => setSlideIndex(i => (i - 1 + 15) % 15)} className="absolute left-3 sm:left-4 bg-white/80 p-2 sm:p-3 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity">
                             <ChevronLeft size={20} />
                           </button>
-                          <button onClick={() => setSlideIndex(i => (i + 1) % 13)} className="absolute right-3 sm:right-4 bg-white/80 p-2 sm:p-3 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button onClick={() => setSlideIndex(i => (i + 1) % 15)} className="absolute right-3 sm:right-4 bg-white/80 p-2 sm:p-3 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity">
                             <ChevronRight size={20} />
                           </button>
                         </div>
@@ -201,10 +203,10 @@
                           <h3 className="text-lg sm:text-xl font-black text-gray-800 uppercase tracking-tighter">Download</h3>
                           <div className="flex flex-col w-full gap-2 sm:gap-3">
                             <button onClick={() => handleDownload('ppt')} className="w-full bg-indigo-500 hover:bg-indigo-600 text-white py-3 rounded-xl font-black flex items-center justify-center gap-2 transition-transform active:scale-95 shadow-md">
-                              <MonitorPlay size={18} /> PPTX Presentation
+                              <MonitorPlay size={18} /> PPTX
                             </button>
                             <button onClick={() => handleDownload('pdf')} className="w-full bg-rose-500 hover:bg-rose-600 text-white py-3 rounded-xl font-black flex items-center justify-center gap-2 transition-transform active:scale-95 shadow-md">
-                              <FileText size={18} /> PDF Worksheet
+                              <FileText size={18} /> PDF
                             </button>
                           </div>
                         </div>
