@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bow & Arrow</title>
+    <title>Bow & Arrow - MaachiiKnow</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,11 +33,13 @@
             overflow: hidden;
         }
         
+        /* 滾動條樣式優化 */
         .custom-scroll::-webkit-scrollbar { width: 8px; }
         .custom-scroll::-webkit-scrollbar-track { background: #f8fafc; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 20px; }
         .custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
+        /* 防止 iframe 被圓角切掉 */
         .video-container {
             mask-image: radial-gradient(white, black);
             -webkit-mask-image: -webkit-radial-gradient(white, black);
@@ -84,8 +86,9 @@
 
         function App() {
           const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+          // 影片 URL 與 下載 URL
           const bilibiliUrl = "https://www.bilibili.com/video/BV13i4y1t7YP/";
-          const downloadUrl = "https://github.com/JOUCHUCHEN/maachiiknow/blob/main/steam/bow%26arrow/Bow%26Arrow.io";
+          const downloadUrl = "https://raw.githubusercontent.com/JOUCHUCHEN/maachiiknow/main/steam/bow%26arrow/Bow%26Arrow.io";
           
           const handleNavAction = () => {
             console.log("Navigating to home...");
@@ -94,6 +97,7 @@
 
           return (
             <div className="flex flex-col h-screen font-sans">
+              {/* 導覽列 */}
               <nav className="bg-white shadow-sm h-20 border-b flex-shrink-0 z-50">
                 <div className="max-w-7xl mx-auto px-4 h-full flex justify-between items-center">
                   <div className="flex items-center cursor-pointer group" onClick={handleNavAction}>
@@ -125,16 +129,18 @@
                 <main className="w-full">
                     <div className="p-6 lg:p-10 max-w-6xl mx-auto w-full flex flex-col">
                         
+                        {/* 專案標題區 */}
                         <div className="mb-10 text-left">
                             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight mb-3">LEGO 9686 SPM: Bow & Arrow</h2>
                             <div className="flex items-center justify-start gap-2 text-slate-400 font-bold tracking-wider uppercase text-xs">
                                 <Icon name="play-circle" size={14} className="text-orange-500" />
                                 <span>STEAM Project Learning</span>
                                 <span className="text-slate-200 mx-1">•</span>
-                                <span className="text-indigo-600 font-bold">Mechanical Engineering Design</span>
+                                <span className="text-indigo-600 font-bold">Physics & Engineering Design</span>
                             </div>
                         </div>
 
+                        {/* 影片容器 */}
                         <div className="w-full relative group">
                             <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 to-rose-500 rounded-[3rem] blur opacity-15 group-hover:opacity-25 transition duration-1000"></div>
                             <div className="relative bg-white p-3 md:p-4 rounded-[3.5rem] shadow-2xl border border-slate-100">
@@ -151,6 +157,7 @@
                             </div>
                         </div>
 
+                        {/* 按鈕動作區 */}
                         <div className="mt-12 flex flex-col items-center gap-6">
                           <div className="flex flex-col sm:flex-row items-center gap-4 w-full justify-center">
                             <a 
@@ -168,7 +175,7 @@
                               href={downloadUrl} 
                               target="_blank" 
                               rel="noopener noreferrer"
-                              download="Auto_Grabber.io"
+                              download="Bow_and_Arrow.io"
                               className="flex items-center gap-3 text-base font-bold text-white px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 rounded-full shadow-[0_10px_30px_-10px_rgba(16,185,129,0.4)] transition-all hover:scale-105 active:scale-95 group w-full sm:w-auto justify-center"
                             >
                               <Icon name="download" size={20} className="group-hover:bounce" /> 
@@ -182,17 +189,18 @@
                           </div>
                         </div>
 
+                        {/* 專案介紹區 */}
                         <div className="mt-16 mb-20 grid grid-cols-1 lg:grid-cols-3 gap-8">
                           <div className="lg:col-span-2 bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm relative overflow-hidden group">
                              <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:scale-110 transition-transform duration-700">
-                                <Icon name="lightbulb" size={120} className="text-orange-600" />
+                                <Icon name="target" size={120} className="text-orange-600" />
                              </div>
                              <h3 className="font-black text-2xl mb-6 flex items-center gap-3 text-orange-600 tracking-tight">
                                <span className="p-2 bg-orange-50 rounded-xl"><Icon name="lightbulb" className="text-orange-600" size={24} /></span>
                                Project Overview
                              </h3>
                              <p className="text-slate-600 leading-loose text-lg font-medium relative z-10">
-                               In this lesson, we will explore the mechanics of an <strong>Auto Grabber</strong> using the Lego 9686 set. Students will learn how to design a linkage system that enables automatic grasping and releasing. We'll dive deep into gear ratios, reciprocating motion, and the physics of grip. Let's start building!
+                               In this lesson, we will explore the physics of elasticity and tension by building a <strong>Bow & Arrow</strong> using the Lego 9686 set. Students will learn how potential energy is stored in bent structures and released as kinetic energy. We will analyze projectile motion, structural stability, and trigger mechanisms to create a reliable and powerful launcher!
                              </p>
                           </div>
                           <div className="flex flex-col">
