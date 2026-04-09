@@ -68,7 +68,8 @@
     <script type="text/babel" data-type="module">
         import React, { useState, useEffect } from 'react';
         import { createRoot } from 'react-dom/client';
-        import { BrainCircuit, ArrowLeft, Menu, X, Star, CheckCircle2, XCircle, Volume2 } from 'lucide-react';
+        // 替換 BrainCircuit 為 Gamepad2
+        import { Gamepad2, ArrowLeft, Menu, X, Star, CheckCircle2, XCircle, Volume2 } from 'lucide-react';
 
         const TEXTURES = [
           { id: 'scales', name: 'Scales', color: 'bg-emerald-100', borderColor: 'border-emerald-400', textColor: 'text-emerald-700', icon: '🐍' },
@@ -121,40 +122,50 @@
           const [quizScore, setQuizScore] = useState(0);
           const [quizFeedback, setQuizFeedback] = useState(null);
           const [quizStreak, setQuizStreak] = useState(0);
-
-          useEffect(() => { resetQuiz(); }, []);
+          const [hasStarted, setHasStarted] = useState(false); // 新增狀態：判斷是否已點擊開始
 
           const resetQuiz = () => {
             const random = ANIMALS[Math.floor(Math.random() * ANIMALS.length)];
             setQuizAnimal(random);
-            setTimeout(() => { speak(`What does a ${random.name} have?`); }, 500);
+            // 移除原本的 0.5 秒延遲，立刻播放發音
+            speak(`What does a ${random.name} have?`);
           };
 
           const handleQuizGuess = (textureId) => {
             if (quizFeedback) return;
             const selectedTexture = TEXTURES.find(t => t.id === textureId);
+            
             if (textureId === quizAnimal.texture) {
+              // 答對邏輯
               playSound('correct');
               setQuizFeedback('correct');
               setQuizScore(s => s + 10);
               setQuizStreak(s => s + 1);
-              speak(`It has ${selectedTexture.name}`);
-              setTimeout(() => { setQuizFeedback(null); resetQuiz(); }, 2000);
+              
+              // 延遲 0.5 秒後播放人聲
+              setTimeout(() => {
+                  speak(`It has ${selectedTexture.name}`);
+              }, 500);
+              
+              // 等待 2.5 秒後重置進入下一題 (確保語音播完)
+              setTimeout(() => { setQuizFeedback(null); resetQuiz(); }, 2500);
             } else {
+              // 答錯邏輯
               playSound('wrong');
               setQuizFeedback('wrong');
               setQuizStreak(0);
-              speak('Oops! Try again.');
+              // 移除了 speak('Oops! Try again.');
+              
               setTimeout(() => setQuizFeedback(null), 1200);
             }
           };
 
-          // 導航至首頁 (加上 "/" 以導向網站根目錄)
+          // 導航至首頁
           const navigateToHome = () => {
             window.location.href = '/index.html';
           };
 
-          // 導航至質地介紹頁 (加上 "/" 以導向網站根目錄)
+          // 導航至質地介紹頁
           const navigateToEnglishTexture = () => {
             window.location.href = '/english_texture.html';
           };
@@ -176,7 +187,6 @@
                 </div>
                 
                 <div className="hidden md:flex items-center space-x-12">
-                  {/* Home 按鈕點擊回到網站根目錄 */}
                   <button 
                     onClick={navigateToHome} 
                     className="font-bold text-base text-gray-500 hover:text-orange-600 uppercase tracking-widest transition-colors"
@@ -215,7 +225,7 @@
                 <main className="flex-1 flex flex-col p-2 sm:p-4 min-h-0 overflow-y-auto overflow-x-hidden relative custom-scroll">
                   <div className="max-w-7xl mx-auto w-full h-full flex flex-col min-h-0">
                     
-                    {/* Header & Content Back Button 嚴格套用樣板格式 (並結合測驗的得分區塊) */}
+                    {/* Header & Content Back Button */}
                     <div className="flex items-center justify-between mb-2 sm:mb-4 bg-white p-3 rounded-3xl shadow-sm border border-sky-100 shrink-0">
                       <button 
                         onClick={navigateToEnglishTexture} 
@@ -224,9 +234,9 @@
                         <ArrowLeft size={28} />
                       </button>
                       <h2 className="text-2xl sm:text-3xl font-black text-slate-800 flex items-center gap-3">
-                        <BrainCircuit className="text-emerald-500" /> Texture Quiz
+                        {/* 更換圖標為 Gamepad2 */}
+                        <Gamepad2 className="text-emerald-500" /> Texture Quiz
                       </h2>
-                      {/* 取代原本的 w-12，放入計分板維持版面平衡 */}
                       <div className="flex items-center gap-2 pr-2">
                         <div className="flex items-center gap-1 text-amber-500 font-black text-xl sm:text-2xl">
                           <Star className="fill-amber-500" size={24} /> {quizScore}
@@ -234,56 +244,70 @@
                       </div>
                     </div>
 
-                    {/* Quiz Logic Area (The "White Card") */}
-                    <div className="bg-white rounded-[2rem] sm:rounded-[3.5rem] p-4 sm:p-6 border-2 sm:border-4 border-sky-100 shadow-xl relative flex-1 flex flex-col items-center justify-center gap-2 sm:gap-4 min-h-0 animate-in overflow-hidden w-full max-w-5xl mx-auto">
-                      
-                      {/* Feedback Overlays */}
-                      {quizFeedback === 'correct' && (
-                        <div className="absolute inset-0 bg-emerald-500/95 z-20 flex flex-col items-center justify-center text-white animate-in px-4 text-center">
-                          <CheckCircle2 size={64} className="mb-2 sm:mb-4 animate-bounce" />
-                          <h2 className="text-2xl sm:text-4xl font-black uppercase tracking-tighter">It has {TEXTURES.find(t => t.id === quizAnimal.texture)?.name}!</h2>
-                        </div>
-                      )}
-                      {quizFeedback === 'wrong' && (
-                        <div className="absolute inset-0 bg-rose-500/95 z-20 flex flex-col items-center justify-center text-white animate-in">
-                          <XCircle size={64} className="mb-2 sm:mb-4" />
-                          <h2 className="text-2xl sm:text-4xl font-black uppercase tracking-tighter">Try Again!</h2>
-                        </div>
-                      )}
-
-                      {/* Question Section */}
-                      <h3 className="text-xl sm:text-3xl font-black text-gray-800 flex items-center gap-2 sm:gap-3 justify-center text-center px-2 shrink-0 relative z-10">
-                        What does a <span className="text-orange-600 underline decoration-sky-200 underline-offset-4 sm:underline-offset-8">{quizAnimal?.name}</span> have?
-                        <button onClick={() => speak(`What does a ${quizAnimal?.name} have?`)} className="p-2 sm:p-3 bg-sky-50 text-sky-500 rounded-full hover:bg-sky-100 transition-all shrink-0">
-                          <Volume2 size={24} />
-                        </button>
-                      </h3>
-
-                      {/* Hero Image Area - 使用 clamp 高度限制以防止排版跑版 */}
-                      <div className="flex-1 flex items-center justify-center w-full min-h-0 relative z-10">
-                        <div 
-                          className="drop-shadow-2xl hover:scale-105 transition-transform cursor-pointer select-none leading-none flex items-center justify-center"
-                          style={{ fontSize: 'clamp(4rem, 16vh, 12rem)' }}
+                    {/* 透過 hasStarted 狀態來控制是否顯示測驗畫面，以確保符合瀏覽器自動播放語音規則 */}
+                    {!hasStarted ? (
+                      <div className="bg-white rounded-[2rem] sm:rounded-[3.5rem] p-4 sm:p-6 border-2 sm:border-4 border-sky-100 shadow-xl relative flex-1 flex flex-col items-center justify-center gap-6 min-h-0 animate-in overflow-hidden w-full max-w-5xl mx-auto">
+                        <div className="text-[6rem] sm:text-[8rem] animate-bounce-slow">🐾</div>
+                        <h2 className="text-3xl sm:text-5xl font-black text-slate-800 tracking-tighter text-center">Ready to Play?</h2>
+                        <button 
+                          onClick={() => { setHasStarted(true); resetQuiz(); }} 
+                          className="mt-2 px-10 py-4 bg-orange-500 hover:bg-orange-600 text-white text-2xl sm:text-3xl font-black rounded-full shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all"
                         >
-                            {quizAnimal?.emoji}
+                          Start Quiz
+                        </button>
+                      </div>
+                    ) : (
+                      /* Quiz Logic Area (The "White Card") */
+                      <div className="bg-white rounded-[2rem] sm:rounded-[3.5rem] p-4 sm:p-6 border-2 sm:border-4 border-sky-100 shadow-xl relative flex-1 flex flex-col items-center justify-center gap-2 sm:gap-4 min-h-0 animate-in overflow-hidden w-full max-w-5xl mx-auto">
+                        
+                        {/* Feedback Overlays */}
+                        {quizFeedback === 'correct' && (
+                          <div className="absolute inset-0 bg-emerald-500/95 z-20 flex flex-col items-center justify-center text-white animate-in px-4 text-center">
+                            <CheckCircle2 size={64} className="mb-2 sm:mb-4 animate-bounce" />
+                            <h2 className="text-2xl sm:text-4xl font-black uppercase tracking-tighter">It has {TEXTURES.find(t => t.id === quizAnimal.texture)?.name}!</h2>
+                          </div>
+                        )}
+                        {quizFeedback === 'wrong' && (
+                          <div className="absolute inset-0 bg-rose-500/95 z-20 flex flex-col items-center justify-center text-white animate-in">
+                            <XCircle size={64} className="mb-2 sm:mb-4" />
+                            <h2 className="text-2xl sm:text-4xl font-black uppercase tracking-tighter">Try Again!</h2>
+                          </div>
+                        )}
+
+                        {/* Question Section */}
+                        <h3 className="text-xl sm:text-3xl font-black text-gray-800 flex items-center gap-2 sm:gap-3 justify-center text-center px-2 shrink-0 relative z-10">
+                          What does a <span className="text-orange-600 underline decoration-sky-200 underline-offset-4 sm:underline-offset-8">{quizAnimal?.name?.toLowerCase()}</span> have?
+                          <button onClick={() => speak(`What does a ${quizAnimal?.name} have?`)} className="p-2 sm:p-3 bg-sky-50 text-sky-500 rounded-full hover:bg-sky-100 transition-all shrink-0">
+                            <Volume2 size={24} />
+                          </button>
+                        </h3>
+
+                        {/* Hero Image Area */}
+                        <div className="flex-1 flex items-center justify-center w-full min-h-0 relative z-10">
+                          <div 
+                            className="drop-shadow-2xl hover:scale-105 transition-transform cursor-pointer select-none leading-none flex items-center justify-center"
+                            style={{ fontSize: 'clamp(4rem, 16vh, 12rem)' }}
+                          >
+                              {quizAnimal?.emoji}
+                          </div>
+                        </div>
+
+                        {/* Options Grid */}
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 w-full max-w-4xl shrink-0 relative z-10">
+                          {TEXTURES.map(t => (
+                            <button 
+                              key={t.id} 
+                              onClick={() => handleQuizGuess(t.id)} 
+                              disabled={!!quizFeedback}
+                              className={`${t.color} ${t.borderColor} border-b-4 sm:border-b-6 ${!quizFeedback ? 'hover:border-b-0 hover:translate-y-1' : 'opacity-40'} p-3 sm:p-5 rounded-2xl sm:rounded-[2rem] transition-all flex flex-col items-center justify-center gap-1 sm:gap-2 active:scale-95 group`}
+                            >
+                              <span className="text-3xl sm:text-4xl group-hover:scale-110 transition-transform leading-none">{t.icon}</span>
+                              <span className={`text-base sm:text-xl font-black ${t.textColor} leading-tight`}>{t.name}</span>
+                            </button>
+                          ))}
                         </div>
                       </div>
-
-                      {/* Options Grid */}
-                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 w-full max-w-4xl shrink-0 relative z-10">
-                        {TEXTURES.map(t => (
-                          <button 
-                            key={t.id} 
-                            onClick={() => handleQuizGuess(t.id)} 
-                            disabled={!!quizFeedback}
-                            className={`${t.color} ${t.borderColor} border-b-4 sm:border-b-6 ${!quizFeedback ? 'hover:border-b-0 hover:translate-y-1' : 'opacity-40'} p-3 sm:p-5 rounded-2xl sm:rounded-[2rem] transition-all flex flex-col items-center justify-center gap-1 sm:gap-2 active:scale-95 group`}
-                          >
-                            <span className="text-3xl sm:text-4xl group-hover:scale-110 transition-transform leading-none">{t.icon}</span>
-                            <span className={`text-base sm:text-xl font-black ${t.textColor} leading-tight`}>{t.name}</span>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
+                    )}
                   </div>
                 </main>
 
