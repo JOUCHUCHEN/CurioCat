@@ -119,22 +119,22 @@
 
         // 動物數據與描述
         const ANIMALS = [
-          { id: 'snake', name: 'Snake', texture: 'scales', emoji: '🐍', desc: 'They have dry and hard scales.' }, 
-          { id: 'fish', name: 'Fish', texture: 'scales', emoji: '🐟', desc: 'They have shiny and wet scales.' }, 
-          { id: 'crocodile', name: 'Crocodile', texture: 'scales', emoji: '🐊', desc: 'They have very hard scales.' },
-          { id: 'lizard', name: 'Lizard', texture: 'scales', emoji: '🦎', desc: 'They have small and dry scales.' },
-          { id: 'eagle', name: 'Eagle', texture: 'feathers', emoji: '🦅', desc: 'They have strong feathers for flying.' }, 
-          { id: 'crow', name: 'Crow', texture: 'feathers', emoji: '🐦‍⬛', desc: 'They have black and shiny feathers.' }, 
-          { id: 'parrot', name: 'Parrot', texture: 'feathers', emoji: '🦜', desc: 'They have colorful feathers.' },
-          { id: 'owl', name: 'Owl', texture: 'feathers', emoji: '🦉', desc: 'They have very soft feathers.' },
-          { id: 'dog', name: 'Dog', texture: 'fur', emoji: '🐶', desc: 'They are our furry best friends.' }, 
-          { id: 'lion', name: 'Lion', texture: 'fur', emoji: '🦁', desc: 'They have thick and warm fur.' }, 
-          { id: 'horse', name: 'Horse', texture: 'fur', emoji: '🐴', desc: 'They have short and smooth fur.' },
-          { id: 'panda', name: 'Panda', texture: 'fur', emoji: '🐼', desc: 'They have thick black and white fur.' },
-          { id: 'whale', name: 'Whale', texture: 'skin', emoji: '🐳', desc: 'They have smooth skin.' }, 
-          { id: 'dolphin', name: 'Dolphin', texture: 'skin', emoji: '🐬', desc: 'They have very smooth skin for swimming fast.' }, 
-          { id: 'frog', name: 'Frog', texture: 'skin', emoji: '🐸', desc: 'They have smooth and wet skin.' },
-          { id: 'elephant', name: 'Elephant', texture: 'skin', emoji: '🐘', desc: 'They have rough and thick skin. Elephant skin is not smooth!' }
+          { id: 'snake', name: 'Snake', texture: 'scales', emoji: '🐍', desc: 'Snakes have dry and hard scales.' }, 
+          { id: 'fish', name: 'Fish', texture: 'scales', emoji: '🐟', desc: 'Fish have shiny and wet scales.' }, 
+          { id: 'crocodile', name: 'Crocodile', texture: 'scales', emoji: '🐊', desc: 'Crocodiles have very hard scales.' },
+          { id: 'lizard', name: 'Lizard', texture: 'scales', emoji: '🦎', desc: 'Lizards have small and dry scales.' },
+          { id: 'eagle', name: 'Eagle', texture: 'feathers', emoji: '🦅', desc: 'Eagles have strong feathers for flying.' }, 
+          { id: 'crow', name: 'Crow', texture: 'feathers', emoji: '🐦‍⬛', desc: 'Crows have black and shiny feathers.' }, 
+          { id: 'parrot', name: 'Parrot', texture: 'feathers', emoji: '🦜', desc: 'Parrots have colorful feathers.' },
+          { id: 'owl', name: 'Owl', texture: 'feathers', emoji: '🦉', desc: 'Owls have very soft feathers.' },
+          { id: 'dog', name: 'Dog', texture: 'fur', emoji: '🐶', desc: 'Dogs are our furry best friends.' }, 
+          { id: 'lion', name: 'Lion', texture: 'fur', emoji: '🦁', desc: 'Lions have thick and warm fur.' }, 
+          { id: 'horse', name: 'Horse', texture: 'fur', emoji: '🐴', desc: 'Horses have short and smooth fur.' },
+          { id: 'panda', name: 'Panda', texture: 'fur', emoji: '🐼', desc: 'Pandas have thick black and white fur.' },
+          { id: 'whale', name: 'Whale', texture: 'skin', emoji: '🐳', desc: 'Whales have smooth skin.' }, 
+          { id: 'dolphin', name: 'Dolphin', texture: 'skin', emoji: '🐬', desc: 'Dolphins have very smooth skin for swimming fast.' }, 
+          { id: 'frog', name: 'Frog', texture: 'skin', emoji: '🐸', desc: 'Frogs have smooth and wet skin.' },
+          { id: 'elephant', name: 'Elephant', texture: 'skin', emoji: '🐘', desc: 'Elephants have rough and thick skin. Elephant skin is not smooth!' }
         ];
 
         const speak = (text) => {
@@ -158,7 +158,8 @@
 
           // 輔助函式：將句子拆分為「引導語」與「關鍵描述」
           const formatDescription = (desc) => {
-            const regex = /^(They\s(?:have|are))\s(.*)$/i;
+            // 更新正則表達式，使其能抓取「任何動物名稱 + have/are」
+            const regex = /^([A-Za-z\s]+(?:have|are))\s(.*)$/i;
             const match = desc.match(regex);
             if (match) {
               return (
