@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Texture Library - MaachiiKnow</title>
     
-    <!-- 引入 Noto Sans TC (Logo使用) 與 Roboto (全站使用) 字體 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -28,7 +26,6 @@
         }
     </script>
 
-    <!-- UI 所需的自訂 CSS -->
     <style>
         body { font-family: 'Roboto', sans-serif; }
         .custom-scroll::-webkit-scrollbar { width: 8px; }
@@ -50,7 +47,6 @@
         }
     </style>
 
-    <!-- Import Maps -->
     <script type="importmap">
     {
         "imports": {
@@ -61,11 +57,9 @@
     }
     </script>
 
-    <!-- Babel Standalone -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body class="bg-sky-50 h-screen overflow-hidden">
-    <!-- React 應用的掛載點 -->
     <div id="root" class="h-full"></div>
 
     <script type="text/babel" data-type="module">
@@ -121,7 +115,7 @@
         const ANIMALS = [
           { id: 'snake', name: 'Snake', texture: 'scales', emoji: '🐍', desc: 'Snakes have dry and hard scales.' }, 
           { id: 'fish', name: 'Fish', texture: 'scales', emoji: '🐟', desc: 'Fish have shiny and wet scales.' }, 
-          { id: 'crocodile', name: 'Crocodile', texture: 'scales', emoji: '🐊', image: 'https://i.ibb.co/Ng3L4Xw2/miniformat65-nile-crocodile-245013-1920.jpg', desc: 'Crocodiles have very hard scales.' },
+          { id: 'crocodile', name: 'Crocodile', texture: 'scales', emoji: '🐊', image: 'https://i.ibb.co/39VRLgmj/miniformat65-nile-crocodile-245013-640.jpg', desc: 'Crocodiles have very hard scales.' },
           { id: 'lizard', name: 'Lizard', texture: 'scales', emoji: '🦎', image: 'https://i.ibb.co/SwT4hFnB/pavanprasad-ind-lizard-9076520-1920.jpg', desc: 'Lizards have small and dry scales.' },
           { id: 'eagle', name: 'Eagle', texture: 'feathers', emoji: '🦅', image: 'https://i.ibb.co/5gVzdnGc/stacyvitallo-eagle-1029909-1920.jpg', desc: 'Eagles have strong feathers for flying.' }, 
           { id: 'crow', name: 'Crow', texture: 'feathers', emoji: '🐦‍⬛', image: 'https://i.ibb.co/kgBKWdwG/chiemseherin-raven-bird-3696515-1920.jpg', desc: 'Crows have black and shiny feathers.' }, 
@@ -158,13 +152,11 @@
 
           // 輔助函式：將句子拆分為「引導語」與「關鍵描述」
           const formatDescription = (desc) => {
-            // 更新正則表達式，使其能抓取「任何動物名稱 + have/are」
             const regex = /^([A-Za-z\s]+(?:have|are))\s(.*)$/i;
             const match = desc.match(regex);
             if (match) {
               return (
                 <p className="text-2xl sm:text-4xl leading-tight tracking-tight">
-                  {/* 將 text-slate-400 改為更深的 text-slate-600 */}
                   <span className="text-slate-600 font-medium">{match[1]} </span>
                   <span className="text-orange-600 font-black">{match[2]}</span>
                 </p>
@@ -211,47 +203,52 @@
                 <Navbar />
 
                 <main className="flex-1 overflow-y-auto overflow-x-hidden relative custom-scroll p-4 md:p-6">
-                  <div className="max-w-5xl mx-auto h-full flex flex-col">
+                  {/* 將 max-w-5xl 放寬到 max-w-6xl 充分利用留白 */}
+                  <div className="max-w-6xl mx-auto h-full flex flex-col">
                     
-                    <div className="flex items-center justify-between mb-8 bg-white p-3 rounded-3xl shadow-sm border border-sky-100 flex-shrink-0">
+                    <div className="flex items-center justify-between mb-8 bg-white p-4 rounded-3xl shadow-sm border border-sky-100 flex-shrink-0">
                       <button 
                         onClick={() => selectedTexture ? setSelectedTexture(null) : navigateToEnglishTexture()} 
                         className="p-3 text-orange-600 hover:bg-orange-50 rounded-2xl transition-all shadow-sm active:scale-90"
                       >
-                        <ArrowLeft size={28} />
+                        <ArrowLeft size={32} />
                       </button>
-                      <h2 className="text-2xl sm:text-3xl font-black text-slate-800 flex items-center gap-3">
-                        <BookOpen className="text-emerald-500" /> Texture Library
+                      <h2 className="text-3xl sm:text-4xl font-black text-slate-800 flex items-center gap-4">
+                        <BookOpen className="text-emerald-500" size={36} /> Texture Library
                       </h2>
                       <div className="w-12"></div>
                     </div>
 
                     <div className="flex-1 min-h-0">
                       {!selectedTexture ? (
-                        /* 首頁 2x2 網格 */
-                        <div className="grid grid-cols-1 md:grid-cols-2 grid-rows-2 gap-4 sm:gap-6 h-full animate-in fade-in slide-in-from-bottom-4">
+                        /* 首頁 2x2 網格：加大間距 (gap-6 sm:gap-10) */
+                        <div className="grid grid-cols-1 md:grid-cols-2 grid-rows-2 gap-6 sm:gap-10 h-full animate-in fade-in slide-in-from-bottom-4">
                           {TEXTURES.map((t) => (
                             <button 
                               key={t.id} 
                               onClick={() => { setSelectedTexture(t); speak(t.name); }} 
-                              className="relative bg-white border border-slate-100 rounded-[2.5rem] shadow-premium hover:shadow-2xl hover:-translate-y-1 transform transition-all duration-500 group overflow-hidden flex flex-row items-center justify-start gap-4 sm:gap-8 px-6 sm:px-10"
+                              /* 加大內距 px-6 sm:px-12 lg:px-20 和 gap-6 sm:gap-12 */
+                              className="relative bg-white border border-slate-100 rounded-[3rem] shadow-premium hover:shadow-2xl hover:-translate-y-1 transform transition-all duration-500 group overflow-hidden flex flex-row items-center justify-start gap-6 sm:gap-12 px-6 sm:px-12 lg:px-20"
                             >
                               <div className={`absolute inset-0 bg-gradient-to-br ${t.gradient} opacity-40 group-hover:opacity-60 transition-opacity`}></div>
-                              <Sparkles className="absolute top-4 right-4 text-white/40 group-hover:text-white/80 transition-colors" size={20} />
+                              <Sparkles className="absolute top-6 right-6 text-white/40 group-hover:text-white/80 transition-colors" size={28} />
 
                               <div className="relative flex-shrink-0">
                                 <div className={`absolute inset-0 rounded-full ring-4 ${t.ringColor} scale-110 opacity-50`}></div>
+                                {/* 顯著放大圖片尺寸 (lg:w-44 lg:h-44) */}
                                 <img 
                                   src={t.image} 
                                   alt={t.name} 
-                                  className="w-16 h-16 sm:w-28 sm:h-28 lg:w-32 lg:h-32 object-cover rounded-full shadow-lg border-[4px] border-white relative z-10 group-hover:scale-105 transition-transform duration-500"
+                                  className="w-24 h-24 sm:w-36 sm:h-36 lg:w-44 lg:h-44 object-cover rounded-full shadow-lg border-[6px] border-white relative z-10 group-hover:scale-105 transition-transform duration-500"
                                 />
                               </div>
 
                               <div className="relative z-10 text-left">
-                                <h3 className={`text-2xl sm:text-4xl font-black ${t.textColor} tracking-normal leading-tight`}>{t.name}</h3>
-                                <div className={`mt-1 flex items-center justify-start gap-1 text-[10px] sm:text-xs font-bold ${t.textColor} opacity-60 uppercase tracking-widest`}>
-                                  Explore <ChevronRight size={12} />
+                                {/* 放大標題文字 (lg:text-6xl) */}
+                                <h3 className={`text-4xl sm:text-5xl lg:text-6xl font-black ${t.textColor} tracking-normal leading-tight`}>{t.name}</h3>
+                                {/* 放大 Explore 文字 (lg:text-base) */}
+                                <div className={`mt-2 flex items-center justify-start gap-2 text-xs sm:text-sm lg:text-base font-bold ${t.textColor} opacity-60 uppercase tracking-widest`}>
+                                  Explore <ChevronRight size={16} />
                                 </div>
                               </div>
                             </button>
@@ -299,7 +296,6 @@
                                 >
                                   <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-orange-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                   
-                                  {/* 更新列表顯示邏輯：如果有圖片則顯示圖片，否則顯示 emoji */}
                                   <div className="mb-3 transform group-hover:scale-110 group-hover:rotate-6 transition-transform relative z-10 flex justify-center">
                                     {animal.image ? (
                                       <img src={animal.image} alt={animal.name} className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-full shadow-sm border-2 border-white" />
@@ -362,7 +358,6 @@
                             </button>
 
                             <div className="flex flex-col items-center text-center">
-                                {/* 更新 Popup 顯示邏輯：如果有圖片則顯示圖片，否則顯示 emoji */}
                                 <div className="mb-6 animate-bounce-slow flex justify-center">
                                     {activeAnimal.image ? (
                                         <img src={activeAnimal.image} alt={activeAnimal.name} className="w-32 h-32 sm:w-40 sm:h-40 object-cover rounded-full shadow-xl border-4 border-white" />
@@ -379,7 +374,6 @@
                                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-4 text-orange-400 text-xs font-black uppercase tracking-widest">
                                         Learning Sentence
                                     </div>
-                                    {/* 調用輔助函式，使用加深後的顏色 */}
                                     {formatDescription(activeAnimal.desc)}
                                 </div>
 
