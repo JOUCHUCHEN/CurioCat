@@ -285,8 +285,8 @@
 
                           {/* 右側：2x2 動物網格 */}
                           <div className="relative z-10 flex-1 overflow-y-auto custom-scroll p-6 sm:p-10 flex items-center justify-center">
-                            {/* 強制為 grid-cols-2 保證 2x2 排版 */}
-                            <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:gap-8 w-full max-w-2xl mx-auto">
+                            {/* 強制為 grid-cols-2 保證 2x2 排版，並將 max-w 縮小至 max-w-lg，讓圖示彼此靠攏集中 */}
+                            <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:gap-8 w-full max-w-lg mx-auto">
                               {ANIMALS.filter(a => a.texture === selectedTexture.id).map(animal => (
                                 <div 
                                   key={animal.id} 
