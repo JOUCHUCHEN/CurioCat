@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Texture Library - MaachiiKnow</title>
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="httpsA://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
     
@@ -156,7 +156,6 @@
             const match = desc.match(regex);
             if (match) {
               return (
-                /* 加入 xl 斷點平滑過渡 */
                 <p className="text-2xl sm:text-4xl xl:text-5xl 2xl:text-6xl leading-tight tracking-tight">
                   <span className="text-slate-600 font-medium">{match[1]} </span>
                   <span className="text-orange-600 font-black">{match[2]}</span>
@@ -167,15 +166,15 @@
           };
 
           const Navbar = () => (
-            <nav className="bg-white shadow-sm h-20 xl:h-24 2xl:h-28 border-b flex-shrink-0 z-50 sticky top-0">
+            <nav className="bg-white shadow-sm h-16 xl:h-20 border-b flex-shrink-0 z-50 sticky top-0">
               <div className="max-w-[1600px] mx-auto px-4 lg:px-6 2xl:px-8 h-full flex justify-between items-center">
                 <div className="flex items-center cursor-pointer group" onClick={navigateToHome}>
                   <img 
                       src="https://i.ibb.co/CFC5v9L/Machi-Know-Logo.png" 
                       alt="Maachiiknow Logo" 
-                      className="w-16 h-16 xl:w-20 xl:h-20 2xl:w-24 2xl:h-24 object-contain group-hover:scale-110 group-hover:rotate-6 transition-all relative -top-1 left-0 z-0"
+                      className="w-12 h-12 xl:w-16 xl:h-16 object-contain group-hover:scale-110 group-hover:rotate-6 transition-all relative -top-1 left-0 z-0"
                    />
-                   <span className="font-logo font-black text-3xl xl:text-4xl 2xl:text-5xl text-gray-900 tracking-tighter relative z-10 ml-0">
+                   <span className="font-logo font-black text-2xl xl:text-3xl text-gray-900 tracking-tighter relative z-10 ml-0">
                      Maachii<span className="text-orange-600">Know</span>
                    </span>
                 </div>
@@ -183,7 +182,7 @@
                 <div className="hidden md:flex items-center space-x-12">
                   <button 
                     onClick={navigateToHome} 
-                    className="font-bold text-base xl:text-xl 2xl:text-2xl text-gray-500 hover:text-orange-600 uppercase tracking-widest transition-colors"
+                    className="font-bold text-sm xl:text-base text-gray-500 hover:text-orange-600 uppercase tracking-widest transition-colors"
                   >
                     Home
                   </button>
@@ -193,7 +192,7 @@
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
                   className="md:hidden text-gray-600 p-2"
                 >
-                  {isMobileMenuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
+                  {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                 </button>
               </div>
             </nav>
@@ -204,48 +203,49 @@
                 <Navbar />
 
                 <main className="flex-1 overflow-y-auto overflow-x-hidden relative custom-scroll p-4 md:p-6 xl:p-8 2xl:p-12">
-                  <div className="max-w-[1600px] w-full mx-auto h-full flex flex-col">
+                  <div className="max-w-[1400px] w-full mx-auto h-full flex flex-col justify-center">
                     
-                    <div className="flex items-center justify-between mb-8 xl:mb-10 2xl:mb-12 bg-white p-4 xl:p-5 2xl:p-6 rounded-3xl 2xl:rounded-[2.5rem] shadow-sm border border-sky-100 flex-shrink-0">
+                    <div className="flex items-center justify-between mb-6 xl:mb-8 2xl:mb-12 bg-white p-3 xl:p-4 2xl:p-5 rounded-full shadow-sm border border-sky-100 flex-shrink-0 max-w-5xl mx-auto w-full">
                       <button 
                         onClick={() => selectedTexture ? setSelectedTexture(null) : navigateToEnglishTexture()} 
-                        className="p-3 xl:p-4 2xl:p-5 text-orange-600 hover:bg-orange-50 rounded-2xl 2xl:rounded-3xl transition-all shadow-sm active:scale-90"
+                        className="p-2 xl:p-3 2xl:p-4 text-orange-600 hover:bg-orange-50 rounded-full transition-all shadow-sm active:scale-90"
                       >
-                        <ArrowLeft className="w-8 h-8 xl:w-9 xl:h-9 2xl:w-10 2xl:h-10" />
+                        <ArrowLeft className="w-6 h-6 xl:w-8 xl:h-8 2xl:w-10 2xl:h-10" />
                       </button>
-                      <h2 className="text-3xl sm:text-4xl xl:text-5xl 2xl:text-6xl font-black text-slate-800 flex items-center gap-4 xl:gap-5 2xl:gap-6">
-                        <BookOpen className="text-emerald-500 w-9 h-9 xl:w-11 xl:h-11 2xl:w-14 2xl:h-14" /> Texture Library
+                      <h2 className="text-2xl sm:text-3xl xl:text-4xl 2xl:text-5xl font-black text-slate-800 flex items-center gap-3 xl:gap-4 2xl:gap-5">
+                        <BookOpen className="text-emerald-500 w-7 h-7 xl:w-9 xl:h-9 2xl:w-12 2xl:h-12" /> Texture Library
                       </h2>
-                      <div className="w-12 xl:w-16 2xl:w-20"></div>
+                      <div className="w-10 xl:w-14 2xl:w-16"></div>
                     </div>
 
-                    <div className="flex-1 min-h-0">
+                    <div className="flex-1 min-h-0 flex flex-col justify-center max-w-5xl mx-auto w-full">
                       {!selectedTexture ? (
-                        /* 首頁 2x2 網格：平滑過渡間距與內距 */
-                        <div className="grid grid-cols-1 md:grid-cols-2 grid-rows-2 gap-6 sm:gap-10 xl:gap-12 2xl:gap-16 h-full animate-in fade-in slide-in-from-bottom-4">
+                        /* 首頁 2x2 網格：改為橫向膠囊造型 (rounded-full) */
+                        <div className="grid grid-cols-1 md:grid-cols-2 grid-rows-2 gap-4 sm:gap-6 xl:gap-8 2xl:gap-10 h-auto animate-in fade-in slide-in-from-bottom-4 w-full">
                           {TEXTURES.map((t) => (
                             <button 
                               key={t.id} 
                               onClick={() => { setSelectedTexture(t); }}
-                              className="relative bg-white border border-slate-100 rounded-[3rem] 2xl:rounded-[4.5rem] shadow-premium hover:shadow-2xl hover:-translate-y-1 transform transition-all duration-500 group overflow-hidden flex flex-row items-center justify-start gap-5 sm:gap-8 lg:gap-10 xl:gap-14 2xl:gap-20 px-6 sm:px-10 lg:px-12 xl:px-16 2xl:px-24"
+                              /* 修改內距與形狀，使其呈現完美的膠囊狀 */
+                              className="relative bg-white border border-slate-100 rounded-full shadow-premium hover:shadow-2xl hover:-translate-y-1 transform transition-all duration-500 group overflow-hidden flex flex-row items-center justify-start gap-5 sm:gap-6 lg:gap-8 xl:gap-10 p-3 sm:p-4 lg:p-4 2xl:p-5 pr-8 sm:pr-10 lg:pr-12 2xl:pr-16"
                             >
-                              <div className={`absolute inset-0 bg-gradient-to-br ${t.gradient} opacity-40 group-hover:opacity-60 transition-opacity`}></div>
-                              <Sparkles className="absolute top-6 right-6 xl:top-8 xl:right-8 2xl:top-10 2xl:right-10 text-white/40 group-hover:text-white/80 transition-colors w-7 h-7 xl:w-9 xl:h-9 2xl:w-12 2xl:h-12" />
+                              <div className={`absolute inset-0 bg-gradient-to-r ${t.gradient} opacity-40 group-hover:opacity-60 transition-opacity`}></div>
+                              <Sparkles className="absolute top-1/2 -translate-y-1/2 right-6 xl:right-10 2xl:right-12 text-white/40 group-hover:text-white/80 transition-colors w-6 h-6 xl:w-8 xl:h-8 2xl:w-10 2xl:h-10" />
 
                               <div className="relative flex-shrink-0">
-                                <div className={`absolute inset-0 rounded-full ring-4 ${t.ringColor} scale-110 opacity-50`}></div>
-                                {/* 首頁大圖：平滑縮放 */}
+                                <div className={`absolute inset-0 rounded-full ring-4 ${t.ringColor} scale-[1.05] opacity-50`}></div>
+                                {/* 首頁大圖：調整尺寸以配合膠囊高度，不要過大 */}
                                 <img 
                                   src={t.image} 
                                   alt={t.name} 
-                                  className="w-24 h-24 sm:w-32 sm:h-32 lg:w-40 lg:h-40 xl:w-52 xl:h-52 2xl:w-64 2xl:h-64 object-cover rounded-full shadow-lg border-[6px] xl:border-[8px] 2xl:border-[10px] border-white relative z-10 group-hover:scale-105 transition-transform duration-500"
+                                  className="w-20 h-20 sm:w-28 sm:h-28 lg:w-32 lg:h-32 xl:w-36 xl:h-36 2xl:w-44 2xl:h-44 object-cover rounded-full shadow-lg border-[4px] xl:border-[6px] 2xl:border-[8px] border-white relative z-10 group-hover:scale-105 transition-transform duration-500"
                                 />
                               </div>
 
-                              <div className="relative z-10 text-left flex-1 pr-4">
-                                <h3 className={`text-4xl sm:text-5xl lg:text-5xl xl:text-7xl 2xl:text-8xl font-black ${t.textColor} tracking-normal leading-tight`}>{t.name}</h3>
-                                <div className={`mt-2 xl:mt-3 2xl:mt-4 flex items-center justify-start gap-2 text-xs sm:text-sm lg:text-base xl:text-xl 2xl:text-2xl font-bold ${t.textColor} opacity-60 uppercase tracking-widest`}>
-                                  Explore <ChevronRight className="w-4 h-4 xl:w-6 xl:h-6 2xl:w-8 2xl:h-8" />
+                              <div className="relative z-10 text-left flex-1">
+                                <h3 className={`text-3xl sm:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black ${t.textColor} tracking-tight leading-none`}>{t.name}</h3>
+                                <div className={`mt-1 xl:mt-2 2xl:mt-3 flex items-center justify-start gap-1 text-[10px] sm:text-xs lg:text-sm xl:text-base 2xl:text-xl font-bold ${t.textColor} opacity-60 uppercase tracking-widest`}>
+                                  Explore <ChevronRight className="w-3 h-3 xl:w-4 xl:h-4 2xl:w-6 2xl:h-6" />
                                 </div>
                               </div>
                             </button>
@@ -253,7 +253,7 @@
                         </div>
                       ) : (
                         /* 詳情頁：左右兩欄佈局 */
-                        <div className="bg-white rounded-[3rem] xl:rounded-[4rem] 2xl:rounded-[4.5rem] border border-slate-100 shadow-2xl relative h-full flex flex-col lg:flex-row overflow-hidden animate-in zoom-in-95 fade-in duration-500">
+                        <div className="bg-white rounded-[3rem] xl:rounded-[4rem] 2xl:rounded-[4.5rem] border border-slate-100 shadow-2xl relative h-full flex flex-col lg:flex-row overflow-hidden animate-in zoom-in-95 fade-in duration-500 w-full">
                           <div className={`absolute inset-0 bg-gradient-to-b lg:bg-gradient-to-r ${selectedTexture.gradient} opacity-20 pointer-events-none`}></div>
                           
                           {/* 左側：質地大圖與主題標題 */}
@@ -262,11 +262,10 @@
                               className="relative cursor-pointer group/img mb-6 sm:mb-8 xl:mb-12 2xl:mb-16"
                               onClick={() => setZoomedImage(selectedTexture.image)}
                             >
-                              {/* 左側主圖：平滑縮放 */}
                               <img 
                                 src={selectedTexture.image} 
                                 alt={selectedTexture.name} 
-                                className="w-32 h-32 sm:w-48 sm:h-48 lg:w-64 lg:h-64 xl:w-80 xl:h-80 2xl:w-96 2xl:h-96 object-cover rounded-full shadow-2xl border-[8px] xl:border-[10px] 2xl:border-[12px] border-white animate-bounce-slow group-hover/img:scale-105 transition-transform"
+                                className="w-32 h-32 sm:w-40 sm:h-40 lg:w-56 lg:h-56 xl:w-64 xl:h-64 2xl:w-80 2xl:h-80 object-cover rounded-full shadow-2xl border-[8px] xl:border-[10px] 2xl:border-[12px] border-white animate-bounce-slow group-hover/img:scale-105 transition-transform"
                               />
                               <div className="absolute -bottom-2 -right-2 xl:-bottom-3 xl:-right-3 2xl:-bottom-4 2xl:-right-4 bg-white p-2 xl:p-3 2xl:p-4 rounded-full shadow-md text-orange-600 opacity-0 group-hover/img:opacity-100 transition-opacity">
                                 <Maximize2 className="w-6 h-6 xl:w-8 xl:h-8 2xl:w-10 2xl:h-10" />
@@ -275,7 +274,7 @@
 
                             <div className="text-center flex flex-col items-center">
                               <div className="flex items-center justify-center gap-3 sm:gap-4 xl:gap-5 2xl:gap-6 mb-4 xl:mb-6 2xl:mb-8">
-                                <h3 className={`text-4xl sm:text-6xl lg:text-7xl xl:text-7xl 2xl:text-8xl font-black ${selectedTexture.textColor} tracking-tight`}>{selectedTexture.name}</h3>
+                                <h3 className={`text-4xl sm:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-black ${selectedTexture.textColor} tracking-tight`}>{selectedTexture.name}</h3>
                                 <button 
                                   onClick={() => speak(selectedTexture.name)}
                                   className={`w-10 h-10 sm:w-12 sm:h-12 xl:w-14 xl:h-14 2xl:w-16 2xl:h-16 rounded-full bg-white/60 hover:bg-white hover:shadow-md flex items-center justify-center transition-all opacity-80 hover:opacity-100 active:scale-95 ${selectedTexture.textColor}`}
@@ -301,7 +300,6 @@
 
                           {/* 右側：2x2 動物網格 */}
                           <div className="relative z-10 flex-1 overflow-y-auto custom-scroll p-4 lg:p-6 xl:p-8 2xl:p-12 flex items-center justify-center">
-                            {/* 加入 xl 斷點平滑外框與間距 */}
                             <div className="grid grid-cols-2 gap-2 sm:gap-3 xl:gap-4 2xl:gap-5 w-full max-w-[15rem] sm:max-w-[20rem] lg:max-w-[22rem] xl:max-w-[28rem] 2xl:max-w-[36rem] mx-auto">
                               {ANIMALS.filter(a => a.texture === selectedTexture.id).map(animal => (
                                 <div 
@@ -313,7 +311,6 @@
                                 >
                                   <div className="absolute -right-4 -bottom-4 w-12 h-12 xl:w-16 xl:h-16 2xl:w-24 2xl:h-24 bg-orange-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                   
-                                  {/* 動物圖片：平滑縮放 */}
                                   <div className="mb-2 sm:mb-3 xl:mb-4 2xl:mb-6 transform group-hover:scale-110 group-hover:rotate-6 transition-transform relative z-10 flex justify-center">
                                     {animal.image ? (
                                       <div className="w-20 h-20 sm:w-28 sm:h-28 lg:w-32 lg:h-32 xl:w-44 xl:h-44 2xl:w-56 2xl:h-56 rounded-full shadow-md border-[4px] xl:border-[6px] 2xl:border-[8px] border-white overflow-hidden">
@@ -377,7 +374,7 @@
                             <div className="flex flex-col items-center text-center">
                                 <div className="mb-6 sm:mb-8 xl:mb-10 2xl:mb-12 animate-bounce-slow flex justify-center">
                                     {activeAnimal.image ? (
-                                        <div className="w-48 h-48 sm:w-64 sm:h-64 lg:w-72 lg:h-72 xl:w-96 xl:h-96 2xl:w-[28rem] 2xl:h-[28rem] rounded-full shadow-2xl border-[6px] xl:border-[10px] 2xl:border-[12px] border-white overflow-hidden">
+                                        <div className="w-48 h-48 sm:w-64 sm:h-64 lg:w-72 lg:h-72 xl:w-80 xl:h-80 2xl:w-[24rem] 2xl:h-[24rem] rounded-full shadow-2xl border-[6px] xl:border-[10px] 2xl:border-[12px] border-white overflow-hidden">
                                             <img src={activeAnimal.image} alt={activeAnimal.name} className={`w-full h-full object-cover ${activeAnimal.zoomClass || ''}`} />
                                         </div>
                                     ) : (
