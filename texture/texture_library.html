@@ -150,7 +150,6 @@
           const navigateToHome = () => { window.location.href = '/index.html'; };
           const navigateToEnglishTexture = () => { window.location.href = '/english_texture.html'; };
 
-          // 輔助函式：將句子拆分為「引導語」與「關鍵描述」
           const formatDescription = (desc) => {
             const regex = /^([A-Za-z\s]+(?:have|are))\s(.*)$/i;
             const match = desc.match(regex);
@@ -165,24 +164,27 @@
             return <p className="text-2xl sm:text-4xl xl:text-5xl 2xl:text-6xl font-black text-orange-600 leading-tight tracking-tight">{desc}</p>;
           };
 
+          // --- Navbar Component ---
           const Navbar = () => (
-            <nav className="bg-white shadow-sm h-16 xl:h-20 border-b flex-shrink-0 z-50 sticky top-0 w-full">
-              <div className="max-w-[1600px] mx-auto px-4 lg:px-6 2xl:px-8 h-full flex justify-between items-center">
+            <nav className="bg-white shadow-sm h-20 border-b flex-shrink-0 z-50 sticky top-0">
+              <div className="max-w-7xl mx-auto px-4 h-full flex justify-between items-center">
+                {/* Logo 點擊回到網站根目錄 */}
                 <div className="flex items-center cursor-pointer group" onClick={navigateToHome}>
                   <img 
                       src="https://i.ibb.co/CFC5v9L/Machi-Know-Logo.png" 
                       alt="Maachiiknow Logo" 
-                      className="w-12 h-12 xl:w-16 xl:h-16 object-contain group-hover:scale-110 group-hover:rotate-6 transition-all relative -top-1 left-0 z-0"
+                      className="w-16 h-16 object-contain group-hover:scale-110 group-hover:rotate-6 transition-all relative -top-1 left-0 z-0"
                    />
-                   <span className="font-logo font-black text-2xl xl:text-3xl text-gray-900 tracking-tighter relative z-10 ml-0">
+                   <span className="font-logo font-black text-3xl text-gray-900 tracking-tighter relative z-10 ml-0">
                      Maachii<span className="text-orange-600">Know</span>
                    </span>
                 </div>
                 
                 <div className="hidden md:flex items-center space-x-12">
+                  {/* Home 按鈕點擊回到網站根目錄 */}
                   <button 
                     onClick={navigateToHome} 
-                    className="font-bold text-sm xl:text-base text-gray-500 hover:text-orange-600 uppercase tracking-widest transition-colors"
+                    className="font-bold text-base text-gray-500 hover:text-orange-600 uppercase tracking-widest transition-colors"
                   >
                     Home
                   </button>
@@ -192,19 +194,29 @@
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
                   className="md:hidden text-gray-600 p-2"
                 >
-                  {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                  {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
                 </button>
               </div>
+              
+              {isMobileMenuOpen && (
+                <div className="absolute top-20 left-0 w-full bg-white shadow-xl border-b md:hidden flex flex-col p-6 space-y-4 z-40 animate-in slide-in-from-top-2 duration-300">
+                  <button 
+                    onClick={navigateToHome} 
+                    className="text-left font-bold text-gray-700"
+                  >
+                    Home
+                  </button>
+                </div>
+              )}
             </nav>
           );
 
           return (
-            <div className="min-h-screen bg-sky-50 flex flex-col h-screen overflow-hidden w-full">
+            <div className="min-h-screen bg-sky-50 flex flex-col h-screen overflow-hidden">
                 <Navbar />
 
                 <main className="flex-1 overflow-y-auto overflow-x-hidden relative custom-scroll p-4 md:p-6 xl:p-8 flex flex-col items-center w-full">
                   
-                  {/* 共用頂部標題區：依據是否在詳情頁來伸縮最大寬度 */}
                   <div className={`flex items-center justify-between mb-6 xl:mb-8 bg-white p-3 xl:p-4 rounded-full shadow-sm border border-sky-100 flex-shrink-0 w-full transition-all duration-500 ${selectedTexture ? 'max-w-[1400px]' : 'max-w-5xl'}`}>
                     <button 
                       onClick={() => selectedTexture ? setSelectedTexture(null) : navigateToEnglishTexture()} 
@@ -218,10 +230,8 @@
                     <div className="w-10 xl:w-14"></div>
                   </div>
 
-                  {/* 核心內容區：動態切換佈局限制 */}
                   <div className={`flex-1 min-h-0 w-full transition-all duration-500 flex flex-col ${selectedTexture ? 'max-w-[1400px]' : 'max-w-5xl justify-center'}`}>
                     {!selectedTexture ? (
-                      /* 首頁 2x2 網格：完美的膠囊狀 */
                       <div className="grid grid-cols-1 md:grid-cols-2 grid-rows-2 gap-4 sm:gap-6 xl:gap-8 h-auto w-full animate-in fade-in slide-in-from-bottom-4">
                         {TEXTURES.map((t) => (
                           <button 
@@ -251,11 +261,9 @@
                         ))}
                       </div>
                     ) : (
-                      /* 詳情頁：左右兩欄佈局，解除原本的寬度擠壓限制 */
                       <div className="bg-white rounded-[3rem] xl:rounded-[4rem] border border-slate-100 shadow-2xl relative h-full flex flex-col lg:flex-row overflow-hidden animate-in zoom-in-95 fade-in duration-500 w-full">
                         <div className={`absolute inset-0 bg-gradient-to-b lg:bg-gradient-to-r ${selectedTexture.gradient} opacity-20 pointer-events-none`}></div>
                         
-                        {/* 左側：質地大圖與主題標題 */}
                         <div className="relative z-10 lg:w-5/12 flex flex-col items-center justify-center p-6 sm:p-10 xl:p-12 lg:pr-12 xl:pr-16 lg:border-r border-slate-100/50 shrink-0">
                           <div 
                             className="relative cursor-pointer group/img mb-6 sm:mb-8 xl:mb-12"
@@ -297,7 +305,6 @@
                           </div>
                         </div>
 
-                        {/* 右側：2x2 動物網格 (加入防溢出的內層容器) */}
                         <div className="relative z-10 flex-1 overflow-y-auto custom-scroll p-4 lg:p-6 xl:p-8">
                           <div className="min-h-full flex flex-col items-center justify-center">
                             <div className="grid grid-cols-2 gap-3 xl:gap-5 w-full max-w-[20rem] xl:max-w-[28rem] 2xl:max-w-[32rem] mx-auto py-4">
@@ -332,7 +339,6 @@
                   </div>
                 </main>
 
-                {/* 圖片放大 Overlay */}
                 {zoomedImage && (
                     <div 
                         className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 zoom-overlay"
@@ -354,7 +360,6 @@
                     </div>
                 )}
 
-                {/* 動物描述 Popup */}
                 {activeAnimal && (
                     <div 
                         className="fixed inset-0 z-[110] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 xl:p-8 zoom-overlay"
@@ -412,8 +417,8 @@
                     </div>
                 )}
 
-                <footer className="bg-white/80 backdrop-blur-sm border-t py-4 xl:py-5 text-center shrink-0 w-full">
-                  <p className="text-[10px] xl:text-xs text-gray-400 font-black uppercase tracking-[0.3em]">
+                <footer className="bg-white/80 backdrop-blur-sm border-t py-4 text-center shrink-0">
+                  <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.3em]">
                     © 2026 MaachiiKnow. All rights reserved.
                   </p>
                 </footer>
