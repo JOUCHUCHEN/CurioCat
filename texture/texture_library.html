@@ -136,7 +136,7 @@
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'en-US';
-            utterance.rate = 0.8; // 將語速調回 0.8
+            utterance.rate = 0.8;
             window.speechSynthesis.speak(utterance);
           }
         };
@@ -156,25 +156,26 @@
             const match = desc.match(regex);
             if (match) {
               return (
-                <p className="text-2xl sm:text-4xl leading-tight tracking-tight">
+                /* 適應 1080p：增加 2xl:text-6xl */
+                <p className="text-2xl sm:text-4xl 2xl:text-6xl leading-tight tracking-tight">
                   <span className="text-slate-600 font-medium">{match[1]} </span>
                   <span className="text-orange-600 font-black">{match[2]}</span>
                 </p>
               );
             }
-            return <p className="text-2xl sm:text-4xl font-black text-orange-600 leading-tight tracking-tight">{desc}</p>;
+            return <p className="text-2xl sm:text-4xl 2xl:text-6xl font-black text-orange-600 leading-tight tracking-tight">{desc}</p>;
           };
 
           const Navbar = () => (
-            <nav className="bg-white shadow-sm h-20 border-b flex-shrink-0 z-50 sticky top-0">
-              <div className="max-w-7xl mx-auto px-4 h-full flex justify-between items-center">
+            <nav className="bg-white shadow-sm h-20 2xl:h-28 border-b flex-shrink-0 z-50 sticky top-0">
+              <div className="max-w-[1600px] mx-auto px-4 2xl:px-8 h-full flex justify-between items-center">
                 <div className="flex items-center cursor-pointer group" onClick={navigateToHome}>
                   <img 
                       src="https://i.ibb.co/CFC5v9L/Machi-Know-Logo.png" 
                       alt="Maachiiknow Logo" 
-                      className="w-16 h-16 object-contain group-hover:scale-110 group-hover:rotate-6 transition-all relative -top-1 left-0 z-0"
+                      className="w-16 h-16 2xl:w-24 2xl:h-24 object-contain group-hover:scale-110 group-hover:rotate-6 transition-all relative -top-1 left-0 z-0"
                    />
-                   <span className="font-logo font-black text-3xl text-gray-900 tracking-tighter relative z-10 ml-0">
+                   <span className="font-logo font-black text-3xl 2xl:text-5xl text-gray-900 tracking-tighter relative z-10 ml-0">
                      Maachii<span className="text-orange-600">Know</span>
                    </span>
                 </div>
@@ -182,7 +183,7 @@
                 <div className="hidden md:flex items-center space-x-12">
                   <button 
                     onClick={navigateToHome} 
-                    className="font-bold text-base text-gray-500 hover:text-orange-600 uppercase tracking-widest transition-colors"
+                    className="font-bold text-base 2xl:text-2xl text-gray-500 hover:text-orange-600 uppercase tracking-widest transition-colors"
                   >
                     Home
                   </button>
@@ -192,7 +193,7 @@
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
                   className="md:hidden text-gray-600 p-2"
                 >
-                  {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+                  {isMobileMenuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
                 </button>
               </div>
             </nav>
@@ -202,124 +203,129 @@
             <div className="min-h-screen bg-sky-50 flex flex-col h-screen overflow-hidden">
                 <Navbar />
 
-                <main className="flex-1 overflow-y-auto overflow-x-hidden relative custom-scroll p-4 md:p-6">
-                  {/* 將 max-w-5xl 放寬到 max-w-6xl 充分利用留白 */}
-                  <div className="max-w-6xl mx-auto h-full flex flex-col">
+                <main className="flex-1 overflow-y-auto overflow-x-hidden relative custom-scroll p-4 md:p-6 2xl:p-12">
+                  {/* 適應 1080p：將 max-w-6xl 擴增為 max-w-[1600px] 填補大螢幕空間 */}
+                  <div className="max-w-[1600px] w-full mx-auto h-full flex flex-col">
                     
-                    <div className="flex items-center justify-between mb-8 bg-white p-4 rounded-3xl shadow-sm border border-sky-100 flex-shrink-0">
+                    <div className="flex items-center justify-between mb-8 2xl:mb-12 bg-white p-4 2xl:p-6 rounded-3xl 2xl:rounded-[2.5rem] shadow-sm border border-sky-100 flex-shrink-0">
                       <button 
                         onClick={() => selectedTexture ? setSelectedTexture(null) : navigateToEnglishTexture()} 
-                        className="p-3 text-orange-600 hover:bg-orange-50 rounded-2xl transition-all shadow-sm active:scale-90"
+                        className="p-3 2xl:p-5 text-orange-600 hover:bg-orange-50 rounded-2xl 2xl:rounded-3xl transition-all shadow-sm active:scale-90"
                       >
-                        <ArrowLeft size={32} />
+                        <ArrowLeft className="w-8 h-8 2xl:w-10 2xl:h-10" />
                       </button>
-                      <h2 className="text-3xl sm:text-4xl font-black text-slate-800 flex items-center gap-4">
-                        <BookOpen className="text-emerald-500" size={36} /> Texture Library
+                      <h2 className="text-3xl sm:text-4xl 2xl:text-6xl font-black text-slate-800 flex items-center gap-4 2xl:gap-6">
+                        <BookOpen className="text-emerald-500 w-9 h-9 2xl:w-14 2xl:h-14" /> Texture Library
                       </h2>
-                      <div className="w-12"></div>
+                      <div className="w-12 2xl:w-20"></div>
                     </div>
 
                     <div className="flex-1 min-h-0">
                       {!selectedTexture ? (
-                        /* 首頁 2x2 網格 */
-                        <div className="grid grid-cols-1 md:grid-cols-2 grid-rows-2 gap-6 sm:gap-10 h-full animate-in fade-in slide-in-from-bottom-4">
+                        /* 首頁 2x2 網格：適應 1080p 間距與圓角放大 */
+                        <div className="grid grid-cols-1 md:grid-cols-2 grid-rows-2 gap-6 sm:gap-10 2xl:gap-16 h-full animate-in fade-in slide-in-from-bottom-4">
                           {TEXTURES.map((t) => (
                             <button 
                               key={t.id} 
-                              onClick={() => { setSelectedTexture(t); speak(t.name); }} 
-                              className="relative bg-white border border-slate-100 rounded-[3rem] shadow-premium hover:shadow-2xl hover:-translate-y-1 transform transition-all duration-500 group overflow-hidden flex flex-row items-center justify-start gap-5 sm:gap-8 lg:gap-10 px-6 sm:px-10 lg:px-12"
+                              onClick={() => { setSelectedTexture(t); }}
+                              className="relative bg-white border border-slate-100 rounded-[3rem] 2xl:rounded-[4.5rem] shadow-premium hover:shadow-2xl hover:-translate-y-1 transform transition-all duration-500 group overflow-hidden flex flex-row items-center justify-start gap-5 sm:gap-8 lg:gap-10 2xl:gap-20 px-6 sm:px-10 lg:px-12 2xl:px-24"
                             >
                               <div className={`absolute inset-0 bg-gradient-to-br ${t.gradient} opacity-40 group-hover:opacity-60 transition-opacity`}></div>
-                              <Sparkles className="absolute top-6 right-6 text-white/40 group-hover:text-white/80 transition-colors" size={28} />
+                              <Sparkles className="absolute top-6 right-6 2xl:top-10 2xl:right-10 text-white/40 group-hover:text-white/80 transition-colors w-7 h-7 2xl:w-12 2xl:h-12" />
 
                               <div className="relative flex-shrink-0">
                                 <div className={`absolute inset-0 rounded-full ring-4 ${t.ringColor} scale-110 opacity-50`}></div>
+                                {/* 首頁大圖：適應 1080p 大幅增加為 2xl:w-64 2xl:h-64 */}
                                 <img 
                                   src={t.image} 
                                   alt={t.name} 
-                                  className="w-24 h-24 sm:w-32 sm:h-32 lg:w-40 lg:h-40 object-cover rounded-full shadow-lg border-[6px] border-white relative z-10 group-hover:scale-105 transition-transform duration-500"
+                                  className="w-24 h-24 sm:w-32 sm:h-32 lg:w-40 lg:h-40 2xl:w-64 2xl:h-64 object-cover rounded-full shadow-lg border-[6px] 2xl:border-[10px] border-white relative z-10 group-hover:scale-105 transition-transform duration-500"
                                 />
                               </div>
 
                               <div className="relative z-10 text-left flex-1 pr-4">
-                                <h3 className={`text-4xl sm:text-5xl lg:text-5xl xl:text-6xl font-black ${t.textColor} tracking-normal leading-tight`}>{t.name}</h3>
-                                <div className={`mt-2 flex items-center justify-start gap-2 text-xs sm:text-sm lg:text-base font-bold ${t.textColor} opacity-60 uppercase tracking-widest`}>
-                                  Explore <ChevronRight size={16} />
+                                <h3 className={`text-4xl sm:text-5xl lg:text-5xl xl:text-6xl 2xl:text-8xl font-black ${t.textColor} tracking-normal leading-tight`}>{t.name}</h3>
+                                <div className={`mt-2 2xl:mt-4 flex items-center justify-start gap-2 text-xs sm:text-sm lg:text-base 2xl:text-2xl font-bold ${t.textColor} opacity-60 uppercase tracking-widest`}>
+                                  Explore <ChevronRight className="w-4 h-4 2xl:w-8 2xl:h-8" />
                                 </div>
                               </div>
                             </button>
                           ))}
                         </div>
                       ) : (
-                        /* 詳情頁：左右兩欄佈局 (行動版上下疊加) */
-                        <div className="bg-white rounded-[3rem] border border-slate-100 shadow-2xl relative h-full flex flex-col lg:flex-row overflow-hidden animate-in zoom-in-95 fade-in duration-500">
+                        /* 詳情頁：左右兩欄佈局 */
+                        <div className="bg-white rounded-[3rem] 2xl:rounded-[4.5rem] border border-slate-100 shadow-2xl relative h-full flex flex-col lg:flex-row overflow-hidden animate-in zoom-in-95 fade-in duration-500">
                           <div className={`absolute inset-0 bg-gradient-to-b lg:bg-gradient-to-r ${selectedTexture.gradient} opacity-20 pointer-events-none`}></div>
                           
                           {/* 左側：質地大圖與主題標題 */}
-                          <div className="relative z-10 lg:w-5/12 flex flex-col items-center justify-center p-6 sm:p-10 lg:pr-12 lg:border-r border-slate-100/50 shrink-0">
+                          <div className="relative z-10 lg:w-5/12 flex flex-col items-center justify-center p-6 sm:p-10 2xl:p-16 lg:pr-12 2xl:pr-20 lg:border-r border-slate-100/50 shrink-0">
                             <div 
-                              className="relative cursor-pointer group/img mb-6 sm:mb-8"
+                              className="relative cursor-pointer group/img mb-6 sm:mb-8 2xl:mb-16"
                               onClick={() => setZoomedImage(selectedTexture.image)}
                             >
+                              {/* 左側主圖：適應 1080p 大幅增加為 2xl:w-96 2xl:h-96 */}
                               <img 
                                 src={selectedTexture.image} 
                                 alt={selectedTexture.name} 
-                                className="w-32 h-32 sm:w-48 sm:h-48 lg:w-64 lg:h-64 object-cover rounded-full shadow-2xl border-[8px] border-white animate-bounce-slow group-hover/img:scale-105 transition-transform"
+                                className="w-32 h-32 sm:w-48 sm:h-48 lg:w-64 lg:h-64 2xl:w-96 2xl:h-96 object-cover rounded-full shadow-2xl border-[8px] 2xl:border-[12px] border-white animate-bounce-slow group-hover/img:scale-105 transition-transform"
                               />
-                              <div className="absolute -bottom-2 -right-2 bg-white p-2 rounded-full shadow-md text-orange-600 opacity-0 group-hover/img:opacity-100 transition-opacity">
-                                <Maximize2 size={24} />
+                              <div className="absolute -bottom-2 -right-2 2xl:-bottom-4 2xl:-right-4 bg-white p-2 2xl:p-4 rounded-full shadow-md text-orange-600 opacity-0 group-hover/img:opacity-100 transition-opacity">
+                                <Maximize2 className="w-6 h-6 2xl:w-10 2xl:h-10" />
                               </div>
                             </div>
 
                             <div className="text-center flex flex-col items-center">
-                              <div className="flex items-center justify-center gap-3 sm:gap-4 mb-4">
-                                <h3 className={`text-4xl sm:text-6xl lg:text-7xl font-black ${selectedTexture.textColor} tracking-tight`}>{selectedTexture.name}</h3>
+                              <div className="flex items-center justify-center gap-3 sm:gap-4 2xl:gap-6 mb-4 2xl:mb-8">
+                                <h3 className={`text-4xl sm:text-6xl lg:text-7xl 2xl:text-8xl font-black ${selectedTexture.textColor} tracking-tight`}>{selectedTexture.name}</h3>
                                 <button 
                                   onClick={() => speak(selectedTexture.name)}
-                                  className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/60 hover:bg-white hover:shadow-md flex items-center justify-center transition-all opacity-80 hover:opacity-100 active:scale-95 ${selectedTexture.textColor}`}
+                                  className={`w-10 h-10 sm:w-12 sm:h-12 2xl:w-16 2xl:h-16 rounded-full bg-white/60 hover:bg-white hover:shadow-md flex items-center justify-center transition-all opacity-80 hover:opacity-100 active:scale-95 ${selectedTexture.textColor}`}
                                 >
-                                  <Volume2 size={24} />
+                                  <Volume2 className="w-6 h-6 2xl:w-8 2xl:h-8" />
                                 </button>
                               </div>
-                              <button 
-                                onClick={() => speak(selectedTexture.adjectives)}
-                                className={`inline-flex items-center gap-3 px-6 py-3 rounded-full text-base sm:text-xl lg:text-2xl font-black bg-white/80 hover:bg-white hover:shadow-md transition-all active:scale-95 backdrop-blur shadow-sm border border-white ${selectedTexture.textColor}`}
-                              >
-                                <Volume2 size={20} className="opacity-70" />
-                                {selectedTexture.adjectives}
-                              </button>
+                              
+                              <div className="flex items-center justify-center gap-3 2xl:gap-5">
+                                <div className={`inline-flex items-center gap-2 px-6 py-3 2xl:px-8 2xl:py-5 rounded-full text-base sm:text-xl lg:text-2xl 2xl:text-4xl font-black bg-white/80 backdrop-blur shadow-sm border border-white ${selectedTexture.textColor}`}>
+                                  <span className="w-3 h-3 2xl:w-5 2xl:h-5 rounded-full bg-current animate-pulse"></span>
+                                  {selectedTexture.adjectives}
+                                </div>
+                                <button 
+                                  onClick={() => speak(selectedTexture.adjectives)}
+                                  className={`w-10 h-10 sm:w-12 sm:h-12 2xl:w-16 2xl:h-16 rounded-full bg-white/60 hover:bg-white hover:shadow-md flex items-center justify-center transition-all opacity-80 hover:opacity-100 active:scale-95 ${selectedTexture.textColor}`}
+                                >
+                                  <Volume2 className="w-6 h-6 2xl:w-8 2xl:h-8" />
+                                </button>
+                              </div>
                             </div>
                           </div>
 
                           {/* 右側：2x2 動物網格 */}
-                          <div className="relative z-10 flex-1 overflow-y-auto custom-scroll p-4 lg:p-6 flex items-center justify-center">
-                            {/* 調整 max-w 配合放大的圖片，並保持緊密的 gap */}
-                            <div className="grid grid-cols-2 gap-2 sm:gap-3 w-full max-w-[15rem] sm:max-w-[20rem] lg:max-w-[22rem] mx-auto">
+                          <div className="relative z-10 flex-1 overflow-y-auto custom-scroll p-4 lg:p-6 2xl:p-12 flex items-center justify-center">
+                            {/* 適應 1080p：將群組外框 (max-w) 擴大至 36rem，但依然保持相對細小的 gap 以維持緊密感 */}
+                            <div className="grid grid-cols-2 gap-2 sm:gap-3 2xl:gap-5 w-full max-w-[15rem] sm:max-w-[20rem] lg:max-w-[22rem] 2xl:max-w-[36rem] mx-auto">
                               {ANIMALS.filter(a => a.texture === selectedTexture.id).map(animal => (
                                 <div 
                                   key={animal.id} 
-                                  /* 調整 Padding，讓內部空間緊湊、圖片更大 */
-                                  className="bg-white/60 backdrop-blur-sm p-4 lg:p-6 rounded-[1.5rem] border border-white hover:border-orange-200 hover:bg-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center group relative overflow-hidden" 
+                                  className="bg-white/60 backdrop-blur-sm p-4 lg:p-6 2xl:p-10 rounded-[1.5rem] 2xl:rounded-[2.5rem] border border-white hover:border-orange-200 hover:bg-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center group relative overflow-hidden" 
                                   onClick={() => {
                                       setActiveAnimal(animal);
-                                      speak(animal.name); // 點擊卡片時，只朗讀動物名稱
                                   }}
                                 >
-                                  <div className="absolute -right-4 -bottom-4 w-12 h-12 bg-orange-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                  <div className="absolute -right-4 -bottom-4 w-12 h-12 2xl:w-24 2xl:h-24 bg-orange-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                   
-                                  {/* 大幅放大圖片尺寸 (w-20 -> w-32) */}
-                                  <div className="mb-2 sm:mb-3 transform group-hover:scale-110 group-hover:rotate-6 transition-transform relative z-10 flex justify-center">
+                                  {/* 動物圖片：適應 1080p 大幅增加為 2xl:w-56 2xl:h-56 */}
+                                  <div className="mb-2 sm:mb-3 2xl:mb-6 transform group-hover:scale-110 group-hover:rotate-6 transition-transform relative z-10 flex justify-center">
                                     {animal.image ? (
-                                      <div className="w-20 h-20 sm:w-28 sm:h-28 lg:w-32 lg:h-32 rounded-full shadow-md border-[4px] border-white overflow-hidden">
+                                      <div className="w-20 h-20 sm:w-28 sm:h-28 lg:w-32 lg:h-32 2xl:w-56 2xl:h-56 rounded-full shadow-md border-[4px] 2xl:border-[8px] border-white overflow-hidden">
                                         <img src={animal.image} alt={animal.name} className={`w-full h-full object-cover transition-transform ${animal.zoomClass || ''}`} />
                                       </div>
                                     ) : (
-                                      <span className="text-5xl sm:text-6xl lg:text-7xl">{animal.emoji}</span>
+                                      <span className="text-5xl sm:text-6xl lg:text-7xl 2xl:text-9xl">{animal.emoji}</span>
                                     )}
                                   </div>
 
-                                  {/* 移除原本的喇叭圖示，並為文字加上微小的底部 padding 以平衡視覺 */}
-                                  <div className="text-lg sm:text-xl lg:text-2xl font-black text-slate-700 tracking-tighter relative z-10 leading-none pb-1 sm:pb-2">{animal.name}</div>
+                                  <div className="text-lg sm:text-xl lg:text-2xl 2xl:text-5xl font-black text-slate-700 tracking-tighter relative z-10 leading-none pb-1 sm:pb-2 2xl:pb-3">{animal.name}</div>
                                 </div>
                               ))}
                             </div>
@@ -336,88 +342,82 @@
                         className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 zoom-overlay"
                         onClick={() => setZoomedImage(null)}
                     >
-                        <div className="relative max-w-4xl w-full flex flex-col items-center">
-                            <button className="absolute -top-12 right-0 text-white hover:text-orange-400 transition-colors">
-                                <X size={40} />
+                        <div className="relative max-w-4xl 2xl:max-w-6xl w-full flex flex-col items-center">
+                            <button className="absolute -top-12 right-0 2xl:-top-16 text-white hover:text-orange-400 transition-colors">
+                                <X className="w-10 h-10 2xl:w-16 2xl:h-16" />
                             </button>
                             <img 
                                 src={zoomedImage} 
-                                className="max-h-[80vh] w-auto rounded-3xl shadow-2xl border-4 border-white/20"
+                                className="max-h-[80vh] 2xl:max-h-[85vh] w-auto rounded-3xl 2xl:rounded-[3rem] shadow-2xl border-4 2xl:border-[12px] border-white/20"
                                 alt="Zoomed Texture"
                             />
-                            <p className="mt-6 text-white text-2xl font-black tracking-widest uppercase">
+                            <p className="mt-6 2xl:mt-10 text-white text-2xl 2xl:text-4xl font-black tracking-widest uppercase">
                                 {selectedTexture?.name} Detail
                             </p>
                         </div>
                     </div>
                 )}
 
-                {/* 動物描述 Popup - 放大整個框架與內部大圖 */}
+                {/* 動物描述 Popup - 適應 1080p 進行全域放大 */}
                 {activeAnimal && (
                     <div 
-                        className="fixed inset-0 z-[110] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 zoom-overlay"
+                        className="fixed inset-0 z-[110] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 2xl:p-12 zoom-overlay"
                         onClick={() => setActiveAnimal(null)}
                     >
                         <div 
-                            className="bg-white w-full max-w-2xl rounded-[3rem] p-8 sm:p-12 lg:p-16 shadow-2xl border border-white relative animate-in zoom-in-95 duration-300"
+                            className="bg-white w-full max-w-2xl 2xl:max-w-5xl rounded-[3rem] 2xl:rounded-[4rem] p-8 sm:p-12 lg:p-16 2xl:p-24 shadow-2xl border border-white relative animate-in zoom-in-95 duration-300 max-h-[95vh] overflow-y-auto no-scrollbar"
                             onClick={(e) => e.stopPropagation()}
                         >
                             <button 
                                 onClick={() => setActiveAnimal(null)}
-                                className="absolute top-6 right-6 sm:top-8 sm:right-8 p-2 text-slate-300 hover:text-orange-500 transition-colors"
+                                className="absolute top-6 right-6 sm:top-8 sm:right-8 2xl:top-12 2xl:right-12 p-2 text-slate-300 hover:text-orange-500 transition-colors"
                             >
-                                <X size={36} />
+                                <X className="w-9 h-9 2xl:w-14 2xl:h-14" />
                             </button>
 
                             <div className="flex flex-col items-center text-center">
-                                <div className="mb-6 sm:mb-8 animate-bounce-slow flex justify-center">
+                                <div className="mb-6 sm:mb-8 2xl:mb-12 animate-bounce-slow flex justify-center">
                                     {activeAnimal.image ? (
-                                        <div className="w-48 h-48 sm:w-64 sm:h-64 lg:w-72 lg:h-72 rounded-full shadow-2xl border-[6px] border-white overflow-hidden">
+                                        <div className="w-48 h-48 sm:w-64 sm:h-64 lg:w-72 lg:h-72 2xl:w-[28rem] 2xl:h-[28rem] rounded-full shadow-2xl border-[6px] 2xl:border-[12px] border-white overflow-hidden">
                                             <img src={activeAnimal.image} alt={activeAnimal.name} className={`w-full h-full object-cover ${activeAnimal.zoomClass || ''}`} />
                                         </div>
                                     ) : (
-                                        <span className="text-[10rem] lg:text-[12rem]">{activeAnimal.emoji}</span>
+                                        <span className="text-[10rem] lg:text-[12rem] 2xl:text-[18rem]">{activeAnimal.emoji}</span>
                                     )}
                                 </div>
 
-                                {/* 點擊動物名稱朗讀單字 */}
-                                <div className="flex items-center justify-center gap-4 mb-6">
-                                    <h4 className="text-3xl sm:text-5xl font-black text-slate-800 tracking-tight cursor-pointer hover:text-orange-500 transition-colors" onClick={() => speak(activeAnimal.name)}>
+                                <div className="flex items-center justify-center gap-4 2xl:gap-8 mb-6 2xl:mb-10">
+                                    <h4 className="text-3xl sm:text-5xl 2xl:text-7xl font-black text-slate-800 tracking-tight">
                                         {activeAnimal.name}
                                     </h4>
                                     <button 
                                       onClick={() => speak(activeAnimal.name)}
-                                      className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-all text-slate-500 hover:text-orange-600 active:scale-95"
+                                      className="w-10 h-10 sm:w-12 sm:h-12 2xl:w-16 2xl:h-16 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-all text-slate-500 hover:text-orange-600 active:scale-95"
                                     >
-                                      <Volume2 size={24} />
+                                      <Volume2 className="w-6 h-6 2xl:w-8 2xl:h-8" />
                                     </button>
                                 </div>
                                 
-                                {/* 點擊特徵描述朗讀句子 */}
-                                <div 
-                                    className="bg-orange-50/50 p-6 sm:p-10 rounded-[2.5rem] border-2 border-orange-100/50 relative mb-8 w-full cursor-pointer hover:bg-orange-100/50 transition-colors group"
-                                    onClick={() => speak(activeAnimal.desc)}
-                                >
-                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-6 text-orange-400 text-sm font-black uppercase tracking-widest flex items-center gap-2">
-                                        Learning Sentence <Volume2 size={16} className="text-orange-400 group-hover:scale-110 transition-transform" />
+                                <div className="bg-orange-50/50 p-6 sm:p-10 2xl:p-16 rounded-[2.5rem] 2xl:rounded-[3.5rem] border-2 border-orange-100/50 relative mb-8 2xl:mb-14 w-full">
+                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-6 2xl:px-8 text-orange-400 text-sm 2xl:text-2xl font-black uppercase tracking-widest flex items-center gap-2">
+                                        Learning Sentence
                                     </div>
                                     {formatDescription(activeAnimal.desc)}
                                 </div>
 
-                                {/* 按鈕朗讀句子 */}
                                 <button 
                                     onClick={() => speak(activeAnimal.desc)}
-                                    className="flex items-center gap-3 bg-orange-500 hover:bg-orange-600 text-white px-10 py-5 rounded-2xl font-black text-xl shadow-lg shadow-orange-200 active:scale-95 transition-all"
+                                    className="flex items-center gap-3 2xl:gap-6 bg-orange-500 hover:bg-orange-600 text-white px-10 py-5 2xl:px-16 2xl:py-8 rounded-2xl 2xl:rounded-3xl font-black text-xl 2xl:text-4xl shadow-lg shadow-orange-200 active:scale-95 transition-all"
                                 >
-                                    <Volume2 size={28} /> Listen Again
+                                    <Volume2 className="w-7 h-7 2xl:w-10 2xl:h-10" /> Listen Again
                                 </button>
                             </div>
                         </div>
                     </div>
                 )}
 
-                <footer className="bg-white/80 backdrop-blur-sm border-t py-4 text-center shrink-0">
-                  <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.3em]">
+                <footer className="bg-white/80 backdrop-blur-sm border-t py-4 2xl:py-6 text-center shrink-0">
+                  <p className="text-[10px] 2xl:text-sm text-gray-400 font-black uppercase tracking-[0.3em]">
                     © 2026 MaachiiKnow. All rights reserved.
                   </p>
                 </footer>
