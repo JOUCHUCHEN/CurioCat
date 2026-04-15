@@ -155,16 +155,16 @@
             const match = desc.match(regex);
             if (match) {
               return (
-                <p className="text-2xl sm:text-4xl xl:text-5xl 2xl:text-6xl leading-tight tracking-tight">
+                <p className="text-xl sm:text-3xl xl:text-4xl 2xl:text-5xl leading-tight tracking-tight">
                   <span className="text-slate-600 font-medium">{match[1]} </span>
                   <span className="text-orange-600 font-black">{match[2]}</span>
                 </p>
               );
             }
-            return <p className="text-2xl sm:text-4xl xl:text-5xl 2xl:text-6xl font-black text-orange-600 leading-tight tracking-tight">{desc}</p>;
+            return <p className="text-xl sm:text-3xl xl:text-4xl 2xl:text-5xl font-black text-orange-600 leading-tight tracking-tight">{desc}</p>;
           };
 
-          // --- Navbar Component ---
+          // --- Navbar Component (維持原樣) ---
           const Navbar = () => (
             <nav className="bg-white shadow-sm h-20 border-b flex-shrink-0 z-50 sticky top-0">
               <div className="max-w-7xl mx-auto px-4 h-full flex justify-between items-center">
@@ -215,9 +215,11 @@
             <div className="min-h-screen bg-sky-50 flex flex-col h-screen overflow-hidden">
                 <Navbar />
 
-                <main className="flex-1 overflow-y-auto overflow-x-hidden relative custom-scroll p-4 md:p-6 xl:p-8 flex flex-col items-center w-full">
+                {/* Main 區域自適應高度 */}
+                <main className="flex-1 overflow-y-auto overflow-x-hidden relative custom-scroll p-3 md:p-6 xl:p-8 flex flex-col items-center w-full min-h-0">
                   
-                  <div className={`flex items-center justify-between mb-6 xl:mb-8 bg-white p-3 xl:p-4 rounded-full shadow-sm border border-sky-100 flex-shrink-0 w-full transition-all duration-500 ${selectedTexture ? 'max-w-[1400px]' : 'max-w-5xl'}`}>
+                  {/* Header Title Bar */}
+                  <div className={`flex items-center justify-between mb-4 xl:mb-6 bg-white p-3 xl:p-4 rounded-full shadow-sm border border-sky-100 flex-shrink-0 w-full transition-all duration-500 ${selectedTexture ? 'max-w-[1400px]' : 'max-w-5xl'}`}>
                     <button 
                       onClick={() => selectedTexture ? setSelectedTexture(null) : navigateToEnglishTexture()} 
                       className="p-2 xl:p-3 text-orange-600 hover:bg-orange-50 rounded-full transition-all shadow-sm active:scale-90"
@@ -230,25 +232,27 @@
                     <div className="w-10 xl:w-14"></div>
                   </div>
 
+                  {/* Core Content Area - 使用 flex-1 min-h-0 使其能完整拉伸與壓縮以適應 16:9 和 3:2 */}
                   <div className={`flex-1 min-h-0 w-full transition-all duration-500 flex flex-col ${selectedTexture ? 'max-w-[1400px]' : 'max-w-5xl justify-center'}`}>
                     {!selectedTexture ? (
-                      <div className="grid grid-cols-1 md:grid-cols-2 grid-rows-2 gap-4 sm:gap-6 xl:gap-8 h-auto w-full animate-in fade-in slide-in-from-bottom-4">
+                      /* 首頁 2x2 網格：支援自適應高度 h-full */
+                      <div className="grid grid-cols-1 md:grid-cols-2 grid-rows-2 gap-3 sm:gap-4 xl:gap-6 flex-1 min-h-0 w-full animate-in fade-in slide-in-from-bottom-4">
                         {TEXTURES.map((t) => (
                           <button 
                             key={t.id} 
                             onClick={() => { setSelectedTexture(t); }}
-                            className="relative bg-white border border-slate-100 rounded-full shadow-premium hover:shadow-2xl hover:-translate-y-1 transform transition-all duration-500 group overflow-hidden flex flex-row items-center justify-start gap-4 sm:gap-6 lg:gap-8 xl:gap-10 p-3 xl:p-4 pr-8 sm:pr-10 xl:pr-16"
+                            /* 卡片高度 h-full 使其隨螢幕高度伸縮 */
+                            className="relative bg-white border border-slate-100 rounded-full shadow-premium hover:shadow-2xl hover:-translate-y-1 transform transition-all duration-500 group overflow-hidden flex flex-row items-center justify-start gap-4 sm:gap-6 lg:gap-8 xl:gap-10 p-3 xl:p-4 pr-8 sm:pr-10 xl:pr-16 h-full w-full"
                           >
                             <div className={`absolute inset-0 bg-gradient-to-r ${t.gradient} opacity-40 group-hover:opacity-60 transition-opacity`}></div>
                             <Sparkles className="absolute top-1/2 -translate-y-1/2 right-6 xl:right-10 text-white/40 group-hover:text-white/80 transition-colors w-6 h-6 xl:w-8 xl:h-8 2xl:w-10 2xl:h-10" />
 
-                            <div className="relative flex-shrink-0">
+                            {/* 使用 max-h-[vh] 限制圖片在 16:9 筆電上不會過高 */}
+                            <div className="relative flex-shrink-0 h-full flex items-center justify-center py-1">
                               <div className={`absolute inset-0 rounded-full ring-4 ${t.ringColor} scale-[1.05] opacity-50`}></div>
-                              <img 
-                                src={t.image} 
-                                alt={t.name} 
-                                className="w-20 h-20 sm:w-28 sm:h-28 xl:w-36 xl:h-36 2xl:w-40 2xl:h-40 object-cover rounded-full shadow-lg border-[4px] xl:border-[6px] border-white relative z-10 group-hover:scale-105 transition-transform duration-500"
-                              />
+                              <div className="w-20 sm:w-24 lg:w-28 xl:w-36 2xl:w-40 h-auto aspect-square max-h-[16vh] 2xl:max-h-[18vh] rounded-full shadow-lg border-[4px] xl:border-[6px] border-white relative z-10 group-hover:scale-105 transition-transform duration-500 overflow-hidden">
+                                 <img src={t.image} alt={t.name} className="w-full h-full object-cover" />
+                              </div>
                             </div>
 
                             <div className="relative z-10 text-left flex-1">
@@ -261,19 +265,20 @@
                         ))}
                       </div>
                     ) : (
-                      <div className="bg-white rounded-[3rem] xl:rounded-[4rem] border border-slate-100 shadow-2xl relative h-full flex flex-col lg:flex-row overflow-hidden animate-in zoom-in-95 fade-in duration-500 w-full">
+                      /* 詳情頁：左右兩欄，利用 flex-1 min-h-0 避免內容超出版面 */
+                      <div className="bg-white rounded-[2.5rem] xl:rounded-[3.5rem] border border-slate-100 shadow-2xl relative flex-1 min-h-0 flex flex-col lg:flex-row overflow-hidden animate-in zoom-in-95 fade-in duration-500 w-full">
                         <div className={`absolute inset-0 bg-gradient-to-b lg:bg-gradient-to-r ${selectedTexture.gradient} opacity-20 pointer-events-none`}></div>
                         
-                        <div className="relative z-10 lg:w-5/12 flex flex-col items-center justify-center p-6 sm:p-10 xl:p-12 lg:pr-12 xl:pr-16 lg:border-r border-slate-100/50 shrink-0">
+                        {/* 左側：質地大圖與主題標題 */}
+                        <div className="relative z-10 lg:w-5/12 flex flex-col items-center justify-center p-4 sm:p-8 xl:p-12 lg:pr-12 xl:pr-16 lg:border-r border-slate-100/50 shrink-0">
                           <div 
-                            className="relative cursor-pointer group/img mb-6 sm:mb-8 xl:mb-12"
+                            className="relative cursor-pointer group/img mb-4 sm:mb-6 xl:mb-10"
                             onClick={() => setZoomedImage(selectedTexture.image)}
                           >
-                            <img 
-                              src={selectedTexture.image} 
-                              alt={selectedTexture.name} 
-                              className="w-32 h-32 sm:w-48 sm:h-48 lg:w-56 lg:h-56 xl:w-72 xl:h-72 2xl:w-[22rem] 2xl:h-[22rem] object-cover rounded-full shadow-2xl border-[8px] xl:border-[10px] border-white animate-bounce-slow group-hover/img:scale-105 transition-transform"
-                            />
+                            {/* 加入 max-h-[35vh] 確保它在 16:9 螢幕上能縮小適應，3:2 螢幕上則能長大 */}
+                            <div className="w-32 sm:w-40 lg:w-56 xl:w-64 2xl:w-80 h-auto aspect-square max-h-[25vh] lg:max-h-[35vh] 2xl:max-h-[40vh] rounded-full shadow-2xl border-[6px] xl:border-[10px] border-white animate-bounce-slow group-hover/img:scale-105 transition-transform overflow-hidden">
+                               <img src={selectedTexture.image} alt={selectedTexture.name} className="w-full h-full object-cover" />
+                            </div>
                             <div className="absolute -bottom-2 -right-2 xl:-bottom-3 xl:-right-3 bg-white p-2 xl:p-3 rounded-full shadow-md text-orange-600 opacity-0 group-hover/img:opacity-100 transition-opacity">
                               <Maximize2 className="w-6 h-6 xl:w-8 xl:h-8" />
                             </div>
@@ -281,7 +286,7 @@
 
                           <div className="text-center flex flex-col items-center">
                             <div className="flex items-center justify-center gap-3 sm:gap-4 xl:gap-5 mb-4 xl:mb-6">
-                              <h3 className={`text-4xl sm:text-6xl xl:text-7xl font-black ${selectedTexture.textColor} tracking-tight`}>{selectedTexture.name}</h3>
+                              <h3 className={`text-4xl sm:text-5xl xl:text-6xl 2xl:text-7xl font-black ${selectedTexture.textColor} tracking-tight`}>{selectedTexture.name}</h3>
                               <button 
                                 onClick={() => speak(selectedTexture.name)}
                                 className={`w-10 h-10 sm:w-12 sm:h-12 xl:w-14 xl:h-14 rounded-full bg-white/60 hover:bg-white hover:shadow-md flex items-center justify-center transition-all opacity-80 hover:opacity-100 active:scale-95 ${selectedTexture.textColor}`}
@@ -290,9 +295,9 @@
                               </button>
                             </div>
                             
-                            <div className="flex items-center justify-center gap-3 xl:gap-4">
-                              <div className={`inline-flex items-center gap-2 px-6 py-3 xl:px-7 xl:py-4 rounded-full text-base sm:text-xl xl:text-2xl font-black bg-white/80 backdrop-blur shadow-sm border border-white ${selectedTexture.textColor}`}>
-                                <span className="w-3 h-3 xl:w-4 xl:h-4 rounded-full bg-current animate-pulse"></span>
+                            <div className="flex items-center justify-center gap-2 xl:gap-4">
+                              <div className={`inline-flex items-center gap-2 px-5 py-2 xl:px-7 xl:py-4 rounded-full text-sm sm:text-lg xl:text-2xl font-black bg-white/80 backdrop-blur shadow-sm border border-white ${selectedTexture.textColor}`}>
+                                <span className="w-2 h-2 xl:w-3 xl:h-3 rounded-full bg-current animate-pulse"></span>
                                 {selectedTexture.adjectives}
                               </div>
                               <button 
@@ -305,30 +310,33 @@
                           </div>
                         </div>
 
-                        <div className="relative z-10 flex-1 overflow-y-auto custom-scroll p-4 lg:p-6 xl:p-8">
-                          <div className="min-h-full flex flex-col items-center justify-center">
-                            <div className="grid grid-cols-2 gap-3 xl:gap-5 w-full max-w-[20rem] xl:max-w-[28rem] 2xl:max-w-[32rem] mx-auto py-4">
+                        {/* 右側：2x2 動物網格 */}
+                        <div className="relative z-10 flex-1 overflow-y-auto custom-scroll p-4 lg:p-6 xl:p-8 flex items-center justify-center">
+                          <div className="w-full h-full max-h-full">
+                            <div className="grid grid-cols-2 gap-3 xl:gap-5 w-full max-w-[20rem] xl:max-w-[28rem] 2xl:max-w-[32rem] mx-auto h-full min-h-0">
                               {ANIMALS.filter(a => a.texture === selectedTexture.id).map(animal => (
                                 <div 
                                   key={animal.id} 
-                                  className="bg-white/60 backdrop-blur-sm p-4 xl:p-6 2xl:p-8 rounded-[1.5rem] xl:rounded-[2rem] border border-white hover:border-orange-200 hover:bg-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center group relative overflow-hidden" 
+                                  /* 加入 h-full 讓卡片填滿右側網格高度 */
+                                  className="bg-white/60 backdrop-blur-sm p-3 xl:p-5 2xl:p-6 rounded-[1.5rem] xl:rounded-[2rem] border border-white hover:border-orange-200 hover:bg-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center group relative overflow-hidden h-full" 
                                   onClick={() => {
                                       setActiveAnimal(animal);
                                   }}
                                 >
                                   <div className="absolute -right-4 -bottom-4 w-12 h-12 xl:w-16 xl:h-16 bg-orange-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                   
-                                  <div className="mb-3 xl:mb-4 transform group-hover:scale-110 group-hover:rotate-6 transition-transform relative z-10 flex justify-center">
+                                  {/* 加入 max-h-[vh] 讓動物圖示不會在 16:9 高度被過度放大 */}
+                                  <div className="mb-2 xl:mb-4 transform group-hover:scale-110 group-hover:rotate-6 transition-transform relative z-10 flex justify-center">
                                     {animal.image ? (
-                                      <div className="w-20 h-20 sm:w-24 sm:h-24 xl:w-32 xl:h-32 2xl:w-40 2xl:h-40 rounded-full shadow-md border-[4px] xl:border-[6px] border-white overflow-hidden">
+                                      <div className="w-16 sm:w-20 lg:w-24 xl:w-32 2xl:w-40 h-auto aspect-square max-h-[14vh] lg:max-h-[16vh] 2xl:max-h-[20vh] rounded-full shadow-md border-[4px] xl:border-[6px] border-white overflow-hidden">
                                         <img src={animal.image} alt={animal.name} className={`w-full h-full object-cover transition-transform ${animal.zoomClass || ''}`} />
                                       </div>
                                     ) : (
-                                      <span className="text-5xl sm:text-6xl xl:text-7xl 2xl:text-8xl">{animal.emoji}</span>
+                                      <span className="text-4xl sm:text-5xl xl:text-6xl 2xl:text-7xl">{animal.emoji}</span>
                                     )}
                                   </div>
 
-                                  <div className="text-lg sm:text-xl xl:text-3xl font-black text-slate-700 tracking-tighter relative z-10 leading-none pb-1 xl:pb-2">{animal.name}</div>
+                                  <div className="text-base sm:text-lg xl:text-2xl 2xl:text-3xl font-black text-slate-700 tracking-tighter relative z-10 leading-none pb-1">{animal.name}</div>
                                 </div>
                               ))}
                             </div>
@@ -339,6 +347,7 @@
                   </div>
                 </main>
 
+                {/* 圖片放大 Overlay */}
                 {zoomedImage && (
                     <div 
                         className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 zoom-overlay"
@@ -353,42 +362,43 @@
                                 className="max-h-[80vh] w-auto rounded-3xl xl:rounded-[3rem] shadow-2xl border-4 xl:border-[8px] border-white/20"
                                 alt="Zoomed Texture"
                             />
-                            <p className="mt-6 xl:mt-8 text-white text-2xl xl:text-3xl font-black tracking-widest uppercase">
+                            <p className="mt-6 xl:mt-8 text-white text-xl xl:text-3xl font-black tracking-widest uppercase">
                                 {selectedTexture?.name} Detail
                             </p>
                         </div>
                     </div>
                 )}
 
+                {/* 動物描述 Popup - 適應高度避免捲動 */}
                 {activeAnimal && (
                     <div 
                         className="fixed inset-0 z-[110] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 xl:p-8 zoom-overlay"
                         onClick={() => setActiveAnimal(null)}
                     >
                         <div 
-                            className="bg-white w-full max-w-2xl xl:max-w-4xl rounded-[3rem] xl:rounded-[4rem] p-8 sm:p-12 xl:p-20 shadow-2xl border border-white relative animate-in zoom-in-95 duration-300 max-h-[95vh] overflow-y-auto no-scrollbar"
+                            className="bg-white w-full max-w-2xl xl:max-w-4xl rounded-[2.5rem] xl:rounded-[4rem] p-6 sm:p-10 xl:p-16 shadow-2xl border border-white relative animate-in zoom-in-95 duration-300 max-h-[95vh] flex flex-col overflow-hidden"
                             onClick={(e) => e.stopPropagation()}
                         >
                             <button 
                                 onClick={() => setActiveAnimal(null)}
-                                className="absolute top-6 right-6 sm:top-8 sm:right-8 xl:top-12 xl:right-12 p-2 text-slate-300 hover:text-orange-500 transition-colors"
+                                className="absolute top-4 right-4 sm:top-6 sm:right-6 xl:top-10 xl:right-10 p-2 text-slate-300 hover:text-orange-500 transition-colors z-10"
                             >
-                                <X className="w-9 h-9 xl:w-12 xl:h-12" />
+                                <X className="w-8 h-8 xl:w-12 xl:h-12" />
                             </button>
 
-                            <div className="flex flex-col items-center text-center">
-                                <div className="mb-6 sm:mb-8 xl:mb-12 animate-bounce-slow flex justify-center">
+                            <div className="flex flex-col items-center text-center overflow-y-auto custom-scroll no-scrollbar pb-4">
+                                <div className="mb-4 sm:mb-6 xl:mb-10 animate-bounce-slow flex justify-center shrink-0">
                                     {activeAnimal.image ? (
-                                        <div className="w-48 h-48 sm:w-64 sm:h-64 xl:w-80 xl:h-80 2xl:w-96 2xl:h-96 rounded-full shadow-2xl border-[6px] xl:border-[10px] border-white overflow-hidden">
+                                        <div className="w-40 sm:w-56 xl:w-72 2xl:w-80 h-auto aspect-square max-h-[30vh] lg:max-h-[35vh] rounded-full shadow-2xl border-[6px] xl:border-[10px] border-white overflow-hidden">
                                             <img src={activeAnimal.image} alt={activeAnimal.name} className={`w-full h-full object-cover ${activeAnimal.zoomClass || ''}`} />
                                         </div>
                                     ) : (
-                                        <span className="text-[10rem] lg:text-[12rem] xl:text-[15rem]">{activeAnimal.emoji}</span>
+                                        <span className="text-[8rem] lg:text-[10rem] xl:text-[12rem]">{activeAnimal.emoji}</span>
                                     )}
                                 </div>
 
-                                <div className="flex items-center justify-center gap-4 xl:gap-6 mb-6 xl:mb-8">
-                                    <h4 className="text-3xl sm:text-5xl xl:text-6xl font-black text-slate-800 tracking-tight">
+                                <div className="flex items-center justify-center gap-3 xl:gap-5 mb-4 xl:mb-8 shrink-0">
+                                    <h4 className="text-3xl sm:text-4xl xl:text-6xl font-black text-slate-800 tracking-tight">
                                         {activeAnimal.name}
                                     </h4>
                                     <button 
@@ -399,8 +409,8 @@
                                     </button>
                                 </div>
                                 
-                                <div className="bg-orange-50/50 p-6 sm:p-10 xl:p-12 rounded-[2.5rem] xl:rounded-[3rem] border-2 border-orange-100/50 relative mb-8 xl:mb-10 w-full">
-                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-6 xl:px-8 text-orange-400 text-sm xl:text-lg font-black uppercase tracking-widest flex items-center gap-2">
+                                <div className="bg-orange-50/50 p-5 sm:p-8 xl:p-10 rounded-[2rem] xl:rounded-[3rem] border-2 border-orange-100/50 relative mb-6 xl:mb-10 w-full shrink-0">
+                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-4 xl:px-6 text-orange-400 text-xs xl:text-lg font-black uppercase tracking-widest flex items-center gap-2">
                                         Learning Sentence
                                     </div>
                                     {formatDescription(activeAnimal.desc)}
@@ -408,15 +418,16 @@
 
                                 <button 
                                     onClick={() => speak(activeAnimal.desc)}
-                                    className="flex items-center gap-3 xl:gap-5 bg-orange-500 hover:bg-orange-600 text-white px-10 py-5 xl:px-14 xl:py-7 rounded-2xl xl:rounded-3xl font-black text-xl xl:text-3xl shadow-lg shadow-orange-200 active:scale-95 transition-all"
+                                    className="flex items-center gap-2 xl:gap-4 bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 xl:px-12 xl:py-6 rounded-2xl xl:rounded-3xl font-black text-lg xl:text-2xl shadow-lg shadow-orange-200 active:scale-95 transition-all shrink-0"
                                 >
-                                    <Volume2 className="w-7 h-7 xl:w-9 xl:h-9" /> Listen Again
+                                    <Volume2 className="w-6 h-6 xl:w-8 xl:h-8" /> Listen Again
                                 </button>
                             </div>
                         </div>
                     </div>
                 )}
 
+                {/* --- Footer Component (維持原樣) --- */}
                 <footer className="bg-white/80 backdrop-blur-sm border-t py-4 text-center shrink-0">
                   <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.3em]">
                     © 2026 MaachiiKnow. All rights reserved.
