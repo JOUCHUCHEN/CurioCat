@@ -41,10 +41,11 @@
 
     <style>
         body { font-family: 'Roboto', sans-serif; }
-        .custom-scroll::-webkit-scrollbar { width: 8px; }
-        .custom-scroll::-webkit-scrollbar-track { background: #f0f9ff; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #bae6fd; border-radius: 20px; }
-        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #7dd3fc; }
+        /* 將捲軸樣式應用於全域 */
+        html::-webkit-scrollbar { width: 8px; }
+        html::-webkit-scrollbar-track { background: #f0f9ff; }
+        html::-webkit-scrollbar-thumb { background: #bae6fd; border-radius: 20px; }
+        html::-webkit-scrollbar-thumb:hover { background: #7dd3fc; }
         
         a { text-decoration: none; display: block; }
     </style>
@@ -60,8 +61,8 @@
     </script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
-    <div id="root" class="flex flex-col flex-1"></div>
+<body class="bg-gray-50 min-h-screen">
+    <div id="root"></div>
 
     <script type="text/babel" data-type="module">
         import React, { useState } from 'react';
@@ -113,7 +114,7 @@
                     {stemProjects.map((project, index) => {
                         const themeClass = themes[index % 4];
                         return (
-                            <a key={project.id} href={project.link || `./stem_l1_u1_${project.id}.html`} target="_blank" rel="noopener noreferrer" className={`bg-gradient-to-br ${themeClass} rounded-[2.5rem] 3xl:rounded-[3.5rem] p-6 3xl:p-10 4xl:p-14 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all relative overflow-hidden flex flex-col group shadow-xl min-h-[16.5rem] 3xl:min-h-[24rem] 4xl:min-h-[34rem]`}>
+                            <a key={project.id} href={project.link || `./steam_l1_u1_${project.id}.html`} target="_blank" rel="noopener noreferrer" className={`bg-gradient-to-br ${themeClass} rounded-[2.5rem] 3xl:rounded-[3.5rem] p-6 3xl:p-10 4xl:p-14 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all relative overflow-hidden flex flex-col group shadow-xl min-h-[16.5rem] 3xl:min-h-[24rem] 4xl:min-h-[34rem]`}>
                                 <div className="w-full h-36 3xl:h-48 4xl:h-72 rounded-2xl 3xl:rounded-3xl overflow-hidden mb-4 3xl:mb-8 bg-white/10 flex items-center justify-center relative">
                                     {project.cover ? <img src={project.cover} className="w-full h-full object-contain p-2 group-hover:scale-110 transition-transform duration-500" /> : <span className="text-[6rem] 3xl:text-[8rem] 4xl:text-[12rem]">⚙️</span>}
                                 </div>
@@ -155,8 +156,8 @@
           };
 
           return (
-            <React.Fragment>
-              {/* Navbar - 固定在頂部，樣式與 Texture Library 同步 */}
+            <div className="flex flex-col min-h-screen">
+              {/* Navbar - 固定在頂部，z-50 確保在捲軸之上 */}
               <nav className="bg-white shadow-sm h-20 border-b z-50 sticky top-0 flex-shrink-0">
                 <div className={`${containerClasses} h-full flex justify-between items-center`}>
                   <div className="flex items-center cursor-pointer group" onClick={navigateToHome}>
@@ -183,17 +184,17 @@
                 </div>
 
                 {isMobileMenuOpen && (
-                  <div className="absolute top-20 left-0 w-full bg-white shadow-xl border-b md:hidden flex flex-col p-6 space-y-4 z-40 animate-in slide-in-from-top-2 duration-300">
-                    <button onClick={navigateToHome} className="text-left font-bold text-gray-700">Home</button>
-                    <button onClick={() => scrollToSection('elementary')} className="text-left font-bold text-gray-700">ENGLISH</button>
-                    <button onClick={() => scrollToSection('steam')} className="text-left font-bold text-gray-700">Bricks</button>
-                    <button onClick={() => scrollToSection('scratch')} className="text-left font-bold text-gray-700">Scratch</button>
+                  <div className="absolute top-20 left-0 w-full bg-white shadow-xl border-b md:hidden flex flex-col p-6 space-y-4 z-40 animate-in slide-in-from-top-2 duration-300 text-left">
+                    <button onClick={navigateToHome} className="font-bold text-gray-700">Home</button>
+                    <button onClick={() => scrollToSection('elementary')} className="font-bold text-gray-700">ENGLISH</button>
+                    <button onClick={() => scrollToSection('steam')} className="font-bold text-gray-700">Bricks</button>
+                    <button onClick={() => scrollToSection('scratch')} className="font-bold text-gray-700">Scratch</button>
                   </div>
                 )}
               </nav>
 
-              {/* 主要內容區 */}
-              <main className="flex-1 bg-gray-50 overflow-y-auto overflow-x-hidden custom-scroll">
+              {/* 主要內容區 - 移除獨立捲軸，改為自然流動 */}
+              <main className="flex-1 bg-gray-50">
                 <div className={`${containerClasses} py-8`}>
                   <div className="relative flex items-center justify-center bg-gray-100 border-2 border-dashed border-gray-300 text-gray-400 rounded-lg overflow-hidden w-full h-20 3xl:h-32 4xl:h-48 my-2 3xl:my-4">
                     <span className="absolute top-1 3xl:top-2 right-2 3xl:right-4 text-[10px] 3xl:text-sm 4xl:text-2xl bg-gray-200 text-gray-500 px-1 3xl:px-3 3xl:py-1 rounded uppercase font-bold">AD Space</span>
@@ -245,7 +246,7 @@
                       </section>
 
                       {/* Scratch Section */}
-                      <section id="scratch" className="mb-14 pt-10">
+                      <section id="scratch" className="mb-14 pt-10 pb-20">
                         <div className="flex items-center mb-6 text-left">
                           <Gamepad2 className="text-orange-600 mr-4 3xl:w-10 4xl:w-16" size={28} />
                           <h2 className="text-2xl 3xl:text-4xl font-black text-gray-900 uppercase tracking-tight">Scratch Interactive</h2>
@@ -272,15 +273,15 @@
                 </div>
               </main>
 
-              {/* Footer - 採用範例中的玻璃透視設計，固定在底部 */}
-              <footer className="bg-white/80 backdrop-blur-sm border-t py-4 text-center shrink-0 mt-auto">
+              {/* Footer - 自然位於內容最下方 */}
+              <footer className="bg-white/80 backdrop-blur-sm border-t py-4 text-center mt-auto">
                 <div className={containerClasses}>
                   <p className="text-[10px] sm:text-xs 3xl:text-base 4xl:text-xl text-gray-400 font-black uppercase tracking-[0.3em]">
                     © 2026 MaachiiKnow. All rights reserved.
                   </p>
                 </div>
               </footer>
-            </React.Fragment>
+            </div>
           );
         }
 
