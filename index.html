@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MaachiiKnow - Creative Resource Hub</title>
     
+    <!-- 引入 Roboto 與 Noto Sans TC -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@900&family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         function setupTailwind() {
@@ -135,10 +137,16 @@
 
         function App() {
           const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+          
+          const navigateToHome = () => {
+             window.scrollTo({ top: 0, behavior: 'smooth' });
+             setIsMobileMenuOpen(false);
+          };
+
           const scrollToSection = (sectionId) => {
             const element = document.getElementById(sectionId);
             if (element) {
-              const offset = 80; // Navbar height
+              const offset = 80; 
               const elementPosition = element.getBoundingClientRect().top;
               const offsetPosition = elementPosition + window.pageYOffset - offset;
               window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
@@ -148,10 +156,10 @@
 
           return (
             <React.Fragment>
-              {/* Navbar 固定在頂部 */}
+              {/* Navbar - 固定在頂部，樣式與 Texture Library 同步 */}
               <nav className="bg-white shadow-sm h-20 border-b z-50 sticky top-0 flex-shrink-0">
                 <div className={`${containerClasses} h-full flex justify-between items-center`}>
-                  <div className="flex items-center cursor-pointer group" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
+                  <div className="flex items-center cursor-pointer group" onClick={navigateToHome}>
                     <img 
                       src="https://i.ibb.co/CFC5v9L/Machi-Know-Logo.png" 
                       alt="Maachiiknow Logo"
@@ -163,7 +171,7 @@
                   </div>
                   
                   <div className="hidden md:flex items-center space-x-12">
-                    <button onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})} className="font-bold text-base text-gray-500 hover:text-orange-600 uppercase tracking-widest transition-colors">Home</button>
+                    <button onClick={navigateToHome} className="font-bold text-base text-gray-500 hover:text-orange-600 uppercase tracking-widest transition-colors">Home</button>
                     <button onClick={() => scrollToSection('elementary')} className="font-bold text-base text-gray-500 hover:text-orange-600 uppercase tracking-widest transition-colors">ENGLISH</button>
                     <button onClick={() => scrollToSection('steam')} className="font-bold text-base text-gray-500 hover:text-orange-600 uppercase tracking-widest transition-colors">Bricks</button>
                     <button onClick={() => scrollToSection('scratch')} className="font-bold text-base text-gray-500 hover:text-orange-600 uppercase tracking-widest transition-colors">Scratch</button>
@@ -175,8 +183,8 @@
                 </div>
 
                 {isMobileMenuOpen && (
-                  <div className="absolute top-20 left-0 w-full bg-white shadow-xl border-b md:hidden flex flex-col p-6 space-y-4 z-40">
-                    <button onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})} className="text-left font-bold text-gray-700">Home</button>
+                  <div className="absolute top-20 left-0 w-full bg-white shadow-xl border-b md:hidden flex flex-col p-6 space-y-4 z-40 animate-in slide-in-from-top-2 duration-300">
+                    <button onClick={navigateToHome} className="text-left font-bold text-gray-700">Home</button>
                     <button onClick={() => scrollToSection('elementary')} className="text-left font-bold text-gray-700">ENGLISH</button>
                     <button onClick={() => scrollToSection('steam')} className="text-left font-bold text-gray-700">Bricks</button>
                     <button onClick={() => scrollToSection('scratch')} className="text-left font-bold text-gray-700">Scratch</button>
@@ -185,7 +193,7 @@
               </nav>
 
               {/* 主要內容區 */}
-              <main className="flex-1 bg-gray-50">
+              <main className="flex-1 bg-gray-50 overflow-y-auto overflow-x-hidden custom-scroll">
                 <div className={`${containerClasses} py-8`}>
                   <div className="relative flex items-center justify-center bg-gray-100 border-2 border-dashed border-gray-300 text-gray-400 rounded-lg overflow-hidden w-full h-20 3xl:h-32 4xl:h-48 my-2 3xl:my-4">
                     <span className="absolute top-1 3xl:top-2 right-2 3xl:right-4 text-[10px] 3xl:text-sm 4xl:text-2xl bg-gray-200 text-gray-500 px-1 3xl:px-3 3xl:py-1 rounded uppercase font-bold">AD Space</span>
@@ -193,8 +201,8 @@
                   </div>
 
                   <header className="py-6 3xl:py-16 4xl:py-24 text-center">
-                    <h1 className="text-3xl md:text-5xl 3xl:text-7xl 4xl:text-9xl font-black text-gray-900 mb-3 3xl:mb-8 tracking-tight">Creative Resource Hub</h1>
-                    <p className="text-gray-500 text-base md:text-lg 3xl:text-3xl 4xl:text-5xl font-bold max-w-3xl 3xl:max-w-5xl mx-auto opacity-80">Providing free, professional English and STEAM teaching resources for educators worldwide.</p>
+                    <h1 className="text-3xl md:text-5xl 3xl:text-7xl 4xl:text-9xl font-black text-gray-900 mb-3 3xl:mb-8 tracking-tight text-center">Creative Resource Hub</h1>
+                    <p className="text-gray-500 text-base md:text-lg 3xl:text-3xl 4xl:text-5xl font-bold max-w-3xl 3xl:max-w-5xl mx-auto opacity-80 text-center">Providing free, professional English and STEAM teaching resources for educators worldwide.</p>
                   </header>
 
                   <div className="flex flex-col lg:flex-row gap-10 3xl:gap-16 4xl:gap-24">
@@ -264,10 +272,10 @@
                 </div>
               </main>
 
-              {/* Footer 採用玻璃透視效果，固定在最底部 */}
-              <footer className="bg-white/80 backdrop-blur-sm border-t py-4 text-center mt-auto">
+              {/* Footer - 採用範例中的玻璃透視設計，固定在底部 */}
+              <footer className="bg-white/80 backdrop-blur-sm border-t py-4 text-center shrink-0 mt-auto">
                 <div className={containerClasses}>
-                  <p className="text-[10px] sm:text-xs 3xl:text-base text-gray-400 font-black uppercase tracking-[0.3em]">
+                  <p className="text-[10px] sm:text-xs 3xl:text-base 4xl:text-xl text-gray-400 font-black uppercase tracking-[0.3em]">
                     © 2026 MaachiiKnow. All rights reserved.
                   </p>
                 </div>
