@@ -102,49 +102,51 @@
         // === Data ===
         const vocabData = {
             parts: [
-                { s: 'Head', p: 'Heads', emoji: '🗣️' },
-                { s: 'Ear', p: 'Ears', emoji: '👂' },
-                { s: 'Body', p: 'Bodies', emoji: '🦧' },
-                { s: 'Leg', p: 'Legs', emoji: '🦵' },
-                { s: 'Hand', p: 'Hands', emoji: '🖐️' },
-                { s: 'Claw', p: 'Claws', emoji: '🦅' },
-                { s: 'Tail', p: 'Tails', emoji: '🦎' },
-                { s: 'Tusk', p: 'Tusks', emoji: '🦷' },
-                { s: 'Nose', p: 'Noses', emoji: '🐽' },
-                { s: 'Wing', p: 'Wings', emoji: '🪽' }
+                { s: 'head', p: 'heads', emoji: '🦁' },
+                { s: 'ear', p: 'ears', emoji: '🐘' },
+                { s: 'body', p: 'bodies', emoji: '🦧' },
+                { s: 'leg', p: 'legs', emoji: '🐾' },
+                { s: 'claw', p: 'claws', emoji: '🦅' },
+                { s: 'tail', p: 'tails', emoji: '🦎' },
+                { s: 'tusk', p: 'tusks', emoji: '🦷' },
+                { s: 'nose', p: 'noses', emoji: '🐽' },
+                { s: 'wing', p: 'wings', emoji: '🪽' },
+                { s: 'horn', p: 'horns', emoji: '🦄' },
+                { s: 'tooth', p: 'teeth', emoji: '🦷' },
+                { s: 'neck', p: 'necks', emoji: '🦒' }
             ],
             numbers: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
             colors: [
-                { word: 'Red', hex: '#ef4444', textClass: 'text-red-500' },
-                { word: 'Blue', hex: '#3b82f6', textClass: 'text-blue-500' },
-                { word: 'Green', hex: '#22c55e', textClass: 'text-green-500' },
-                { word: 'Yellow', hex: '#eab308', textClass: 'text-yellow-500' },
-                { word: 'Orange', hex: '#f97316', textClass: 'text-orange-500' },
-                { word: 'Purple', hex: '#a855f7', textClass: 'text-purple-500' },
-                { word: 'Pink', hex: '#ec4899', textClass: 'text-pink-500' },
-                { word: 'Black', hex: '#1e293b', textClass: 'text-slate-800' },
-                { word: 'White', hex: '#e2e8f0', textClass: 'text-slate-400' },
-                { word: 'Brown', hex: '#78350f', textClass: 'text-amber-900' }
+                { word: 'red', hex: '#ef4444', textClass: 'text-red-500' },
+                { word: 'blue', hex: '#3b82f6', textClass: 'text-blue-500' },
+                { word: 'green', hex: '#22c55e', textClass: 'text-green-500' },
+                { word: 'yellow', hex: '#eab308', textClass: 'text-yellow-500' },
+                { word: 'orange', hex: '#f97316', textClass: 'text-orange-500' },
+                { word: 'purple', hex: '#a855f7', textClass: 'text-purple-500' },
+                { word: 'pink', hex: '#ec4899', textClass: 'text-pink-500' },
+                { word: 'black', hex: '#1e293b', textClass: 'text-slate-800' },
+                { word: 'white', hex: '#e2e8f0', textClass: 'text-slate-400' },
+                { word: 'brown', hex: '#78350f', textClass: 'text-amber-900' }
             ],
             adjectives: [
-                { word: 'Large', icon: '🐘' },
-                { word: 'Small', icon: '🐭' },
-                { word: 'Long', icon: '📏' },
-                { word: 'Short', icon: '📐' },
-                { word: 'Giant', icon: '🦖' },
-                { word: 'Hard', icon: '🪨' },
-                { word: 'Soft', icon: '☁️' },
-                { word: 'Shiny', icon: '✨' }
+                { word: 'large', icon: '🐘' },
+                { word: 'small', icon: '🐭' },
+                { word: 'long', icon: '📏' },
+                { word: 'short', icon: '📐' },
+                { word: 'giant', icon: '🦖' },
+                { word: 'hard', icon: '🪨' },
+                { word: 'soft', icon: '☁️' },
+                { word: 'sharp', icon: '🗡️' }
             ]
         };
 
         const gameBeasts = [
-            { name: 'Pegasus', emoji: '🦄', feature: 'Wings', featureEmoji: '🪽' },
-            { name: 'Cerberus', emoji: '🐕', feature: 'Heads', featureEmoji: '🗣️' },
-            { name: 'Airavata', emoji: '🐘', feature: 'Tusks', featureEmoji: '🦷' },
-            { name: 'Yatagarasu', emoji: '🐦‍⬛', feature: 'Legs', featureEmoji: '🦵' },
-            { name: 'Thunderbird', emoji: '🦅', feature: 'Wings', featureEmoji: '🪽' },
-            { name: 'Moon Rabbit', emoji: '🐇', feature: 'Ears', featureEmoji: '👂' }
+            { name: 'Pegasus', emoji: '🦄', feature: 'wings', featureEmoji: '🪽' },
+            { name: 'Cerberus', emoji: '🐕', feature: 'heads', featureEmoji: '🦁' },
+            { name: 'Airavata', emoji: '🐘', feature: 'tusks', featureEmoji: '🦷' },
+            { name: 'Yatagarasu', emoji: '🐦‍⬛', feature: 'legs', featureEmoji: '🐾' },
+            { name: 'Thunderbird', emoji: '🦅', feature: 'wings', featureEmoji: '🪽' },
+            { name: 'Moon Rabbit', emoji: '🐇', feature: 'ears', featureEmoji: '🐘' }
         ];
 
         // === TTS Engine ===
@@ -510,7 +512,8 @@
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pb-10">
                                     <div className="bg-white p-6 rounded-3xl shadow-md border-t-4 border-indigo-500">
                                         <h3 className="text-xl font-bold text-indigo-700 mb-4 flex items-center gap-2"><span className="text-3xl">🐾</span> 1. Body Parts</h3>
-                                        <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
+                                        {/* Adjusted to sm:grid-cols-4 to perfectly fit 12 items */}
+                                        <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
                                             {vocabData.parts.map(part => (
                                                 <button key={part.s} onClick={() => speakText(part.s, setIsSpeaking)} className="vocab-card flex flex-col items-center justify-center p-2 md:p-3 bg-indigo-50 border border-indigo-100 rounded-2xl text-center">
                                                     <span className="text-3xl mb-1 pointer-events-none">{part.emoji}</span>
