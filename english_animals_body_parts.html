@@ -414,10 +414,11 @@
                 setGeneratedImage(null);
                 
                 // 組成給 AI 的提示詞 (Prompt)
-                const prompt = `A magical cute fantasy creature that is a ${creatorColor} ${creatorBase} having ${creatorPart}, highly detailed digital art illustration, child friendly, beautiful lighting, solid bright background`;
+                const promptText = `A magical cute fantasy creature that is a ${creatorColor} ${creatorBase} having ${creatorPart}, highly detailed digital art illustration, child friendly, beautiful lighting, solid bright background`;
                 
+                // 修正：必須嚴格遵守系統要求的物件格式 (非陣列)，環境才能正確解析與發送 API
                 const payload = {
-                    instances: [{ prompt: prompt }], // 修改為陣列格式以符合 API 標準
+                    instances: { prompt: promptText }, 
                     parameters: { sampleCount: 1 }
                 };
 
