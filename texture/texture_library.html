@@ -147,7 +147,7 @@
           { id: 'snake', name: 'snake', phonicsSound: 'ss', audioUrl: 'https://raw.githubusercontent.com/JOUCHUCHEN/maachiiknow/main/texture/s_phonics.mp3', texture: 'scales', emoji: '🐍', image: 'https://i.ibb.co/GfL1pxPN/sipa-line-1289145-1280.jpg', desc: 'Snakes have dry and hard scales.' }, 
           { id: 'fish', name: 'fish', phonicsSound: 'ff', texture: 'scales', emoji: '🐟', image: 'https://i.ibb.co/JWfG1dgf/fish.jpg', desc: 'Fish have shiny and wet scales.' }, 
           { id: 'crocodile', name: 'crocodile', phonicsSound: 'k', texture: 'scales', emoji: '🐊', image: 'https://i.ibb.co/Ng3L4Xw2/miniformat65-nile-crocodile-245013-1920.jpg', desc: 'Crocodiles have very hard scales.' },
-          { id: 'lizard', name: 'lizard', phonicsSound: 'll', texture: 'scales', emoji: '🦎', image: 'https://i.ibb.co/SwT4hFnB/pavanprasad-ind-lizard-9076520-1920.jpg', desc: 'Lizards have small and dry scales.' },
+          { id: 'lizard', name: 'lizard', phonicsSound: 'll', texture: 'scales', emoji: '🦎', image: 'https://i.ibb.co/SwT4hFnB/pavanprasad-ind-lizard-9076520-1920.jpg', desc: 'Lizards have small and dry scales.', zoomClass: 'scale-[1.6] object-[25%_40%]' },
           { id: 'eagle', name: 'eagle', phonicsSound: 'ee', texture: 'feathers', emoji: '🦅', image: 'https://i.ibb.co/5gVzdnGc/stacyvitallo-eagle-1029909-1920.jpg', desc: 'Eagles have strong feathers for flying.' }, 
           { id: 'crow', name: 'crow', phonicsSound: 'k', texture: 'feathers', emoji: '🐦‍⬛', image: 'https://i.ibb.co/kgBKWdwG/chiemseherin-raven-bird-3696515-1920.jpg', desc: 'Crows have black and shiny feathers.' }, 
           { id: 'parrot', name: 'parrot', phonicsSound: 'p', texture: 'feathers', emoji: '🦜', image: 'https://i.ibb.co/v4SmBfMV/beckytregear-bird-4728857-1920.jpg', desc: 'Parrots have colorful feathers.' },
@@ -429,10 +429,10 @@
                   </div>
                 </main>
 
-                {/* 圖片放大 Overlay */}
+                {/* 圖片放大 Overlay (將 z-index 提高到 120，確保能蓋過所有視窗) */}
                 {zoomedImage && (
                     <div 
-                        className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 zoom-overlay"
+                        className="fixed inset-0 z-[120] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 zoom-overlay"
                         onClick={() => setZoomedImage(null)}
                     >
                         <div className="relative max-w-3xl xl:max-w-4xl w-full flex flex-col items-center">
@@ -445,42 +445,56 @@
                                 alt="Zoomed Texture"
                             />
                             <p className="mt-6 xl:mt-8 text-white text-xl xl:text-3xl font-black tracking-widest uppercase">
-                                {selectedTexture?.name} Detail
+                                Detail View
                             </p>
                         </div>
                     </div>
                 )}
 
-                {/* 動物描述 Popup */}
+                {/* 動物描述 Popup (改為上下排版：上方滿版寬圖，下方左單字右句子) */}
                 {activeAnimal && (
                     <div 
-                        className="fixed inset-0 z-[110] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 xl:p-8 zoom-overlay"
+                        className="fixed inset-0 z-[110] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 xl:p-8 zoom-overlay"
                         onClick={() => setActiveAnimal(null)}
                     >
                         <div 
-                            className="bg-white w-full max-w-2xl xl:max-w-4xl rounded-[2.5rem] xl:rounded-[3rem] p-6 sm:p-8 xl:p-12 shadow-2xl border border-white relative animate-in zoom-in-95 duration-300 flex flex-col overflow-hidden max-h-[95vh]"
+                            className="bg-white w-full max-w-4xl xl:max-w-6xl rounded-[2.5rem] xl:rounded-[3rem] p-4 sm:p-6 xl:p-8 shadow-2xl border border-white relative animate-in zoom-in-95 duration-300 flex flex-col gap-4 sm:gap-6 xl:gap-8 overflow-hidden max-h-[95vh]"
                             onClick={(e) => e.stopPropagation()}
                         >
+                            {/* 關閉按鈕改為懸浮在右上角 */}
                             <button 
                                 onClick={() => setActiveAnimal(null)}
-                                className="absolute top-4 right-4 sm:top-6 sm:right-6 p-2 text-slate-300 hover:text-orange-500 transition-colors z-10"
+                                className="absolute top-6 right-6 sm:top-8 sm:right-8 xl:top-10 xl:right-10 p-2 sm:p-3 bg-black/20 hover:bg-black/40 text-white rounded-full backdrop-blur-md transition-all z-20 group shadow-sm"
                             >
-                                <X className="w-8 h-8 xl:w-10 xl:h-10" />
+                                <X className="w-5 h-5 sm:w-6 sm:h-6 xl:w-8 xl:h-8 group-hover:scale-110 transition-transform" />
                             </button>
 
-                            <div className="flex flex-col items-center text-center overflow-y-auto custom-scroll no-scrollbar pb-4">
-                                <div className="mb-4 sm:mb-6 xl:mb-8 animate-bounce-slow flex justify-center shrink-0">
-                                    {activeAnimal.image ? (
-                                        <div className="w-32 h-32 sm:w-48 sm:h-48 xl:w-56 xl:h-56 rounded-full shadow-2xl border-[6px] xl:border-[8px] border-white overflow-hidden shrink-0">
-                                            <img src={activeAnimal.image} alt={activeAnimal.name} className={`w-full h-full object-cover ${activeAnimal.zoomClass || ''}`} />
+                            {/* 上方：橫跨全寬的大面積動物圖片 */}
+                            <div className="w-full flex-shrink-0 flex items-center justify-center">
+                                {activeAnimal.image ? (
+                                    <div 
+                                      className="relative w-full h-[35vh] sm:h-[40vh] lg:h-[45vh] xl:h-[55vh] rounded-[1.5rem] xl:rounded-[2rem] shadow-sm overflow-hidden group/zoom cursor-pointer shrink-0 bg-slate-100"
+                                      onClick={() => setZoomedImage(activeAnimal.image)}
+                                      title="Click to zoom"
+                                    >
+                                        <img src={activeAnimal.image} alt={activeAnimal.name} className={`w-full h-full object-cover transition-transform duration-700 group-hover/zoom:scale-105 ${activeAnimal.zoomClass || ''}`} />
+                                        <div className="absolute inset-0 bg-black/0 group-hover/zoom:bg-black/20 transition-colors flex items-center justify-center">
+                                            <Maximize2 className="text-white opacity-0 group-hover/zoom:opacity-100 w-10 h-10 xl:w-12 xl:h-12 transition-opacity drop-shadow-lg" />
                                         </div>
-                                    ) : (
-                                        <span className="text-[6rem] lg:text-[8rem] xl:text-[10rem]">{activeAnimal.emoji}</span>
-                                    )}
-                                </div>
+                                    </div>
+                                ) : (
+                                    <div className="relative w-full h-[35vh] sm:h-[40vh] lg:h-[45vh] xl:h-[55vh] rounded-[1.5rem] xl:rounded-[2rem] shadow-sm overflow-hidden bg-slate-50 flex items-center justify-center shrink-0">
+                                        <span className="text-[8rem] lg:text-[12rem] xl:text-[15rem]">{activeAnimal.emoji}</span>
+                                    </div>
+                                )}
+                            </div>
 
-                                <div className="flex items-center justify-center gap-3 xl:gap-4 mb-4 xl:mb-6 shrink-0">
-                                    <h4 className="text-5xl sm:text-6xl xl:text-[5.5rem] font-black text-slate-800 tracking-tight">
+                            {/* 下方：左單字，右句子 */}
+                            <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-4 sm:gap-6 xl:gap-10 shrink-0 overflow-y-auto custom-scroll px-2 pb-2">
+                                
+                                {/* 左側：單字與專屬發音 */}
+                                <div className="w-full lg:w-5/12 flex flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4 xl:gap-6 shrink-0">
+                                    <h4 className="text-5xl sm:text-6xl xl:text-[5.5rem] font-black text-slate-800 tracking-tight leading-none">
                                         <span 
                                           onClick={(e) => {
                                               e.stopPropagation();
@@ -495,13 +509,14 @@
                                     </h4>
                                     <button 
                                       onClick={() => speak(activeAnimal.name)}
-                                      className="w-10 h-10 sm:w-12 sm:h-12 xl:w-12 xl:h-12 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-all text-slate-500 hover:text-orange-600 active:scale-95"
+                                      className="w-10 h-10 sm:w-12 sm:h-12 xl:w-14 xl:h-14 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-all text-slate-500 hover:text-orange-600 active:scale-95 shrink-0 shadow-sm"
                                     >
-                                      <Volume2 className="w-6 h-6 xl:w-6 xl:h-6" />
+                                      <Volume2 className="w-5 h-5 sm:w-6 sm:h-6 xl:w-7 xl:h-7" />
                                     </button>
                                 </div>
-                                
-                                <div className="bg-orange-50/50 p-4 sm:p-6 xl:p-8 rounded-[2rem] xl:rounded-[2.5rem] border-2 border-orange-100/50 flex flex-row items-center justify-between gap-4 xl:gap-6 mb-4 xl:mb-6 w-full shrink-0">
+
+                                {/* 右側：描述句 */}
+                                <div className="w-full lg:w-7/12 bg-orange-50/50 p-4 sm:p-5 xl:p-8 rounded-[1.5rem] xl:rounded-[2rem] border-2 border-orange-100/50 flex flex-row items-center justify-between gap-3 sm:gap-4 xl:gap-6 shrink-0">
                                     <div className="flex-1 text-left">
                                         {formatDescription(activeAnimal.desc)}
                                     </div>
