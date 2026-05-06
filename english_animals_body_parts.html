@@ -113,7 +113,7 @@
             { name: 'Moon Rabbit', emoji: '🐇', feature: 'ears', featureEmoji: '🐘' }
         ];
 
-        // 動物部位座標校準 (校準版 - 針對你的需求微調)
+        // 動物部位座標校準 (校準版)
         const baseAnimals = [
             { word: 'dog', emoji: '🐕', parts: [
                 { id: 'ears', top: '5%', left: '30%' }, 
@@ -121,48 +121,48 @@
                 { id: 'noses', top: '45%', left: '5%' } 
             ]},
             { word: 'horse', emoji: '🐎', parts: [
-                { id: 'necks', top: '40%', left: '5%' }, // Neck 位置調整
-                { id: 'tails', top: '10%', left: '70%' },
+                { id: 'necks', top: '25%', left: '15%' }, 
+                { id: 'tails', top: '35%', left: '85%' },
                 { id: 'heads', top: '8%', left: '5%' }
             ]},
             { word: 'elephant', emoji: '🐘', parts: [
                 { id: 'ears', top: '15%', left: '60%' }, 
-                { id: 'tusks', top: '55%', left: '10%' }, // Tusk 位置調整
-                { id: 'noses', top: '75%', left: '15%' }  // Nose 位置調整
+                { id: 'tusks', top: '55%', left: '10%' }, 
+                { id: 'noses', top: '75%', left: '15%' }  
             ]},
             { word: 'lion', emoji: '🦁', parts: [ 
                 { id: 'heads', top: '15%', left: '15%' },
-                { id: 'tails', top: '40%', left: '80%' }, // Tail 向內縮，不跑出框
-                { id: 'legs', top: '78%', left: '30%' }  // Leg 向內縮，不跑出框
+                { id: 'tails', top: '40%', left: '80%' }, 
+                { id: 'legs', top: '78%', left: '30%' }  
             ]},
             { word: 'snake', emoji: '🐍', parts: [
                 { id: 'tongues', top: '10%', left: '8%' },
-                { id: 'tails', top: '78%', left: '70%' }, // Tail 位置調整
-                { id: 'bodies', top: '50%', left: '80%' }  // Body 位置調整
+                { id: 'tails', top: '78%', left: '70%' }, 
+                { id: 'bodies', top: '50%', left: '80%' }  
             ]},
             { word: 'human', emoji: '🧑', parts: [
                 { id: 'eyes', top: '15%', left: '62%' },
                 { id: 'noses', top: '45%', left: '72%' },
                 { id: 'ears', top: '38%', left: '18%' }
             ]},
-            { word: 'crow', emoji: '🐦', parts: [ // 更換為更通用的鳥 Emoji
-                { id: 'claws', top: '85%', left: '45%' }, // Claw 放在爪子下
+            { word: 'crow', emoji: '🐦', parts: [ 
+                { id: 'claws', top: '85%', left: '45%' }, 
                 { id: 'wings', top: '22%', left: '72%' },
                 { id: 'mouths', top: '28%', left: '8%' }
             ]},
             { word: 'eagle', emoji: '🦅', parts: [
-                { id: 'claws', top: '85%', left: '25%' }, // Claw 放在爪子下
+                { id: 'claws', top: '85%', left: '25%' }, 
                 { id: 'wings', top: '18%', left: '68%' },
                 { id: 'eyes', top: '18%', left: '12%' }
             ]},
             { word: 'whale', emoji: '🐋', parts: [
-                { id: 'tails', top: '25%', left: '80%' }, // Tail 縮回框內
+                { id: 'tails', top: '25%', left: '80%' }, 
                 { id: 'heads', top: '38%', left: '8%' },
-                { id: 'fins', top: '75%', left: '45%' }  // Fin 放在魚鰭下
+                { id: 'fins', top: '75%', left: '45%' }  
             ]},
             { word: 'seal', emoji: '🦭', parts: [
                 { id: 'bodies', top: '58%', left: '78%' },
-                { id: 'tails', top: '78%', left: '60%' }, // Tail 放在尾巴旁
+                { id: 'tails', top: '78%', left: '60%' }, 
                 { id: 'heads', top: '18%', left: '10%' }
             ]}
         ];
@@ -241,6 +241,19 @@
             } catch (e) { if (fallbackText) speakText(fallbackText); }
         };
 
+        const PhonicsWord = ({ word, firstLetterColor = "text-orange-500", restColor = "text-emerald-700", phonicsUrl = null, wordUrl = null, capitalize = false, setIsSpeaking }) => {
+            const first = word.charAt(0); const rest = word.slice(1);
+            return (
+                <div className="flex items-center gap-1 justify-center mt-1">
+                    <div className="font-black text-3xl md:text-5xl flex items-baseline">
+                        <button onClick={(e) => { e.stopPropagation(); if (phonicsUrl) playExternalAudio(phonicsUrl, first); else speakText(first, setIsSpeaking); }} className={`${firstLetterColor} hover:scale-125 transition-transform`}>{capitalize ? first.toUpperCase() : first}</button>
+                        <span onClick={(e) => { e.stopPropagation(); if (wordUrl) playExternalAudio(wordUrl, word); else speakText(word, setIsSpeaking); }} className={`${restColor} cursor-pointer hover:opacity-80`}>{rest}</span>
+                    </div>
+                    <button onClick={(e) => { e.stopPropagation(); if (wordUrl) playExternalAudio(wordUrl, word); else speakText(word, setIsSpeaking); }} className="text-slate-400 hover:text-indigo-600 p-2 bg-slate-100 rounded-full scale-125 ml-2"><Volume2 size={20} /></button>
+                </div>
+            );
+        };
+
         function App() {
             const [activeTab, setActiveTab] = useState('animals');
             const [toastMsg, setToastMsg] = useState("");
@@ -289,19 +302,6 @@
             };
 
             const showToast = (msg) => { setToastMsg(msg); setTimeout(() => setToastMsg(""), 3000); };
-
-            const PhonicsWord = ({ word, firstLetterColor = "text-orange-500", restColor = "text-emerald-700", phonicsUrl = null, wordUrl = null, capitalize = false }) => {
-                const first = word.charAt(0); const rest = word.slice(1);
-                return (
-                    <div className="flex items-center gap-1 justify-center mt-1">
-                        <div className="font-black text-xl md:text-2xl flex items-baseline">
-                            <button onClick={(e) => { e.stopPropagation(); if (phonicsUrl) playExternalAudio(phonicsUrl, first); else speakText(first, setIsSpeaking); }} className={`${firstLetterColor} hover:scale-125 transition-transform`}>{capitalize ? first.toUpperCase() : first}</button>
-                            <span onClick={(e) => { e.stopPropagation(); if (wordUrl) playExternalAudio(wordUrl, word); else speakText(word, setIsSpeaking); }} className={`${restColor} cursor-pointer hover:opacity-80`}>{rest}</span>
-                        </div>
-                        <button onClick={(e) => { e.stopPropagation(); if (wordUrl) playExternalAudio(wordUrl, word); else speakText(word, setIsSpeaking); }} className="text-slate-400 hover:text-indigo-600 p-1 bg-slate-100 rounded-full"><Volume2 size={16} /></button>
-                    </div>
-                );
-            };
 
             const generateGrammar = useCallback(() => {
                 const num = vocabData.numbers[Math.floor(Math.random() * vocabData.numbers.length)];
@@ -379,18 +379,18 @@
                                 ))}
                             </div>
 
-                            {/* PART 1: ANIMALS - 已校準標籤位置與圖像顯示 */}
+                            {/* PART 1: ANIMALS - 放大標籤與名稱版本 */}
                             <section className={`${activeTab === 'animals' ? 'block' : 'hidden'} space-y-12 pb-20`}>
                                 <div className="text-center"><h2 className="text-3xl font-bold text-indigo-900">Explore the Animals!</h2><p className="text-slate-500">Tap the body parts to listen 🔊</p></div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                                     {baseAnimals.map(animal => {
                                         const custom = customAudioMap[animal.word];
                                         return (
-                                            <div key={animal.word} className="bg-white rounded-[2.5rem] shadow-xl border-b-8 border-indigo-100 overflow-hidden relative flex flex-col items-center p-8 min-h-[450px]">
-                                                <div className="absolute top-6 left-1/2 -translate-x-1/2 z-0 opacity-10 pointer-events-none text-[15rem] select-none">{animal.emoji}</div>
+                                            <div key={animal.word} className="bg-white rounded-[2.5rem] shadow-xl border-b-8 border-indigo-100 overflow-hidden relative flex flex-col items-center p-8 min-h-[500px]">
+                                                <div className="absolute top-6 left-1/2 -translate-x-1/2 z-0 opacity-10 pointer-events-none text-[18rem] select-none">{animal.emoji}</div>
                                                 <div className="relative z-10 w-full flex flex-col items-center">
-                                                    <button onClick={() => custom ? playExternalAudio(custom.wordUrl, animal.word) : speakText(animal.word, setIsSpeaking)} className="text-[12rem] md:text-[14rem] transition-transform hover:scale-105 active:scale-95 mb-6 drop-shadow-2xl">{animal.emoji}</button>
-                                                    <div className="bg-white/80 backdrop-blur shadow-sm border border-indigo-50 px-6 py-2 rounded-full mb-12"><PhonicsWord word={animal.word} firstLetterColor={custom?.firstLetterColor || "text-sky-500"} restColor="text-indigo-800" phonicsUrl={custom?.phonicUrl} wordUrl={custom.wordUrl} /></div>
+                                                    <button onClick={() => custom ? playExternalAudio(custom.wordUrl, animal.word) : speakText(animal.word, setIsSpeaking)} className="text-[14rem] md:text-[16rem] transition-transform hover:scale-105 active:scale-95 mb-6 drop-shadow-2xl">{animal.emoji}</button>
+                                                    <div className="bg-white/80 backdrop-blur shadow-sm border border-indigo-50 px-10 py-4 rounded-full mb-12"><PhonicsWord word={animal.word} firstLetterColor={custom?.firstLetterColor || "text-sky-500"} restColor="text-indigo-800" phonicsUrl={custom?.phonicUrl} wordUrl={custom.wordUrl} setIsSpeaking={setIsSpeaking} /></div>
                                                 </div>
                                                 {animal.parts.map(p => {
                                                     const partInfo = vocabData.parts.find(v => v.s === p.id || v.p === p.id) || { s: p.id, p: p.id };
@@ -399,7 +399,7 @@
                                                     const sentence = `A ${animal.word} has ${isPlural ? '' : 'a '}${isPlural ? partInfo.p : partInfo.s}.`;
                                                     return (
                                                         <button key={p.id} onClick={() => { showToast(sentence); partAudio ? playExternalAudio(partAudio.wordUrl, sentence) : speakText(sentence, setIsSpeaking); }} 
-                                                            className="absolute bg-white/95 backdrop-blur-md shadow-lg border-2 border-indigo-100 px-4 py-2 rounded-full text-sm font-bold text-indigo-700 hover:bg-indigo-600 hover:text-white transition-all active:scale-90 z-20 flex items-center gap-1.5"
+                                                            className="absolute bg-white/95 backdrop-blur-md shadow-2xl border-4 border-indigo-100 px-8 py-4 rounded-full text-2xl font-bold text-indigo-700 hover:bg-indigo-600 hover:text-white transition-all active:scale-90 z-20 flex items-center gap-2"
                                                             style={{ top: p.top, left: p.left }}
                                                         >
                                                             <span>{partInfo.s}</span>
@@ -425,7 +425,12 @@
                                                 return (
                                                     <div key={p.s} className="vocab-card bg-indigo-50 p-4 rounded-2xl text-center border border-indigo-100 cursor-pointer" onClick={() => custom ? playExternalAudio(custom.phonicUrl, p.s) : speakText(p.s, setIsSpeaking)}>
                                                         <span className="text-4xl mb-2 block">{p.emoji}</span>
-                                                        <PhonicsWord word={p.s} phonicsUrl={custom?.phonicUrl} wordUrl={custom?.wordUrl} />
+                                                        <div className="flex items-center gap-1 justify-center mt-1">
+                                                            <div className="font-black text-xl md:text-2xl flex items-baseline">
+                                                                <span className="text-orange-500">{p.s.charAt(0)}</span>
+                                                                <span className="text-emerald-700">{p.s.slice(1)}</span>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 );
                                             })}
@@ -450,7 +455,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div className="text-center mt-12"><button onClick={() => setActiveTab('grammar')} className="bg-indigo-600 text-white px-10 py-4 rounded-full font-bold text-xl">Next: Grammar Rules ➡️</button></div>
                             </section>
 
                             {/* PART 3: GRAMMAR */}
