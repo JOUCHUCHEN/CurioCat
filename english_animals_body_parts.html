@@ -426,9 +426,6 @@
                                     const custom = customAudioMap[animal.word];
                                     return (
                                         <div key={animal.word} className="bg-white rounded-[2rem] border border-indigo-50 overflow-hidden relative flex flex-col items-center p-6 h-[450px]">
-                                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 opacity-10 pointer-events-none select-none">
-                                                {animal.icon ? <img src={animal.icon} className="w-64 h-64 object-contain" /> : <span className="text-[18rem]">{animal.emoji}</span>}
-                                            </div>
                                             <div className="relative z-10 w-full flex flex-col items-center pt-4">
                                                 <div className="h-[250px] flex items-center justify-center mb-4">
                                                     <button onClick={() => custom ? playExternalAudio(custom.wordUrl, animal.word) : speakWithBackoff(animal.word, setIsSpeaking)} className="transition-transform hover:scale-105 active:scale-95 flex items-center justify-center">
