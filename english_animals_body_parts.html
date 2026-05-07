@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Beast Body Parts: Vocabulary, Grammar & AI Game</title>
     
+    <!-- 引入 Noto Sans TC (Logo使用) 與 Roboto (全站使用) 字體 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Outfit:wght@300;400;500;600;700&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
     
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
@@ -18,8 +19,8 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Outfit', 'sans-serif'],
-                        logo: ['Fredoka', 'sans-serif'], 
+                        sans: ['Roboto', 'sans-serif'],
+                        logo: ['"Noto Sans TC"', 'sans-serif'],
                     }
                 }
             }
@@ -27,20 +28,17 @@
     </script>
 
     <style>
-        body { overflow-x: hidden; }
-        /* 移除陰影 */
+        body { font-family: 'Roboto', sans-serif; overflow: hidden; }
         .active-tab { background-color: #4f46e5; color: white; }
         .loading-ring { border: 4px solid #e0e7ff; border-top: 4px solid #4f46e5; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; display: none; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         #ai-cursor { position: fixed; width: 45px; height: 45px; background-color: rgba(79, 70, 229, 0.2); border: 3px solid #4f46e5; border-radius: 50%; pointer-events: none; z-index: 1000; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center; font-size: 28px; transition: width 0.2s, height 0.2s; }
         .hover-progress { position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border-radius: 50%; border: 5px solid transparent; border-top-color: #10b981; animation: spin 1.5s linear infinite; display: none; }
         .game-card { transition: all 0.3s; }
-        /* 移除懸停陰影 */
         .game-card.hovered { transform: scale(1.05); border-color: #4f46e5; }
         .game-card.correct { background-color: #d1fae5; border-color: #10b981; }
         .game-card.wrong { background-color: #fee2e2; border-color: #ef4444; }
         .vocab-card { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
-        /* 移除卡片陰影 */
         .vocab-card:hover { transform: translateY(-3px); border-color: #818cf8; }
         .vocab-card:active { transform: scale(0.95); }
         .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -274,7 +272,7 @@
             const [hasStartedGame, setHasStartedGame] = useState(false);
             const [targetBeast, setTargetBeast] = useState(null);
             const [options, setOptions] = useState([]);
-            const [gameMode, setGameMode] = useState('challenge');
+            const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
             
             const videoRef = useRef(null);
             const cursorRef = useRef(null);
@@ -365,21 +363,61 @@
                 { id: 'game', label: 'AI Game' }
             ];
 
+            const navigateToHome = () => { window.location.href = 'index.html'; };
+
             return (
                 <div className="flex flex-col h-screen overflow-hidden bg-indigo-50">
-                    <nav className="bg-white h-14 border-b flex items-center justify-between px-6 shrink-0 text-slate-800">
-                        <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.location.reload()}>
-                            <img src="https://i.ibb.co/CFC5v9L/Machi-Know-Logo.png" alt="Logo" className="w-8 h-8" />
-                            <span className="font-logo font-black text-xl">Maachii<span className="text-orange-600">Know</span></span>
+                    {/* 完全一致的 Navbar 結構 */}
+                    <nav className="bg-white shadow-sm h-20 border-b flex-shrink-0 z-50 sticky top-0">
+                        <div className="max-w-7xl mx-auto px-4 h-full flex justify-between items-center">
+                            <div className="flex items-center cursor-pointer group" onClick={navigateToHome}>
+                                <img 
+                                    src="https://i.ibb.co/CFC5v9L/Machi-Know-Logo.png" 
+                                    alt="Maachiiknow Logo" 
+                                    className="w-16 h-16 object-contain group-hover:scale-110 group-hover:rotate-6 transition-all relative -top-1 left-0 z-0"
+                                />
+                                <span className="font-logo font-black text-3xl text-gray-900 tracking-tighter relative z-10 ml-0">
+                                    Maachii<span className="text-orange-600">Know</span>
+                                </span>
+                            </div>
+                            
+                            <div className="hidden md:flex items-center space-x-12">
+                                <button 
+                                    onClick={navigateToHome} 
+                                    className="font-bold text-base text-gray-500 hover:text-orange-600 uppercase tracking-widest transition-colors"
+                                >
+                                    Home
+                                </button>
+                            </div>
+
+                            <button 
+                                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+                                className="md:hidden text-gray-600 p-2"
+                            >
+                                {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+                            </button>
                         </div>
-                        <div className="flex bg-slate-100 p-1 rounded-xl gap-1">
-                            {tabs.map((tab, idx) => (
-                                <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`py-1.5 px-4 rounded-lg font-bold transition-all text-sm ${activeTab === tab.id ? 'active-tab' : 'text-slate-500 hover:bg-white'}`}>{tab.label}</button>
-                            ))}
-                        </div>
+                        
+                        {isMobileMenuOpen && (
+                            <div className="absolute top-20 left-0 w-full bg-white shadow-xl border-b md:hidden flex flex-col p-6 space-y-4 z-40 animate-in slide-in-from-top-2 duration-300">
+                                <button 
+                                    onClick={navigateToHome} 
+                                    className="text-left font-bold text-gray-700"
+                                >
+                                    Home
+                                </button>
+                            </div>
+                        )}
                     </nav>
 
                     <main className="flex-1 overflow-y-auto custom-scrollbar p-4 flex flex-col items-center">
+                        {/* 遊戲內容導航分頁 */}
+                        <div className="flex bg-slate-100 p-1 rounded-xl gap-1 mb-6">
+                            {tabs.map((tab) => (
+                                <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`py-1.5 px-4 rounded-lg font-bold transition-all text-sm ${activeTab === tab.id ? 'active-tab' : 'text-slate-500 hover:bg-white'}`}>{tab.label}</button>
+                            ))}
+                        </div>
+
                         {/* PART 1: ANIMALS */}
                         <section className={`${activeTab === 'animals' ? 'block' : 'hidden'} w-full max-w-6xl`}>
                             <div className="grid grid-cols-2 gap-6">
@@ -387,28 +425,21 @@
                                     const custom = customAudioMap[animal.word];
                                     return (
                                         <div key={animal.word} className="bg-white rounded-[2rem] border border-indigo-50 overflow-hidden relative flex flex-col items-center p-6 h-[450px]">
-                                            {/* 背景 Emoji/Icon */}
                                             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 opacity-10 pointer-events-none select-none">
                                                 {animal.icon ? <img src={animal.icon} className="w-64 h-64 object-contain" /> : <span className="text-[18rem]">{animal.emoji}</span>}
                                             </div>
-                                            
                                             <div className="relative z-10 w-full flex flex-col items-center pt-4">
-                                                {/* 固定高度的動物容器 (h-[250px])，確保名稱高度一致 */}
                                                 <div className="h-[250px] flex items-center justify-center mb-4">
                                                     <button onClick={() => custom ? playExternalAudio(custom.wordUrl, animal.word) : speakWithBackoff(animal.word, setIsSpeaking)} className="transition-transform hover:scale-105 active:scale-95 flex items-center justify-center">
                                                         {animal.icon ? <img src={animal.icon} className="w-56 h-56 object-contain" /> : <span className="text-[12rem] md:text-[14rem]">{animal.emoji}</span>}
                                                     </button>
                                                 </div>
-                                                
-                                                {/* 動物名稱 */}
                                                 <div className="bg-white/80 backdrop-blur-sm px-8 py-3 rounded-full border border-white">
                                                     <PhonicsWord word={animal.word} firstLetterColor={custom?.firstLetterColor || "text-sky-500"} restColor="text-indigo-800" phonicsUrl={custom?.phonicUrl} wordUrl={custom.wordUrl} setIsSpeaking={setIsSpeaking} />
                                                 </div>
                                             </div>
-
-                                            {/* 部位標籤 */}
                                             {animal.parts.map(p => {
-                                                const partInfo = vocabData.parts.find(v => v.s === p.id || v.p === p.id) || { s: p.id, p: p.id };
+                                                const partInfo = vocabData.parts.find(v => v.s.toLowerCase() === p.id.toLowerCase() || v.p.toLowerCase() === p.id.toLowerCase()) || { s: p.id, p: p.id };
                                                 const partAudio = getCustomAudio(partInfo.s);
                                                 const isPlural = ['ears', 'legs', 'claws', 'tusks', 'wings', 'horns', 'teeth', 'mouths', 'tongues', 'eyes', 'fins'].includes(p.id);
                                                 const sentence = `A ${animal.word} has ${isPlural ? '' : 'a '}${isPlural ? partInfo.p : partInfo.s}.`;
@@ -480,6 +511,11 @@
                             </div>
                         </section>
                     </main>
+
+                    {/* 完全一致的 Footer 結構 */}
+                    <footer className="bg-white/80 backdrop-blur-sm border-t py-4 text-center shrink-0">
+                        <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.3em]">© 2026 MaachiiKnow. All rights reserved.</p>
+                    </footer>
 
                     <div id="toast" className={`fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full font-bold transition-opacity z-50 ${toastMsg ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>{toastMsg}</div>
                     <div id="ai-cursor" ref={cursorRef} style={{display:'none'}}>👆<div className="hover-progress" ref={progressRef}></div></div>
