@@ -458,13 +458,52 @@
 
                         {/* PART 2: BODY PARTS */}
                         <section className={`${activeTab === 'body_part' ? 'block' : 'hidden'} w-full max-w-4xl space-y-6`}>
+                            {/* Body Parts */}
                             <div className="bg-white p-6 rounded-3xl border-t-4 border-indigo-500">
-                                <h3 className="text-xl font-bold text-indigo-700 mb-4">🐾 Body Parts</h3>
+                                <h3 className="text-xl font-bold text-indigo-700 mb-4 flex items-center gap-2">🐾 Body Parts</h3>
                                 <div className="grid grid-cols-4 gap-3">
                                     {vocabData.parts.map(p => (
                                         <div key={p.s} className="vocab-card bg-indigo-50 p-4 rounded-2xl text-center border border-indigo-100 cursor-pointer" onClick={() => speakWithBackoff(p.s, setIsSpeaking)}>
                                             <span className="text-3xl mb-1 block">{p.emoji}</span>
                                             <span className="font-bold text-lg text-indigo-900">{p.s}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Numbers */}
+                            <div className="bg-white p-6 rounded-3xl border-t-4 border-pink-500">
+                                <h3 className="text-xl font-bold text-pink-700 mb-4 flex items-center gap-2">🔢 Numbers</h3>
+                                <div className="grid grid-cols-5 gap-3">
+                                    {vocabData.numbers.map(num => (
+                                        <div key={num} className="vocab-card bg-pink-50 p-4 rounded-2xl text-center border border-pink-100 cursor-pointer" onClick={() => speakWithBackoff(num.toString(), setIsSpeaking)}>
+                                            <span className="font-bold text-2xl text-pink-700 block">{num}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Colors */}
+                            <div className="bg-white p-6 rounded-3xl border-t-4 border-emerald-500">
+                                <h3 className="text-xl font-bold text-emerald-700 mb-4 flex items-center gap-2">🎨 Colors</h3>
+                                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                                    {vocabData.colors.map(color => (
+                                        <div key={color.word} className="vocab-card bg-slate-50 p-4 rounded-2xl text-center border border-slate-200 cursor-pointer flex flex-col items-center justify-center" onClick={() => speakWithBackoff(color.word, setIsSpeaking)}>
+                                            <div className="w-8 h-8 rounded-full mb-2 shadow-inner border border-slate-300" style={{ backgroundColor: color.hex }}></div>
+                                            <span className="font-bold text-sm text-slate-700 capitalize">{color.word}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Features (Adjectives) */}
+                            <div className="bg-white p-6 rounded-3xl border-t-4 border-amber-500">
+                                <h3 className="text-xl font-bold text-amber-700 mb-4 flex items-center gap-2">📏 Features</h3>
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                    {vocabData.adjectives.map(adj => (
+                                        <div key={adj.word} className="vocab-card bg-amber-50 p-4 rounded-2xl text-center border border-amber-100 cursor-pointer" onClick={() => speakWithBackoff(adj.word, setIsSpeaking)}>
+                                            <span className="text-3xl mb-1 block">{adj.icon}</span>
+                                            <span className="font-bold text-lg text-amber-800 capitalize">{adj.word}</span>
                                         </div>
                                     ))}
                                 </div>
