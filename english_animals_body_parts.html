@@ -117,54 +117,54 @@
 
         const baseAnimals = [
             { word: 'dog', emoji: '🐕', parts: [
-                { id: 'ear', top: '25%', left: '42%' }, 
-                { id: 'tail', top: '30%', left: '78%' }, 
-                { id: 'nose', top: '48%', left: '22%' } 
+                { id: 'ear' }, 
+                { id: 'tail' }, 
+                { id: 'nose' } 
             ]},
             { word: 'horse', emoji: '🐎', parts: [
-                { id: 'neck', top: '40%', left: '38%' }, 
-                { id: 'tail', top: '42%', left: '80%' },
-                { id: 'head', top: '22%', left: '18%' }
+                { id: 'neck' }, 
+                { id: 'tail' },
+                { id: 'head' }
             ]},
             { word: 'elephant', emoji: '🐘', parts: [
-                { id: 'ear', top: '28%', left: '60%' }, 
-                { id: 'tusk', top: '55%', left: '32%' }, 
-                { id: 'nose', top: '70%', left: '18%' }  
+                { id: 'ear' }, 
+                { id: 'tusk' }, 
+                { id: 'nose' }  
             ]},
             { word: 'lion', emoji: '🦁', parts: [ 
-                { id: 'head', top: '30%', left: '25%' },
-                { id: 'tail', top: '50%', left: '75%' }, 
-                { id: 'leg', top: '78%', left: '45%' }  
+                { id: 'head' },
+                { id: 'tail' }, 
+                { id: 'leg' }  
             ]},
             { word: 'snake', emoji: '🐍', parts: [
-                { id: 'tongue', top: '22%', left: '15%' },
-                { id: 'tail', top: '80%', left: '55%' }, 
-                { id: 'body', top: '48%', left: '45%' }  
+                { id: 'tongue' },
+                { id: 'tail' }, 
+                { id: 'body' }  
             ]},
             { word: 'human', emoji: '🧑', parts: [
-                { id: 'eye', top: '25%', left: '58%' },
-                { id: 'nose', top: '48%', left: '68%' },
-                { id: 'ear', top: '45%', left: '25%' }
+                { id: 'eye' },
+                { id: 'nose' },
+                { id: 'ear' }
             ]},
             { word: 'crow', icon: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f426-200d-2b1b.svg', parts: [ 
-                { id: 'claw', top: '82%', left: '52%' }, 
-                { id: 'wing', top: '42%', left: '62%' },
-                { id: 'mouth', top: '38%', left: '22%' }
+                { id: 'claw' }, 
+                { id: 'wing' },
+                { id: 'mouth' }
             ]},
             { word: 'eagle', emoji: '🦅', parts: [
-                { id: 'claw', top: '85%', left: '42%' }, 
-                { id: 'wing', top: '32%', left: '62%' },
-                { id: 'eye', top: '32%', left: '22%' }
+                { id: 'claw' }, 
+                { id: 'wing' },
+                { id: 'eye' }
             ]},
             { word: 'whale', emoji: '🐋', parts: [
-                { id: 'tail', top: '38%', left: '75%' }, 
-                { id: 'head', top: '50%', left: '22%' },
-                { id: 'fin', top: '72%', left: '48%' }  
+                { id: 'tail' }, 
+                { id: 'head' },
+                { id: 'fin' }  
             ]},
             { word: 'seal', icon: 'https://raw.githubusercontent.com/googlefonts/noto-emoji/main/svg/emoji_u1f9ad.svg', parts: [
-                { id: 'body', top: '62%', left: '55%' },
-                { id: 'tail', top: '65%', left: '82%' }, 
-                { id: 'head', top: '32%', left: '32%' }
+                { id: 'body' },
+                { id: 'tail' }, 
+                { id: 'head' }
             ]}
         ];
 
@@ -425,31 +425,34 @@
                                 {baseAnimals.map(animal => {
                                     const custom = customAudioMap[animal.word];
                                     return (
-                                        <div key={animal.word} className="bg-white rounded-[2rem] border border-indigo-50 overflow-hidden relative flex flex-col items-center p-6 h-[450px]">
-                                            <div className="relative z-10 w-full flex flex-col items-center pt-4">
+                                        <div key={animal.word} className="bg-white rounded-[2rem] border border-indigo-50 overflow-hidden relative flex flex-col items-center p-6 h-[500px]">
+                                            <div className="w-full flex flex-col items-center flex-1">
                                                 <div className="h-[250px] flex items-center justify-center mb-4">
                                                     <button onClick={() => custom ? playExternalAudio(custom.wordUrl, animal.word) : speakWithBackoff(animal.word, setIsSpeaking)} className="transition-transform hover:scale-105 active:scale-95 flex items-center justify-center">
-                                                        {animal.icon ? <img src={animal.icon} className="w-56 h-56 object-contain" /> : <span className="text-[12rem] md:text-[14rem]">{animal.emoji}</span>}
+                                                        {animal.icon ? <img src={animal.icon} className="w-56 h-56 object-contain" /> : <span className="text-[12rem] md:text-[14rem] leading-none">{animal.emoji}</span>}
                                                     </button>
                                                 </div>
-                                                <div className="bg-white/80 backdrop-blur-sm px-10 py-4 rounded-full border border-white">
+                                                <div className="bg-white/80 backdrop-blur-sm px-10 py-4 rounded-full border border-white mb-6">
                                                     <PhonicsWord word={animal.word} firstLetterColor={custom?.firstLetterColor || "text-sky-500"} restColor="text-indigo-800" phonicsUrl={custom?.phonicUrl} wordUrl={custom.wordUrl} setIsSpeaking={setIsSpeaking} />
                                                 </div>
+                                                
+                                                {/* 部位標籤容器放置於單字下方 */}
+                                                <div className="flex flex-wrap justify-center gap-3 w-full mt-auto">
+                                                    {animal.parts.map(p => {
+                                                        const partInfo = vocabData.parts.find(v => v.s.toLowerCase() === p.id.toLowerCase() || v.p.toLowerCase() === p.id.toLowerCase()) || { s: p.id, p: p.id };
+                                                        const partAudio = getCustomAudio(partInfo.s);
+                                                        const isPlural = ['ears', 'legs', 'claws', 'tusks', 'wings', 'horns', 'teeth', 'mouths', 'tongues', 'eyes', 'fins'].includes(p.id.toLowerCase());
+                                                        const sentence = `A ${animal.word} has ${isPlural ? '' : 'a '}${isPlural ? partInfo.p : partInfo.s}.`;
+                                                        return (
+                                                            <button key={p.id} onClick={() => { showToast(sentence); partAudio ? playExternalAudio(partAudio.wordUrl, sentence) : speakWithBackoff(sentence, setIsSpeaking); }} 
+                                                                className="bg-indigo-50 border-2 border-indigo-100 px-6 py-2 rounded-full text-lg md:text-xl font-bold text-indigo-700 hover:bg-indigo-600 hover:text-white transition-all active:scale-95 whitespace-nowrap"
+                                                            >
+                                                                {partInfo.s}
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
                                             </div>
-                                            {animal.parts.map(p => {
-                                                const partInfo = vocabData.parts.find(v => v.s.toLowerCase() === p.id.toLowerCase() || v.p.toLowerCase() === p.id.toLowerCase()) || { s: p.id, p: p.id };
-                                                const partAudio = getCustomAudio(partInfo.s);
-                                                const isPlural = ['ears', 'legs', 'claws', 'tusks', 'wings', 'horns', 'teeth', 'mouths', 'tongues', 'eyes', 'fins'].includes(p.id.toLowerCase());
-                                                const sentence = `A ${animal.word} has ${isPlural ? '' : 'a '}${isPlural ? partInfo.p : partInfo.s}.`;
-                                                return (
-                                                    <button key={p.id} onClick={() => { showToast(sentence); partAudio ? playExternalAudio(partAudio.wordUrl, sentence) : speakWithBackoff(sentence, setIsSpeaking); }} 
-                                                        className="absolute bg-white/95 backdrop-blur border-2 border-indigo-100 px-5 py-2.5 rounded-full text-lg md:text-xl font-bold text-indigo-700 hover:bg-indigo-600 hover:text-white transition-all active:scale-90 z-20 whitespace-nowrap"
-                                                        style={{ top: p.top, left: p.left, transform: 'translate(-50%, -50%)' }}
-                                                    >
-                                                        {partInfo.s}
-                                                    </button>
-                                                );
-                                            })}
                                         </div>
                                     );
                                 })}
